@@ -1,0 +1,3 @@
+[submodule "msqrc4g"]
+	path = msqrc4g
+	url = https://github.com/muneebmahmed/ms-qr-codes-good.git
