@@ -16,9 +16,9 @@ function get(req, res) {
 }
 
 function create(req, res) {
-  const { email, name } = req.body;
+  const { email, name, passwd } = req.body;
 
-  const hero = new Hero({ email, name });
+  const hero = new Hero({ email, name, passwd });
   hero
     .save()
     .then(() => {

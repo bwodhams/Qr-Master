@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 const heroSchema = new Schema(
   {
     email: { type: String, required: true, unique: true },
-    name: String
+    name: { type: String, required:  true},
+    passwd: { type: String, required: true}
   },
   { autoIndex: false }
 );

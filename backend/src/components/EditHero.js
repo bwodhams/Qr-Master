@@ -27,6 +27,14 @@ const EditHero = props => {
               onChange={props.onChange}
             />
           </div>
+          <div>
+            <label>Password: </label>
+            <input
+              name="passwd"
+              value={props.selectedHero.passwd}
+              onChange={props.onChange}
+            />
+          </div>
         </div>
         <button onClick={props.onCancel}>Cancel</button>
         <button onClick={props.onSave}>Save</button>
