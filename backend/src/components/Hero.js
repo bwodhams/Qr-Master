@@ -19,8 +19,8 @@ const Hero = props => {
         <div className="name">
           {props.hero.name}
         </div>
-        <div className="passwd">
-          {props.hero.passwd}
+        <div className="passwordHash">
+          {props.hero.passwordHash}
         </div>
       </div>
     </li>
