@@ -1,5 +1,6 @@
 const Hero = require('./hero-model');
 const ReadPreference = require('mongodb').ReadPreference;
+var bcrypt = require("bcryptjs");
 
 require('./mongo').connect();
 
@@ -16,23 +17,39 @@ function get(req, res) {
 }
 
 function create(req, res) {
-  const { email, name, passwordHash } = req.body;
-
-  const hero = new Hero({ email, name, passwordHash });
-  hero
-    .save()
-    .then(() => {
-      res.json(hero);
+  const {
+    email,
+    name,
+    passwordHash
+  } = req.body;
+  bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.hash(passwordHash, salt, function (err, passwordHash) {
+      const hero = new Hero({
+        email,
+        name,
+        passwordHash
+      });
+      hero
+        .save()
+        .then(() => {
+          res.json(hero);
+        })
+        .catch(err => {
+          res.status(500).send(err);
+        });
     })
-    .catch(err => {
-      res.status(500).send(err);
-    });
+  })
 }
 
 function update(req, res) {
-  const { email, name } = req.body;
+  const {
+    email,
+    name
+  } = req.body;
 
-  Hero.findOne({ email })
+  Hero.findOne({
+      email
+    })
     .then(hero => {
       hero.name = name;
       hero.save().then(res.json(hero));
@@ -43,9 +60,13 @@ function update(req, res) {
 }
 
 function destroy(req, res) {
-  const { email } = req.params;
+  const {
+    email
+  } = req.params;
 
-  Hero.findOneAndRemove({ email })
+  Hero.findOneAndRemove({
+      email
+    })
     .then(hero => {
       res.json(hero);
     })
@@ -54,4 +75,9 @@ function destroy(req, res) {
     });
 }
 
-module.exports = { get, create, update, destroy };
+module.exports = {
+  get,
+  create,
+  update,
+  destroy
+};

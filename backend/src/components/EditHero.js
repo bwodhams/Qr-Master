@@ -30,6 +30,8 @@ const EditHero = props => {
           <div>
             <label>Password: </label>
             <input
+              type="password"
+              secureTextEntry={true}
               name="passwordHash"
               value={props.selectedHero.passwordHash}
               onChange={props.onChange}
