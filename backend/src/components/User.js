@@ -7,6 +7,12 @@ const User = props => {
       className={props.user === props.selectedUser ? 'selected' : ''}
     >
       <button
+        className="login-button"
+        onClick={e => props.onLogin(e, props.user, document.getElementById("inputPassword").value)}
+      >
+        Login
+      </button>
+      <button
         className="delete-button"
         onClick={e => props.onDelete(e, props.user)}
       >
@@ -18,9 +24,6 @@ const User = props => {
         </div>
         <div className="name">
           {props.user.name}
-        </div>
-        <div className="passwordHash">
-          {props.user.passwordHash}
         </div>
       </div>
     </li>

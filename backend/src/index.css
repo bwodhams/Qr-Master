@@ -33,6 +33,16 @@ button:hover {
     background-color: #cfd8dc;
 }
 
+button.login-button {
+    float: right;
+    background-color: gray !important;
+    background-color: #0088f8 !important;
+    color: white;
+    padding: 4px;
+    position: relative;
+    font-size: 12px;
+}
+
 button.delete-button {
     float: right;
     background-color: gray !important;

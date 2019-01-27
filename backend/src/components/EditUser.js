@@ -33,7 +33,17 @@ const EditUser = props => {
               type="password"
               secureTextEntry={true}
               name="passwordHash"
-              value={props.selectedUser.passwordHash}
+              onChange={props.onChange}
+            />
+          </div>
+          <div>
+            <label>Login with password: </label>
+            <input
+              id="inputPassword"
+              type="password"
+              secureTextEntry={true}
+              name="inputPassword"
+              placeholder="password"
               onChange={props.onChange}
             />
           </div>

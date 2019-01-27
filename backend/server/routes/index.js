@@ -19,4 +19,8 @@ router.delete('/user/:email', (req, res) => {
   userService.destroy(req, res);
 });
 
+router.get('/user/:email&:inputPassword', (req, res) => {
+  userService.login(req, res);
+});
+
 module.exports = router;

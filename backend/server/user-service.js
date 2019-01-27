@@ -60,6 +60,7 @@ function update(req, res) {
 }
 
 function destroy(req, res) {
+  console.log("req.params" + req.params);
   const {
     email
   } = req.params;
@@ -75,9 +76,50 @@ function destroy(req, res) {
     });
 }
 
+function login(req, res) {
+  const {
+    email,
+    inputPassword
+  } = req.params;
+  User.findOne({
+    email
+  }, function (err, user) {
+    if (err) {
+      res.status(401).json({
+        message: "Error communicating with database.",
+        loggedIn: false
+      });
+    } else if (!user) {
+      res.status(401).json({
+        message: "The email or password provided was invalid.",
+        loggedIn: false
+      });
+    } else {
+      bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
+        if (err) {
+          res.status(401).json({
+            message: "Error authenticating.",
+            loggedIn: false
+          });
+        } else if (valid) {
+          res.status(201).json({
+            message: "You have signed in successfully."
+          });
+        } else {
+          res.status(401).json({
+            message: "The email or password provided was invalid.",
+            loggedIn: false
+          })
+        }
+      })
+    }
+  })
+}
+
 module.exports = {
   get,
   create,
   update,
-  destroy
+  destroy,
+  login
 };

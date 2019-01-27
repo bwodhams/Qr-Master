@@ -17,6 +17,7 @@ class Users extends Component {
     this.handleEnableAddMode = this.handleEnableAddMode.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
@@ -29,7 +30,12 @@ class Users extends Component {
   handleSelect(user) {
     this.setState({ selectedUser: user });
   }
-
+  handleLogin(event, user, inputPassword){
+    event.stopPropagation();
+    api.login(user, inputPassword).then(result => {
+      console.log(result.message);
+    });
+  }
   handleDelete(event, user) {
     event.stopPropagation();
 
@@ -101,6 +107,7 @@ class Users extends Component {
                 user={user}
                 onSelect={this.handleSelect}
                 onDelete={this.handleDelete}
+                onLogin={this.handleLogin}
                 selectedUser={this.state.selectedUser}
               />
             );
