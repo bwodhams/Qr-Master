@@ -1,9 +1,9 @@
 const baseAPI = '/api';
 
-const heroService = {
+const userService = {
   get() {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/heroes`)
+      fetch(`${baseAPI}/users`)
         .then(response => response.json())
         .then(json => resolve(json))
         .catch(err => {
@@ -12,11 +12,11 @@ const heroService = {
     });
   },
 
-  create(hero) {
+  create(user) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/hero`, {
+      fetch(`${baseAPI}/user`, {
         method: 'PUT',
-        body: JSON.stringify(hero),
+        body: JSON.stringify(user),
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
@@ -30,11 +30,11 @@ const heroService = {
     });
   },
 
-  update(hero) {
+  update(user) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/hero`, {
+      fetch(`${baseAPI}/user`, {
         method: 'POST',
-        body: JSON.stringify(hero),
+        body: JSON.stringify(user),
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
@@ -49,9 +49,9 @@ const heroService = {
     });
   },
 
-  destroy(hero) {
+  destroy(user) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/hero/${hero.email}`, { method: 'DELETE' })
+      fetch(`${baseAPI}/user/${user.email}`, { method: 'DELETE' })
         .then(response => response.json())
         .then(json => resolve(json))
         .catch(err => {
@@ -61,4 +61,4 @@ const heroService = {
   }
 };
 
-export default heroService;
+export default userService;

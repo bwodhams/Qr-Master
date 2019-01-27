@@ -53,14 +53,14 @@ div {
     color: white;
 }
 
-.heroes {
+.users {
     float: left;
     margin: 0 0 2em 0;
     list-style-type: none;
     padding: 0;
 }
 
-.heroes li {
+.users li {
     cursor: pointer;
     position: relative;
     left: 0;
@@ -72,28 +72,28 @@ div {
     width: 17em;
 }
 
-.heroes li:hover {
+.users li:hover {
     color: #607d8b;
     color: #0078d7;
     background-color: #ddd;
     left: .1em;
 }
 
-.heroes li.selected:hover {
+.users li.selected:hover {
     /*background-color: #BBD8DC !important;*/
     color: white;
 }
 
-.heroes .text {
+.users .text {
     position: relative;
     top: -3px;
 }
 
-.heroes .badge {
+.users .badge {
     margin: 5px 0;
 }
 
-.heroes .name {
+.users .name {
     font-weight: bold;
 }
 

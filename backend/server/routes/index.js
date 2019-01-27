@@ -1,22 +1,22 @@
 const express = require('express');
 const router = express.Router();
 
-const heroesService = require('../hero-service');
+const userService = require('../user-service');
 
-router.get('/heroes', (req, res) => {
-  heroesService.get(req, res);
+router.get('/users', (req, res) => {
+  userService.get(req, res);
 });
 
-router.put('/hero', (req, res) => {
-  heroesService.create(req, res);
+router.put('/user', (req, res) => {
+  userService.create(req, res);
 });
 
-router.post('/hero', (req, res) => {
-  heroesService.update(req, res);
+router.post('/user', (req, res) => {
+  userService.update(req, res);
 });
 
-router.delete('/hero/:email', (req, res) => {
-  heroesService.destroy(req, res);
+router.delete('/user/:email', (req, res) => {
+  userService.destroy(req, res);
 });
 
 module.exports = router;

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 
-import Heroes from "./components/Heroes";
+import Users from "./components/Users";
 
 class App extends Component {
   render() {
@@ -9,8 +9,8 @@ class App extends Component {
       <div>
         <h1>QRCodes4Good Registered Accounts</h1>
         <div className="header-bar" />
-        <app-heroes />
-        <Heroes />
+        <app-users />
+        <Users />
       </div>
     );
   }
