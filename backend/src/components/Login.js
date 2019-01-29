@@ -1,7 +1,6 @@
 import React from 'react';
 
 const Login = props => {
-    console.log("logged in value = " + props.loggedIn);
   if (props.startLogin) {
     return (
       <div>
@@ -35,9 +34,7 @@ const Login = props => {
       );
   } else if(!props.loggedIn){
     return (
-
             <h2>You are not logged in!</h2>
-
     );
   } else {
     return <div />;

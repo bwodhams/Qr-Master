@@ -60,7 +60,6 @@ function update(req, res) {
 }
 
 function destroy(req, res) {
-  console.log("req.params" + req.params);
   const {
     email
   } = req.params;
