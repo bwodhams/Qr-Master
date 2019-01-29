@@ -103,7 +103,8 @@ function login(req, res) {
           });
         } else if (valid) {
           res.status(201).json({
-            message: "You have signed in successfully."
+            message: "You have signed in successfully.",
+            loggedIn: true
           });
         } else {
           res.status(401).json({

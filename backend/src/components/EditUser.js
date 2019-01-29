@@ -36,17 +36,6 @@ const EditUser = props => {
               onChange={props.onChange}
             />
           </div>
-          <div>
-            <label>Login with password: </label>
-            <input
-              id="inputPassword"
-              type="password"
-              secureTextEntry={true}
-              name="inputPassword"
-              placeholder="password"
-              onChange={props.onChange}
-            />
-          </div>
         </div>
         <button onClick={props.onCancel}>Cancel</button>
         <button onClick={props.onSave}>Save</button>

@@ -79,7 +79,7 @@ div {
     padding: .5em;
     height: 3.0em;
     border-radius: 4px;
-    width: 17em;
+    width: 20em;
 }
 
 .users li:hover {
@@ -100,7 +100,7 @@ div {
 }
 
 .users .badge {
-    margin: 5px 0;
+    margin: 0px 0px;
 }
 
 .users .name {
@@ -146,6 +146,7 @@ input::placeholder {
 
 .editarea input {
     margin: 4px;
+    margin-left: 12px;
     height: 20px;
     color: #0078d7;
 }
@@ -156,4 +157,8 @@ input::placeholder {
 
 .editarea .editfields {
     margin-left: 12px;
+}
+
+h2{
+    color: white;
 }

@@ -63,9 +63,9 @@ const userService = {
     });
   },
 
-  login(user, inputPassword) {
+  login(email, inputPassword) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/user/${user.email}&${inputPassword}`)
+      fetch(`${baseAPI}/user/${email}&${inputPassword}`)
         .then(response => response.json())
         .then(json => resolve(json))
         .catch(err => {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import EditUser from './EditUser';
+import Login from './Login';
 import User from './User';
 
 import api from '../api';
@@ -17,6 +18,7 @@ class Users extends Component {
     this.handleEnableAddMode = this.handleEnableAddMode.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
+    this.handleBeginLogin = this.handleBeginLogin.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -30,12 +32,24 @@ class Users extends Component {
   handleSelect(user) {
     this.setState({ selectedUser: user });
   }
-  handleLogin(event, user, inputPassword){
+
+  handleBeginLogin(){
+    this.setState({ startLogin: true, loggedIn: null});
+  }
+
+  handleLogin(event, email, inputPassword){
     event.stopPropagation();
-    api.login(user, inputPassword).then(result => {
+    api.login(email, inputPassword).then(result => {
+      this.setState({ startLogin: false});
+      if(result.loggedIn === true){
+        this.setState({ loggedIn: true});
+      }else{
+        this.setState({ loggedIn: false});
+      }
       console.log(result.message);
     });
   }
+
   handleDelete(event, user) {
     event.stopPropagation();
 
@@ -58,7 +72,7 @@ class Users extends Component {
   }
 
   handleCancel() {
-    this.setState({ addingUser: false, selectedUser: null });
+    this.setState({ addingUser: false, selectedUser: null, startLogin: false });
   }
 
   handleSave() {
@@ -115,11 +129,18 @@ class Users extends Component {
         </ul>
         <div className="editarea">
           <button onClick={this.handleEnableAddMode}>Register New Account</button>
+          <button onClick={this.handleBeginLogin}>Login to Account</button>
           <EditUser
             addingUser={this.state.addingUser}
             onChange={this.handleOnChange}
             selectedUser={this.state.selectedUser}
             onSave={this.handleSave}
+            onCancel={this.handleCancel}
+          />
+          <Login
+            startLogin={this.state.startLogin}
+            loggedIn={this.state.loggedIn}
+            onLogin={this.handleLogin}
             onCancel={this.handleCancel}
           />
         </div>
