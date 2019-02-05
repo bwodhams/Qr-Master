@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import React, {
+  Component
+} from 'react';
 
 import EditUser from './EditUser';
 import Login from './Login';
@@ -26,25 +28,38 @@ class Users extends Component {
   }
 
   componentDidMount() {
-    api.get().then(json => this.setState({ users: json }));
+    api.get().then(json => this.setState({
+      users: json
+    }));
   }
 
   handleSelect(user) {
-    this.setState({ selectedUser: user });
+    this.setState({
+      selectedUser: user
+    });
   }
 
-  handleBeginLogin(){
-    this.setState({ startLogin: true, loggedIn: null});
+  handleBeginLogin() {
+    this.setState({
+      startLogin: true,
+      loggedIn: null
+    });
   }
 
-  handleLogin(event, email, inputPassword){
+  handleLogin(event, email, inputPassword) {
     event.stopPropagation();
     api.login(email, inputPassword).then(result => {
-      this.setState({ startLogin: false});
-      if(result.loggedIn === true){
-        this.setState({ loggedIn: true});
-      }else{
-        this.setState({ loggedIn: false});
+      this.setState({
+        startLogin: false
+      });
+      if (result.loggedIn === true) {
+        this.setState({
+          loggedIn: true
+        });
+      } else {
+        this.setState({
+          loggedIn: false
+        });
       }
       console.log(result.message);
     });
@@ -56,10 +71,14 @@ class Users extends Component {
     api.destroy(user).then(() => {
       let users = this.state.users;
       users = users.filter(h => h !== user);
-      this.setState({ users: users });
+      this.setState({
+        users: users
+      });
 
       if (this.selectedUser === user) {
-        this.setState({ selectedUser: null });
+        this.setState({
+          selectedUser: null
+        });
       }
     });
   }
@@ -67,38 +86,52 @@ class Users extends Component {
   handleEnableAddMode() {
     this.setState({
       addingUser: true,
-      selectedUser: { id: '', name: '', saying: '' }
+      selectedUser: {
+        id: '',
+        name: '',
+        saying: ''
+      }
     });
   }
 
   handleCancel() {
-    this.setState({ addingUser: false, selectedUser: null, startLogin: false });
+    this.setState({
+      addingUser: false,
+      selectedUser: null,
+      startLogin: false
+    });
   }
 
   handleSave() {
     let users = this.state.users;
-
     if (this.state.addingUser) {
       api
         .create(this.state.selectedUser)
         .then(result => {
-          console.log('Successfully created!');
-
-          users.push(this.state.selectedUser);
-          this.setState({
-            users: users,
-            selectedUser: null,
-            addingUser: false
-          });
+          if (result.accountCreated === true) {
+            console.log('Successfully created!');
+            console.log(result.message);
+            users.push(this.state.selectedUser);
+            this.setState({
+              users: users,
+              selectedUser: null,
+              addingUser: false
+            });
+          }else{
+            console.log(result.message);
+          }
         })
         .catch(err => {
           console.log(err);
         });
     } else {
+      console.log("in here");
       api
         .update(this.state.selectedUser)
         .then(() => {
-          this.setState({ selectedUser: null });
+          this.setState({
+            selectedUser: null
+          });
         })
         .catch(err => {});
     }
@@ -107,7 +140,9 @@ class Users extends Component {
   handleOnChange(event) {
     let selectedUser = this.state.selectedUser;
     selectedUser[event.target.name] = event.target.value;
-    this.setState({ selectedUser: selectedUser });
+    this.setState({
+      selectedUser: selectedUser
+    });
   }
 
   render() {
@@ -147,6 +182,8 @@ class Users extends Component {
       </div>
     );
   }
+
+
 }
 
 export default Users;

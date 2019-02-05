@@ -22,23 +22,42 @@ function create(req, res) {
     name,
     passwordHash
   } = req.body;
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(passwordHash, salt, function (err, passwordHash) {
-      const user = new User({
-        email,
-        name,
-        passwordHash
+  User.findOne({
+    email
+  }, function (err, user) {
+    if (err) {
+      res.status(401).json({
+        message: "Error communicating with database.",
+        accountCreated: false
       });
-      user
-        .save()
-        .then(() => {
-          res.json(user);
+    } else if (!user) {
+      bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash(passwordHash, salt, function (err, passwordHash) {
+          const user = new User({
+            email,
+            name,
+            passwordHash
+          });
+          user
+            .save()
+            .then(() => {
+              res.status(201).json({
+                message: "User doesn't exist. Able to create account.",
+                accountCreated: true
+              })
+            })
+            .catch(err => {
+              res.status(500).json(err);
+            });
         })
-        .catch(err => {
-          res.status(500).send(err);
-        });
-    })
-  })
+      })
+    } else {
+      res.status(401).json({
+        message: "User with this email already exists.",
+        accountCreated: false
+      });
+    }
+  });
 }
 
 function update(req, res) {
