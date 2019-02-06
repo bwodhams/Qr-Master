@@ -125,7 +125,6 @@ class Users extends Component {
           console.log(err);
         });
     } else {
-      console.log("in here");
       api
         .update(this.state.selectedUser)
         .then(() => {
