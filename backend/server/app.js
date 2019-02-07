@@ -22,7 +22,6 @@ app.set('view engine', 'jade');
 
 app.use('/api', index);
 app.get('*', (req, res) => {
-  console.log("in app.js verify asdf");
   res.sendFile('build/index.html', { root: root });
 });
 

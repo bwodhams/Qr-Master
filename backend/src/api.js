@@ -50,7 +50,6 @@ const userService = {
   },
 
   destroy(user) {
-    console.log(user);
     return new Promise((resolve, reject) => {
       fetch(`${baseAPI}/user/${user.email}`, {
           method: 'DELETE'
