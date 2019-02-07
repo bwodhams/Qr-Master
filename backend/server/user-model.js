@@ -7,6 +7,8 @@ const userSchema = new Schema(
     passwordHash: { type: String, required: true},
     registrationDate: { type: Date, default: Date.now },
     lastAccess: { type: Date, default: Date.now },
+    emailVerified: {type: Boolean, default: false},
+    emailVerifCode: {type: String}
   },
   { autoIndex: false }
 );

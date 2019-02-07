@@ -46,6 +46,8 @@ class Users extends Component {
     });
   }
 
+  
+
   handleLogin(event, email, inputPassword) {
     event.stopPropagation();
     api.login(email, inputPassword).then(result => {
@@ -89,7 +91,7 @@ class Users extends Component {
       selectedUser: {
         id: '',
         name: '',
-        saying: ''
+        emailVerifCode: ''
       }
     });
   }

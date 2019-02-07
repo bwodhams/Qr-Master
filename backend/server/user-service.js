@@ -20,7 +20,8 @@ function create(req, res) {
   const {
     email,
     name,
-    passwordHash
+    passwordHash,
+    emailVerifCode
   } = req.body;
   User.findOne({
     email
@@ -36,7 +37,8 @@ function create(req, res) {
           const user = new User({
             email,
             name,
-            passwordHash
+            passwordHash,
+            emailVerifCode
           });
           user
             .save()
@@ -135,10 +137,42 @@ function login(req, res) {
   })
 }
 
+function verify(req, res){
+  const{
+    email,
+    code
+  } = req.params;
+  User.findOne({
+    email
+  }, function(err, user){
+    if(err){
+      res.status(401).json({
+        message: "Error communicating with database.",
+      });
+    }else if(!user){
+      res.status(401).json({
+        message: "The verification link is incorrect, please try again or request a new verification email be sent.",
+      });
+    }else {
+      if(code === user.emailVerifCode){
+        user.emailVerified = true;
+        res.status(201).json({
+          message: "Email successfully verified! You may now login."
+        });
+      }else{
+        res.status(401).json({
+          message: "Error occured, please try again later"
+        })
+      }
+    }
+  })
+}
+
 module.exports = {
   get,
   create,
   update,
   destroy,
-  login
+  login,
+  verify
 };
