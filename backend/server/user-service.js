@@ -123,6 +123,9 @@ function login(req, res) {
               loggedIn: false
             });
           } else if (valid) {
+            var currentTime = (new Date).getTime();
+            user.lastAccess = currentTime;
+            user.save();
             res.status(201).json({
               message: "You have signed in successfully.",
               loggedIn: true
