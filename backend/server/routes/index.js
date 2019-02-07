@@ -9,7 +9,7 @@ router.get('/users', (req, res) => {
   userService.get(req, res);
 });
 
-router.get('/verify', (req, res) => {
+router.get('/verify/:email&:code', (req, res) => {
   console.log("in verify before request is sent");
   userService.verify(req, res);
   console.log("verify account res message = " + res.message);
@@ -38,7 +38,7 @@ function randomVerificationCode(length, chars){
 router.put('/user', (req, res) => {
   req.body.emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
   host = req.get('host');
-  link = "http://" + host + "/verify?email=" + req.body.email + "&code=" + req.body.emailVerifCode;
+  link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
   console.log("req body" + JSON.stringify(req.body));
   mailOptions={
     to : req.body.email,

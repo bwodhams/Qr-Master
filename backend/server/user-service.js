@@ -138,6 +138,7 @@ function login(req, res) {
 }
 
 function verify(req, res){
+  console.log("verify req params = " + JSON.stringify(req.params));
   const{
     email,
     code
@@ -156,6 +157,7 @@ function verify(req, res){
     }else {
       if(code === user.emailVerifCode){
         user.emailVerified = true;
+        user.save();
         res.status(201).json({
           message: "Email successfully verified! You may now login."
         });
