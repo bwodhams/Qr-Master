@@ -90,6 +90,17 @@ const userService = {
           reject(err);
         });
     });
+  },
+
+  getCards(email){
+    return new Promise((resolve, reject) => {
+      fetch(`${baseAPI}/user/getCards/${email}`)
+        .then(response => response.json())
+        .then(json => resolve(json))
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 };
 

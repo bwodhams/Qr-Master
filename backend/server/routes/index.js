@@ -69,6 +69,9 @@ router.post('/user/updateStripe', (req, res) => {
   userService.updateStripe(req, res);
 });
 
+router.get('/user/getCards/:email', (req, res) => {
+  userService.getCards(req, res);
+});
 
 
 module.exports = router;

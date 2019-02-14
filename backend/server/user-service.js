@@ -203,6 +203,25 @@ function updateStripe(req, res){
     });
 }
 
+function getCards(req, res){
+  const email = req.params.email;
+  User.findOne({
+    email
+  }, function(err, user){
+    if(err){
+      res.status(401).json({
+        message: "Error communicating with database.",
+      });
+    }else if(!user){
+      res.status(401).json({
+        message: "The verification link is incorrect, please try again or request a new verification email be sent.",
+      });
+    }else {
+      res.json(user.stripeData);
+    }
+  })
+}
+
 function verify(req, res){
   const{
     email,
@@ -242,5 +261,6 @@ module.exports = {
   destroy,
   login,
   verify,
-  updateStripe
+  updateStripe,
+  getCards
 };

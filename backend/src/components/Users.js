@@ -8,6 +8,7 @@ import User from './User';
 
 import api from '../api';
 import AddCard from './AddCard';
+import ShowCards from './ShowCards';
 
 class Users extends Component {
   constructor() {
@@ -23,6 +24,8 @@ class Users extends Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleBeginLogin = this.handleBeginLogin.bind(this);
     this.handleUpdateStripeInfo = this.handleUpdateStripeInfo.bind(this);
+    this.handleShowCards = this.handleShowCards.bind(this);
+    this.handleShowUserCards = this.handleShowUserCards.bind(this);
     this.handleAddCard = this.handleAddCard.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
@@ -98,6 +101,25 @@ class Users extends Component {
     });
   }
 
+  handleShowCards(){
+    this.setState({
+      showingCards: true
+    });
+  }
+
+  handleShowUserCards(event, email){
+    event.stopPropagation();
+    this.setState({
+      showingCards: false,
+      showAllCardsNow: true
+    });
+    api.getCards(email).then(result => {
+      console.log(result);
+    });
+
+
+  }
+
   handleDelete(event, user) {
     event.stopPropagation();
 
@@ -132,7 +154,8 @@ class Users extends Component {
       addingUser: false,
       selectedUser: null,
       startLogin: false,
-      showAddCard: false
+      showAddCard: false,
+      showingCards: false
     });
   }
 
@@ -199,6 +222,7 @@ class Users extends Component {
           <button onClick={this.handleEnableAddMode}>Register New Account</button>
           <button onClick={this.handleBeginLogin}>Login to Account</button>
           <button onClick={this.handleUpdateStripeInfo}>Add Stripe Info</button>
+          <button onClick={this.handleShowCards}>Show Cards</button>
           <EditUser
             addingUser={this.state.addingUser}
             onChange={this.handleOnChange}
@@ -216,6 +240,12 @@ class Users extends Component {
             addingCard={this.state.showAddCard}
             onAddCard={this.handleAddCard}
             onCancel={this.handleCancel}
+          />
+          <ShowCards
+            showingCards={this.state.showingCards}
+            onSubmit={this.handleShowUserCards}
+            onCancel={this.handleCancel}
+            showAllCardsNow={this.state.showAllCardsNow}
           />
         </div>
       </div>
