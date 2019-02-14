@@ -65,6 +65,10 @@ router.get('/user/:email&:inputPassword', (req, res) => {
   userService.login(req, res);
 });
 
+router.post('/user/updateStripe', (req, res) => {
+  userService.updateStripe(req, res);
+});
+
 
 
 module.exports = router;

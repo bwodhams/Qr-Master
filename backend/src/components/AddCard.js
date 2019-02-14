@@ -4,6 +4,13 @@ const AddCard = props => {
     return (
       <div>
         <div className="editfields">
+        <div>
+            <label>Email: </label>
+                <input
+                  id="email"
+                  name="email"
+                />
+          </div>
           <div>
             <label>Credit Card Number: </label>
                 <input
@@ -72,6 +79,7 @@ const AddCard = props => {
         </div>
         <button onClick={props.onCancel}>Cancel</button>
         <button onClick={e => props.onAddCard(e, 
+        document.getElementById("email").value,
         document.getElementById("creditCard").value, 
         document.getElementById("expDate").value,
         document.getElementById("cvv").value,

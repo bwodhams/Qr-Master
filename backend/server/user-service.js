@@ -149,7 +149,58 @@ function login(req, res) {
 }
 
 function updateStripe(req, res){
+  const {
+    email,
+    creditCard,
+    cvv,
+    billingFirstName,
+    billingLastName,
+    billingAddress,
+    billingCity,
+    billingState,
+    billingZip
+  } = req.body;
+  let expYear = req.body.exp.substring(req.body.exp.indexOf("/") + 1, req.body.exp.length);
+  let expMonth = req.body.exp.substring(0, 2);
+  let ccLastDigits = 0;
+  let ccType = "";
+  let ccFirstDigit = creditCard.charAt(0);
+  if(ccFirstDigit == 3){
+    ccType = "American Express";
+    ccLastDigits = String(creditCard).substring(creditCard.length - 5, creditCard.length);
+  }else if(ccFirstDigit == 4){
+    ccType = "Visa";
+    ccLastDigits = String(creditCard).substring(creditCard.length - 4, creditCard.length);
+  }else if(ccFirstDigit == 5){
+    ccType = "MasterCard";
+    ccLastDigits = String(creditCard).substring(creditCard.length - 4, creditCard.length);
+  }else{
+    ccType = "Discover Card";
+    ccLastDigits = String(creditCard).substring(creditCard.length - 4, creditCard.length);
+  }
 
+
+  User.findOne({
+      email
+    })
+    .then(user => {
+      user.stripeData.creditCard.push(creditCard);
+      user.stripeData.cvv.push(cvv);
+      user.stripeData.billingFirstName.push(billingFirstName);
+      user.stripeData.billingLastName.push(billingLastName);
+      user.stripeData.billingAddress.push(billingAddress);
+      user.stripeData.billingCity.push(billingCity);
+      user.stripeData.billingState.push(billingState);
+      user.stripeData.billingZip.push(billingZip);
+      user.stripeData.expYear.push(expYear);
+      user.stripeData.expMonth.push(expMonth);
+      user.stripeData.creditCardType.push(ccType);
+      user.stripeData.creditCardLastDigits.push(ccLastDigits);
+      user.save().then(res.json(user));
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
 }
 
 function verify(req, res){
@@ -190,5 +241,6 @@ module.exports = {
   update,
   destroy,
   login,
-  verify
+  verify,
+  updateStripe
 };

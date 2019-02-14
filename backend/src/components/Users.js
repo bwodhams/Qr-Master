@@ -23,6 +23,7 @@ class Users extends Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleBeginLogin = this.handleBeginLogin.bind(this);
     this.handleUpdateStripeInfo = this.handleUpdateStripeInfo.bind(this);
+    this.handleAddCard = this.handleAddCard.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -75,9 +76,26 @@ class Users extends Component {
     });
   }
 
-  handleAddCard(event, creditcard, expDate, cvv, firstName, lastName, address, city, state, zip){
+  handleAddCard(event, emailIn, creditcard, expDate, cvvNum, firstName, lastName, address, cityIn, stateIn, zipcode){
     event.stopPropagation();
-    
+    const info = {
+      email: emailIn,
+      creditCard: creditcard,
+      exp: expDate,
+      cvv: cvvNum,
+      billingFirstName: firstName,
+      billingLastName: lastName,
+      billingAddress: address,
+      billingCity: cityIn,
+      billingState: stateIn,
+      billingZip: zipcode
+    };
+    api.updateStripe(info).then(result => {
+      this.setState({
+        showAddCard: false
+      });
+      console.log(result.message);
+    });
   }
 
   handleDelete(event, user) {

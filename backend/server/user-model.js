@@ -11,17 +11,17 @@ const userSchema = new Schema(
     emailVerified: {type: Boolean, default: false},
     emailVerifCode: {type: String},
     stripeData : {
-      creditCard : [{type: Number, default: null}],
-      creditCardLastDigits : [{type: Number, default: null}],
+      creditCard : [{type: String, default: null}],
+      creditCardLastDigits : [{type: String, default: null}],
       creditCardType : [{type: String, default: null}],
-      cvv : [{type: Number, default: null}],
-      expMonth : [{type: Number, default: null}],
-      expYear : [{type: Number, default: null}],
+      cvv : [{type: String, default: null}],
+      expMonth : [{type: String, default: null}],
+      expYear : [{type: String, default: null}],
       token : [{type: String, default: null}],
       billingFirstName : [{type: String, default: null}],
       billingLastName : [{type: String, default: null}],
       billingAddress : [{type: String, default: null}],
-      billingZip : [{type: Number, default: null}],
+      billingZip : [{type: String, default: null}],
       billingState : [{type: String, default: null}],
       billingCity : [{type: String, default: null}]
     }

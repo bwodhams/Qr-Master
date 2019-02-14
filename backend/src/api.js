@@ -73,11 +73,19 @@ const userService = {
     });
   },
 
-  updateStripe(email, inputPassword){
+  updateStripe(info){
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/user/${email}&${inputPassword}`)
-        .then(response => response.json())
-        .then(json => resolve(json))
+      fetch(`${baseAPI}/user/updateStripe`, {
+          method: 'POST',
+          body: JSON.stringify(info),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(result => {
+          resolve(result);
+        })
         .catch(err => {
           reject(err);
         });
