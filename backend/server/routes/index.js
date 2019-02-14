@@ -33,6 +33,7 @@ function randomVerificationCode(length, chars){
 }
 
 router.put('/user', (req, res) => {
+  /*
   req.body.emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
   host = req.get('host');
   link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
@@ -48,6 +49,7 @@ router.put('/user', (req, res) => {
       console.log("Message was sent successfully!");
     }
   });
+  */
   userService.create(req, res);
 });
 

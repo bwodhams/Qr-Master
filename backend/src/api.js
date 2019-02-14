@@ -71,6 +71,17 @@ const userService = {
           reject(err);
         });
     });
+  },
+
+  updateStripe(email, inputPassword){
+    return new Promise((resolve, reject) => {
+      fetch(`${baseAPI}/user/${email}&${inputPassword}`)
+        .then(response => response.json())
+        .then(json => resolve(json))
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 };
 

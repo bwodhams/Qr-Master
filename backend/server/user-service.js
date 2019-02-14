@@ -148,6 +148,10 @@ function login(req, res) {
   })
 }
 
+function updateStripe(req, res){
+
+}
+
 function verify(req, res){
   const{
     email,

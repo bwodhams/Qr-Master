@@ -1,44 +1,91 @@
 import React from 'react';
-
 const AddCard = props => {
-  if (props.addCard) {
+  if (props.addingCard) {
     return (
       <div>
         <div className="editfields">
           <div>
-            <label>Email: </label>
+            <label>Credit Card Number: </label>
                 <input
-                  id="inputEmail"
-                  name="email"
+                  id="creditCard"
+                  name="cc"
                 />
           </div>
           <div>
-            <label>Password: </label>
-            <input
-              id="inputPassword"
-              type="password"
-              secureTextEntry={true}
-              name="passwordHash"
-            />
+            <label>Expiration Date: </label>
+                <input
+                  id="expDate"
+                  name="exp"
+                  placeholder="MM/YYYY"
+                />
+          </div>
+          <div>
+            <label>CVV: </label>
+                <input
+                  id="cvv"
+                  name="cvv"
+                />
+          </div>
+          <div>
+            <label>First Name: </label>
+                <input
+                  id="firstName"
+                  name="firstName"
+                />
+          </div>
+          <div>
+            <label>Last Name: </label>
+                <input
+                  id="lastName"
+                  name="lastName"
+                />
+          </div>
+          <div>
+            <label>Address: </label>
+                <input
+                  id="userAddress"
+                  name="userAddress"
+                />
+          </div>
+          <div>
+            <label>City: </label>
+                <input
+                  id="city"
+                  name="city"
+                />
+          </div>
+          <div>
+            <label>State: </label>
+                <input
+                  id="state"
+                  name="state"
+                  placeholder="CA"
+                />
+          </div>
+          <div>
+            <label>Zip Code: </label>
+                <input
+                  id="zipCode"
+                  name="zipCode"
+                />
           </div>
         </div>
         <button onClick={props.onCancel}>Cancel</button>
-        <button onClick={e => props.onLogin(e, document.getElementById("inputEmail").value, document.getElementById("inputPassword").value)}>Login</button>
+        <button onClick={e => props.onAddCard(e, 
+        document.getElementById("creditCard").value, 
+        document.getElementById("expDate").value,
+        document.getElementById("cvv").value,
+        document.getElementById("firstName").value,
+        document.getElementById("lastName").value,
+        document.getElementById("userAddress").value,
+        document.getElementById("city").value,
+        document.getElementById("state").value,
+        document.getElementById("zipCode").value)}>Submit</button>
       </div>
-    );
-  } else if(props.loggedIn === null || props.loggedIn === undefined){
-    return <div />;
-  } else if(props.loggedIn){
-    return (
-            <h2>You have logged in successfully!</h2>
-      );
-  } else if(!props.loggedIn){
-    return (
-            <h2>You are not logged in!</h2>
     );
   } else {
     return <div />;
   }
 };
 
-export default Login;
+export default AddCard;

@@ -7,6 +7,7 @@ import Login from './Login';
 import User from './User';
 
 import api from '../api';
+import AddCard from './AddCard';
 
 class Users extends Component {
   constructor() {
@@ -21,6 +22,7 @@ class Users extends Component {
     this.handleSave = this.handleSave.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleBeginLogin = this.handleBeginLogin.bind(this);
+    this.handleUpdateStripeInfo = this.handleUpdateStripeInfo.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -67,6 +69,17 @@ class Users extends Component {
     });
   }
 
+  handleUpdateStripeInfo(){
+    this.setState({
+      showAddCard: true
+    });
+  }
+
+  handleAddCard(event, creditcard, expDate, cvv, firstName, lastName, address, city, state, zip){
+    event.stopPropagation();
+    
+  }
+
   handleDelete(event, user) {
     event.stopPropagation();
 
@@ -100,7 +113,8 @@ class Users extends Component {
     this.setState({
       addingUser: false,
       selectedUser: null,
-      startLogin: false
+      startLogin: false,
+      showAddCard: false
     });
   }
 
@@ -166,6 +180,7 @@ class Users extends Component {
         <div className="editarea">
           <button onClick={this.handleEnableAddMode}>Register New Account</button>
           <button onClick={this.handleBeginLogin}>Login to Account</button>
+          <button onClick={this.handleUpdateStripeInfo}>Add Stripe Info</button>
           <EditUser
             addingUser={this.state.addingUser}
             onChange={this.handleOnChange}
@@ -177,6 +192,11 @@ class Users extends Component {
             startLogin={this.state.startLogin}
             loggedIn={this.state.loggedIn}
             onLogin={this.handleLogin}
+            onCancel={this.handleCancel}
+          />
+          <AddCard
+            addingCard={this.state.showAddCard}
+            onAddCard={this.handleAddCard}
             onCancel={this.handleCancel}
           />
         </div>
