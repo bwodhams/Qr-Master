@@ -32,11 +32,13 @@ function randomVerificationCode(length, chars){
   return result;
 }
 
-router.put('/user', (req, res) => {
-  /*
+router.put('/user/create', (req, res) => {
   req.body.emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
   host = req.get('host');
-  link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
+  //local host testing
+  //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
+  //website testing
+  link = "http://" + "104.42.36.29:3001" + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
   mailOptions={
     to : req.body.email,
     subject : "Please confirm your account",
@@ -49,7 +51,6 @@ router.put('/user', (req, res) => {
       console.log("Message was sent successfully!");
     }
   });
-  */
   userService.create(req, res);
 });
 
@@ -61,7 +62,7 @@ router.delete('/user/:email', (req, res) => {
   userService.destroy(req, res);
 });
 
-router.get('/user/:email&:inputPassword', (req, res) => {
+router.get('/user/login/:email&:inputPassword', (req, res) => {
   userService.login(req, res);
 });
 

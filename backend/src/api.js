@@ -14,7 +14,7 @@ const userService = {
 
   create(user) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/user`, {
+      fetch(`${baseAPI}/user/create`, {
           method: 'PUT',
           body: JSON.stringify(user),
           headers: {
@@ -64,7 +64,7 @@ const userService = {
 
   login(email, inputPassword) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/user/${email}&${inputPassword}`)
+      fetch(`${baseAPI}/user/login/${email}&${inputPassword}`)
         .then(response => response.json())
         .then(json => resolve(json))
         .catch(err => {
