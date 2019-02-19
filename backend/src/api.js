@@ -62,11 +62,19 @@ const userService = {
     });
   },
 
-  login(email, inputPassword) {
+  login(info) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/user/login/${email}&${inputPassword}`)
-        .then(response => response.json())
-        .then(json => resolve(json))
+      fetch(`${baseAPI}/user/login`, {
+          method: 'POST',
+          body: JSON.stringify(info),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(result => {
+          resolve(result);
+        })
         .catch(err => {
           reject(err);
         });

@@ -100,7 +100,7 @@ function login(req, res) {
   const {
     email,
     inputPassword
-  } = req.params;
+  } = req.body;
   User.findOne({
     email
   }, function (err, user) {

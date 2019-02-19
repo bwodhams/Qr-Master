@@ -56,7 +56,11 @@ class Users extends Component {
 
   handleLogin(event, email, inputPassword) {
     event.stopPropagation();
-    api.login(email, inputPassword).then(result => {
+    const info ={
+      email: email,
+      inputPassword: inputPassword
+    }
+    api.login(info).then(result => {
       this.setState({
         startLogin: false
       });

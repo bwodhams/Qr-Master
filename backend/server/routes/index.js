@@ -62,7 +62,7 @@ router.delete('/user/:email', (req, res) => {
   userService.destroy(req, res);
 });
 
-router.get('/user/login/:email&:inputPassword', (req, res) => {
+router.post('/user/login', (req, res) => {
   userService.login(req, res);
 });
 
