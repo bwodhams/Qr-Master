@@ -20,7 +20,7 @@ function create(req, res) {
   const {
     email,
     name,
-    passwordHash,
+    password,
     emailVerifCode
   } = req.body;
   User.findOne({
@@ -33,7 +33,7 @@ function create(req, res) {
       });
     } else if (!user) {
       bcrypt.genSalt(10, function (err, salt) {
-        bcrypt.hash(passwordHash, salt, function (err, passwordHash) {
+        bcrypt.hash(password, salt, function (err, passwordHash) {
           const user = new User({
             email,
             name,

@@ -11,4 +11,4 @@ HOST : http://104.42.36.29:3001
 | Mode | Route | Description | Expected Input | Sample Usage |
 | ---- | ----- | ----------- | -------------- | ------------ |
 | GET  |  {HOST}/api/verify/ | Verify a user's email address | Email address and the verification code - these values are automatically included in the email sent to the user, so all they have to do is click the link to verify. | /api/verify/:email&:code |
-| PUT | {HOST}/api/user/create | Create new account | Body containing email, name, password | /api/create  with request body of {"email": "random@gmail.com", "name": "Random Name", "passwordHash": "randomPassword"} |
+| PUT | {HOST}/api/user/create | Create new account | Body containing email, name, password | /api/create  with request body of {"email": "random@gmail.com", "name": "Random Name", "password": "randomPassword"} |
