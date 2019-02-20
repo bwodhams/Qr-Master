@@ -221,7 +221,7 @@ function getCards(req, res){
       });
     }else if(!user){
       res.status(401).json({
-        message: "The verification link is incorrect, please try again or request a new verification email be sent.",
+        message: "A user with this email address was not found.",
       });
     }else {
       res.json(user.stripeData);
