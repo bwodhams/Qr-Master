@@ -104,47 +104,48 @@ function login(req, res) {
   User.findOne({
     email
   }, function (err, user) {
-    if(user.emailVerified === true){
-      if (err) {
-        res.status(401).json({
-          message: "Error communicating with database.",
-          loggedIn: false
-        });
-      } else if (!user) {
-        res.status(401).json({
-          message: "The email or password provided was invalid.",
-          loggedIn: false
-        });
-      } else {
-        bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
-          if (err) {
-            res.status(401).json({
-              message: "Error authenticating.",
-              loggedIn: false
-            });
-          } else if (valid) {
-            var currentTime = (new Date).getTime();
-            user.lastAccess = currentTime;
-            user.save();
-            res.status(201).json({
-              message: "You have signed in successfully.",
-              loggedIn: true
-            });
-          } else {
-            res.status(401).json({
-              message: "The email or password provided was invalid.",
-              loggedIn: false
-            })
-          }
-        })
-      }
-    }else{
+    if (!user) {
       res.status(401).json({
-        message: "You must confirm your email address before you may login.",
+        message: "The email or password provided was invalid.",
         loggedIn: false
-      });
+      })
+    }else{
+      if(user.emailVerified === true){
+        if (err) {
+          res.status(401).json({
+            message: "Error communicating with database.",
+            loggedIn: false
+          });
+        } else {
+          bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
+            if (err) {
+              res.status(401).json({
+                message: "Error authenticating.",
+                loggedIn: false
+              });
+            } else if (valid) {
+              var currentTime = (new Date).getTime();
+              user.lastAccess = currentTime;
+              user.save();
+              res.status(201).json({
+                message: "You have signed in successfully.",
+                loggedIn: true
+              });
+            } else {
+              res.status(401).json({
+                message: "The email or password provided was invalid.",
+                loggedIn: false
+              })
+            }
+          })
+        }
+      }else{
+        res.status(401).json({
+          message: "You must confirm your email address before you may login.",
+          loggedIn: false
+        });
+      }
     }
-    
   })
 }
 
