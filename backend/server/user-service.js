@@ -104,7 +104,13 @@ function login(req, res) {
   User.findOne({
     email
   }, function (err, user) {
-    if (!user) {
+    if (err) {
+      res.status(401).json({
+        message: "Error communicating with database.",
+        loggedIn: false
+      });
+    }
+    else if (!user) {
       res.status(401).json({
         message: "The email or password provided was invalid.",
         loggedIn: false
