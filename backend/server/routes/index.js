@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-var nodemailer = require('nodemailer');
 
 const userService = require('../user-service');
 
@@ -13,45 +12,59 @@ router.get('/verify/:email&:code', (req, res) => {
 });
 
 
- //Email verification stuff
- var smtpTransport = nodemailer.createTransport({
-  service: "hotmail",
-  auth:{
-    user: "qrcodes4good@outlook.com",
-    pass: "MicrosoftGive4G"
-  }
-});
+function registrationErrorCheck(fullName, email, password, confirmPassword) {
 
-var mailOptions, host, link;
 
-function randomVerificationCode(length, chars){
-  let result = '';
-  for(let i = 0; i < length; i++){
-    result += chars[Math.floor(Math.random() * chars.length)];
+  let emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
+  let pwdLowerReg = /[a-z]+/;
+  let pwdUpperReg = /[A-Z]+/;
+  let pwdNumReg = /.*\d.*/;
+
+  let outputString = '';
+
+  if (fullName.length < 1) {
+    outputString += " Invalid name. ";
   }
-  return result;
+
+  if (!emailReg.test(email)) {
+    outputString += " Invalid email. ";
+  }
+
+  if (password.length < 6 || password.length > 20) {
+    outputString += " Password must be longer than 6 characters and less than 20 characters. ";
+  }
+
+  if (!pwdLowerReg.test(password)) {
+    outputString += " Password must contain at least one lowercase character. ";
+  }
+
+  if (!pwdUpperReg.test(password)) {
+    outputString += " Password must contain at least one uppercase character. ";
+  }
+
+  if (!pwdNumReg.test(password)) {
+    outputString += " Password must contain at least one digit. ";
+  }
+
+  if (password != confirmPassword) {
+    outputString += " Password and confirmation password don't match. ";
+  }
+
+  return outputString;
+
 }
 
 router.put('/user/create', (req, res) => {
-  req.body.emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  host = req.get('host');
-  //local host testing
-  //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
-  //website testing
-  link = "http://" + "104.42.36.29:3001" + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
-  mailOptions={
-    to : req.body.email,
-    subject : "Please confirm your account",
-    html : "Hello, <br> Please click on the link to verify your email. <br><a href=" + link + ">Click here to verify</a>"
+  let errorCheck = registrationErrorCheck(req.body.name, req.body.email, req.body.password, req.body.confirmPassword);
+  if(errorCheck.length > 0){
+    res.status(400).json({
+      message: errorCheck,
+      accountCreated: false
+    });
+  }else{
+    userService.create(req, res);
   }
-  smtpTransport.sendMail(mailOptions, function(error, response){
-    if(error){
-      console.log(error);
-    }else{
-      console.log("Message was sent successfully!");
-    }
-  });
-  userService.create(req, res);
+  
 });
 
 router.post('/user', (req, res) => {

@@ -1,6 +1,7 @@
 const User = require('./user-model');
 const ReadPreference = require('mongodb').ReadPreference;
 var bcrypt = require("bcryptjs");
+var nodemailer = require('nodemailer');
 
 require('./mongo').connect();
 
@@ -16,13 +17,34 @@ function get(req, res) {
     });
 }
 
+//Email verification stuff
+var smtpTransport = nodemailer.createTransport({
+  service: "hotmail",
+  auth:{
+    user: "qrcodes4good@outlook.com",
+    pass: "MicrosoftGive4G"
+  }
+});
+
+var mailOptions, host, link;
+
+function randomVerificationCode(length, chars){
+  let result = '';
+  for(let i = 0; i < length; i++){
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
+
+
 function create(req, res) {
   const {
     email,
     name,
-    password,
-    emailVerifCode
+    password
   } = req.body;
+  let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  let loginAuthToken = randomVerificationCode(64, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
   User.findOne({
     email
   }, function (err, user) {
@@ -38,11 +60,30 @@ function create(req, res) {
             email,
             name,
             passwordHash,
-            emailVerifCode
+            emailVerifCode,
+            loginAuthToken
           });
           user
             .save()
             .then(() => {
+              host = req.get('host');
+              console.log("host = " + host);
+              //local host testing
+              //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
+              //website testing
+              link = "http://" + "104.42.36.29:3001" + "/api/verify/" + email + "&" + emailVerifCode;
+              mailOptions={
+                to : email,
+                subject : "Please confirm your account",
+                html : "Hello, <br> Please click on the link to verify your email. <br><a href=" + link + ">Click here to verify</a>"
+              }
+              smtpTransport.sendMail(mailOptions, function(error, response){
+                if(error){
+                  console.log(error);
+                }else{
+                  console.log("Message was sent successfully!");
+                }
+              });
               res.status(201).json({
                 message: "User doesn't exist. Able to create account.",
                 accountCreated: true
@@ -51,6 +92,7 @@ function create(req, res) {
             .catch(err => {
               res.status(500).json(err);
             });
+            return true;
         })
       })
     } else {
@@ -135,6 +177,8 @@ function login(req, res) {
               user.save();
               res.status(201).json({
                 message: "You have signed in successfully.",
+                name: user.name,
+                token: user.loginAuthToken,
                 loggedIn: true
               });
             } else {
