@@ -2,6 +2,7 @@ const User = require('./user-model');
 const ReadPreference = require('mongodb').ReadPreference;
 var bcrypt = require("bcryptjs");
 var nodemailer = require('nodemailer');
+var jwt = require('jsonwebtoken');
 
 require('./mongo').connect();
 
@@ -44,7 +45,7 @@ function create(req, res) {
     password
   } = req.body;
   let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  let loginAuthToken = randomVerificationCode(64, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  let loginAuthToken = jwt.sign({email: email}, '2CWukLuOME4D16I',{expiresIn: 600});
   User.findOne({
     email
   }, function (err, user) {
