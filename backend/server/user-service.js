@@ -178,7 +178,7 @@ function login(req, res) {
               res.status(201).json({
                 message: "You have signed in successfully.",
                 name: user.name,
-                token: user.loginAuthToken,
+                loginAuthToken: user.loginAuthToken,
                 loggedIn: true
               });
             } else {
