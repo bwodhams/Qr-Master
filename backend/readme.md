@@ -7,10 +7,13 @@ For more explicit instructions, check out the howTo.md file.
 
 
 Server information (connect via SSH)
-------------------------------------
+====================================
 IP : 104.42.36.29
+
 Username : qrcodes4good
+
 Password : 1282*^nb7*(56&
+
 
 Once logged in, all pertinent information can  be found at route 
 /app/
@@ -18,12 +21,15 @@ Once logged in, all pertinent information can  be found at route
 Using [SCREEN](https://linux.die.net/man/1/screen) to allow app to run without needing to stay connected to server. 
 
 | Command | Description |
+| ------- | ----------- |
 | screen -ls | list all currently running screens |
 | screen -r 1234 | connect to screen with id number 1234 |
 | ctrl + a + d | disconnect from screen (detach) and leave running |
 
-Sample usage to restart node server : 
+Sample usage to restart node server
+-----------------------------------
 | Command | Description |
+| ------- | ----------- |
 | screen -ls | list all currently running screens |
 | screen -r 1791 | connect to node screen |
 | ctrl + c | stop node service |
@@ -33,7 +39,7 @@ Sample usage to restart node server :
 
 
 Server routes
--------------
+=============
 HOST : http://104.42.36.29:3001
 
 Sample account {"email": "bpwodhams@gmail.com", "password": "Abc1234"}
