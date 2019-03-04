@@ -20,6 +20,8 @@ Once logged in, all pertinent information can  be found at route
 
 Using [SCREEN](https://linux.die.net/man/1/screen) to allow app to run without needing to stay connected to server. 
 
+Frequently used commands
+------------------------
 | Command | Description |
 | ------- | ----------- |
 | screen -ls | list all currently running screens |
