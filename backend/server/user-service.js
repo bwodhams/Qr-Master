@@ -140,90 +140,105 @@ function destroy(req, res) {
 }
 
 function login(req, res) {
+  var ready = true;
   const {
     email,
     inputPassword,
     loginAuthToken
-  } = req.body;
-  User.findOne({
-    email
-  }, function (err, user) {
-    if (err) {
-      res.status(401).json({
-        message: "Error communicating with database.",
-        loggedIn: false
-      });
-    }
-    else if (!user) {
-      res.status(401).json({
-        message: "The email or password provided was invalid.",
-        loggedIn: false
-      })
-    }else{
-      if(user.emailVerified === true){
-        if (err) {
-          res.status(401).json({
-            message: "Error communicating with database.",
-            loggedIn: false
-          });
-        } else if(loginAuthToken.length != 0){
-            jwt.verify(loginAuthToken, '2CWukLuOME4D16I', function(err, decoded){
-              if(decoded){
-                console.log(JSON.stringify(decoded));
-                if(loginAuthToken == user.loginAuthToken){
-                  var currentTime = (new Date).getTime();
-                  user.lastAccess = currentTime;
-                  user.save();
-                  res.status(200).json({
-                    message: "You have signed in successfully.",
-                    name: user.name,
-                    loginAuthToken: user.loginAuthToken,
-                    loggedIn: true
-                  });
-                }
-              }else{
-                res.status(401).json({
-                  message: "Your login authentication token has expired. Please login with your username and password.",
-                  loggedIn: false
-                });
-              }
-            });
-        } 
-        else {
-          bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
-            if (err) {
-              res.status(401).json({
-                message: "Error authenticating.",
-                loggedIn: false
-              });
-            } else if (valid) {
-              var currentTime = (new Date).getTime();
-              var loginAuthToken = jwt.sign({email: email}, '2CWukLuOME4D16I',{expiresIn: 600});
-              user.lastAccess = currentTime;
-              user.loginAuthToken = loginAuthToken;
-              user.save();
-              res.status(200).json({
-                message: "You have signed in successfully.",
-                name: user.name,
-                loginAuthToken: loginAuthToken,
-                loggedIn: true
-              });
-            } else {
-              res.status(401).json({
-                message: "The email or password provided was invalid.",
-                loggedIn: false
-              })
-            }
-          })
-        }
-      }else{
+  } = "";
+  try{
+    email = req.body.email;
+    inputPassword = req.body.inputPassword;
+    loginAuthToken = req.body.loginAuthToken;
+  }catch(err){
+    ready = false;
+    res.status(400).json({
+      message: "Request didn't include the required fields of email, inputPassword, loginAuthToken",
+      loggedIn: false
+    })
+  }
+  if(ready == true){
+    User.findOne({
+      email
+    }, function (err, user) {
+      if (err) {
         res.status(401).json({
-          message: "You must confirm your email address before you may login.",
+          message: "Error communicating with database.",
           loggedIn: false
         });
       }
-    }
-  })
+      else if (!user) {
+        res.status(401).json({
+          message: "The email or password provided was invalid.",
+          loggedIn: false
+        })
+      }else{
+        if(user.emailVerified === true){
+          if (err) {
+            res.status(401).json({
+              message: "Error communicating with database.",
+              loggedIn: false
+            });
+          } else if(loginAuthToken.length != 0){
+              jwt.verify(loginAuthToken, '2CWukLuOME4D16I', function(err, decoded){
+                if(decoded){
+                  console.log(JSON.stringify(decoded));
+                  if(loginAuthToken == user.loginAuthToken){
+                    var currentTime = (new Date).getTime();
+                    user.lastAccess = currentTime;
+                    user.save();
+                    res.status(200).json({
+                      message: "You have signed in successfully.",
+                      name: user.name,
+                      loginAuthToken: user.loginAuthToken,
+                      loggedIn: true
+                    });
+                  }
+                }else{
+                  res.status(401).json({
+                    message: "Your login authentication token has expired. Please login with your username and password.",
+                    loggedIn: false
+                  });
+                }
+              });
+          } 
+          else {
+            bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
+              if (err) {
+                res.status(401).json({
+                  message: "Error authenticating.",
+                  loggedIn: false
+                });
+              } else if (valid) {
+                var currentTime = (new Date).getTime();
+                var loginAuthToken = jwt.sign({email: email}, '2CWukLuOME4D16I',{expiresIn: 600});
+                user.lastAccess = currentTime;
+                user.loginAuthToken = loginAuthToken;
+                user.save();
+                res.status(200).json({
+                  message: "You have signed in successfully.",
+                  name: user.name,
+                  loginAuthToken: loginAuthToken,
+                  loggedIn: true
+                });
+              } else {
+                res.status(401).json({
+                  message: "The email or password provided was invalid.",
+                  loggedIn: false
+                })
+              }
+            })
+          }
+        }else{
+          res.status(401).json({
+            message: "You must confirm your email address before you may login.",
+            loggedIn: false
+          });
+        }
+      }
+    })
+  }
+  
 }
 
 function updateStripe(req, res){
