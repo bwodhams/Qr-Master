@@ -142,7 +142,8 @@ function destroy(req, res) {
 function login(req, res) {
   const {
     email,
-    inputPassword
+    inputPassword,
+    loginAuthToken
   } = req.body;
   User.findOne({
     email
@@ -165,7 +166,30 @@ function login(req, res) {
             message: "Error communicating with database.",
             loggedIn: false
           });
-        } else {
+        } else if(loginAuthToken.length != 0){
+            jwt.verify(loginAuthToken, '2CWukLuOME4D16I', function(err, decoded){
+              if(decoded){
+                console.log(JSON.stringify(decoded));
+                if(loginAuthToken == user.loginAuthToken){
+                  var currentTime = (new Date).getTime();
+                  user.lastAccess = currentTime;
+                  user.save();
+                  res.status(200).json({
+                    message: "You have signed in successfully.",
+                    name: user.name,
+                    loginAuthToken: user.loginAuthToken,
+                    loggedIn: true
+                  });
+                }
+              }else{
+                res.status(401).json({
+                  message: "Your login authentication token has expired. Please login with your username and password.",
+                  loggedIn: false
+                });
+              }
+            });
+        } 
+        else {
           bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
             if (err) {
               res.status(401).json({
@@ -174,12 +198,14 @@ function login(req, res) {
               });
             } else if (valid) {
               var currentTime = (new Date).getTime();
+              var loginAuthToken = jwt.sign({email: email}, '2CWukLuOME4D16I',{expiresIn: 600});
               user.lastAccess = currentTime;
+              user.loginAuthToken = loginAuthToken;
               user.save();
-              res.status(201).json({
+              res.status(200).json({
                 message: "You have signed in successfully.",
                 name: user.name,
-                loginAuthToken: user.loginAuthToken,
+                loginAuthToken: loginAuthToken,
                 loggedIn: true
               });
             } else {
