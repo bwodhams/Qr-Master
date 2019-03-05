@@ -141,7 +141,7 @@ function destroy(req, res) {
 
 function login(req, res) {
   var ready = true;
-  const {
+  var {
     email,
     inputPassword,
     loginAuthToken
