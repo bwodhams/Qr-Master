@@ -32,6 +32,7 @@ Sample usage to restart node server
 -----------------------------------
 | Command | Description |
 | ------- | ----------- |
+| screen -S NameScreen | Create screen with specific name for easy identifiability |
 | screen -ls | list all currently running screens |
 | screen -r 1791 | connect to node screen |
 | ctrl + c | stop node service |
