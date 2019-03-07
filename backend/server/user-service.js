@@ -113,7 +113,6 @@ function update(req, res) {
     confirmNewPassword
   } = req.body;
   var changePass = false;
-  var newPasswordHash = "";
   if(email == undefined || currentPassword == undefined){
     res.status(400).json({
       message: "Request must contain email and currentPassword."
