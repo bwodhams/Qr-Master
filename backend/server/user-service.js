@@ -93,7 +93,6 @@ function create(req, res) {
             .catch(err => {
               res.status(500).json(err);
             });
-            return true;
         })
       })
     } else {
@@ -110,21 +109,72 @@ function update(req, res) {
     email,
     name,
     currentPassword,
-    changePassword,
-    confirmChangePassword
+    newPassword,
+    confirmNewPassword
   } = req.body;
-
-
-  User.findOne({
+  var changePass = false;
+  var newPasswordHash = "";
+  if(email == undefined || currentPassword == undefined){
+    res.status(400).json({
+      message: "Request must contain email and currentPassword."
+    })
+  }else{
+    User.findOne({
       email
     })
     .then(user => {
-      user.name = name;
-      user.save().then(res.json(user));
+      if(name != undefined){
+        user.name = name;
+      }
+      if(newPassword != undefined){
+        if(newPassword != confirmNewPassword){
+          res.status(400).json({
+            message: "New password and confirm new password don't match."
+          })
+          return false;
+        }else{
+          changePass = true;
+        }
+      }
+      bcrypt.compare(currentPassword, user.passwordHash, function (err, valid) {
+          if (err) {
+            res.status(401).json({
+              message: "Error authenticating.",
+              loggedIn: false
+            });
+          } else if (valid) {
+            if(changePass == true){
+              bcrypt.genSalt(10, function (err, salt) {
+                bcrypt.hash(newPassword, salt, function (err, passwordHash) {
+                  if(!err){
+                    user.passwordHash = passwordHash;
+                    user.save();
+                    res.status(200).json({
+                      message: "You have updated your information successfully.",
+                    });
+                    return true;
+                  }
+                })
+              })
+            }else{
+              user.save();
+              res.status(200).json({
+                message: "You have updated your information successfully.",
+              });
+            }
+          } else {
+            res.status(401).json({
+              message: "Your current password entered is incorrect.",
+              loggedIn: false
+            })
+          }
+        })
     })
     .catch(err => {
       res.status(500).send(err);
     });
+  }
+  
 }
 
 function destroy(req, res) {
