@@ -108,8 +108,12 @@ function create(req, res) {
 function update(req, res) {
   const {
     email,
-    name
+    name,
+    currentPassword,
+    changePassword,
+    confirmChangePassword
   } = req.body;
+
 
   User.findOne({
       email
@@ -140,24 +144,18 @@ function destroy(req, res) {
 }
 
 function login(req, res) {
-  var ready = true;
-  var {
+  const {
     email,
     inputPassword,
     loginAuthToken
-  } = "";
-  try{
-    email = req.body.email;
-    inputPassword = req.body.inputPassword;
-    loginAuthToken = req.body.loginAuthToken;
-  }catch(err){
-    ready = false;
+  } = req.body;
+  if(email == undefined){
     res.status(400).json({
-      message: "Request didn't include the required fields of email, inputPassword, loginAuthToken",
+      message: "Request must have an email in the body.",
       loggedIn: false
     })
   }
-  if(ready == true){
+  else{
     User.findOne({
       email
     }, function (err, user) {
@@ -179,7 +177,7 @@ function login(req, res) {
               message: "Error communicating with database.",
               loggedIn: false
             });
-          } else if(loginAuthToken.length != 0){
+          } else if(loginAuthToken != undefined && email != undefined){
               jwt.verify(loginAuthToken, '2CWukLuOME4D16I', function(err, decoded){
                 if(decoded){
                   console.log(JSON.stringify(decoded));
@@ -196,13 +194,13 @@ function login(req, res) {
                   }
                 }else{
                   res.status(401).json({
-                    message: "Your login authentication token has expired. Please login with your username and password.",
+                    message: "Your login authentication token is incorrect or has expired. Please login with your username and password.",
                     loggedIn: false
                   });
                 }
               });
           } 
-          else {
+          else if(inputPassword != undefined){
             bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
               if (err) {
                 res.status(401).json({
@@ -228,6 +226,11 @@ function login(req, res) {
                 })
               }
             })
+          }else{
+            res.status(400).json({
+              message: "Unable to authenticate user.",
+              loggedIn: false
+            })
           }
         }else{
           res.status(401).json({
@@ -237,8 +240,7 @@ function login(req, res) {
         }
       }
     })
-  }
-  
+  }  
 }
 
 function updateStripe(req, res){

@@ -67,7 +67,7 @@ router.put('/user/create', (req, res) => {
   
 });
 
-router.post('/user', (req, res) => {
+router.post('/user/update', (req, res) => {
   userService.update(req, res);
 });
 

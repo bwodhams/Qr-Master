@@ -32,7 +32,7 @@ const userService = {
 
   update(user) {
     return new Promise((resolve, reject) => {
-      fetch(`${baseAPI}/user`, {
+      fetch(`${baseAPI}/user/update`, {
           method: 'POST',
           body: JSON.stringify(user),
           headers: {
