@@ -54,8 +54,9 @@ function registrationErrorCheck(fullName, email, password, confirmPassword) {
 
 }
 
+
 router.put('/user/create', (req, res) => {
-  let errorCheck = registrationErrorCheck(req.body.name, req.body.email, req.body.password, req.body.confirmPassword);
+  var errorCheck = registrationErrorCheck(req.body.name, req.body.email, req.body.password, req.body.confirmPassword);
   if(errorCheck.length > 0){
     res.status(400).json({
       message: errorCheck,
@@ -67,8 +68,68 @@ router.put('/user/create', (req, res) => {
   
 });
 
+
+
+function validUpdateCheck(email, password) {
+
+
+  let emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
+  let pwdLowerReg = /[a-z]+/;
+  let pwdUpperReg = /[A-Z]+/;
+  let pwdNumReg = /.*\d.*/;
+
+  let outputString = '';
+
+
+  if (!emailReg.test(email)) {
+    outputString += " New email is invalid. ";
+  }
+
+  if (password.length < 6 || password.length > 20) {
+    outputString += " Password must be longer than 6 characters and less than 20 characters. ";
+  }
+
+  if (!pwdLowerReg.test(password)) {
+    outputString += " Password must contain at least one lowercase character. ";
+  }
+
+  if (!pwdUpperReg.test(password)) {
+    outputString += " Password must contain at least one uppercase character. ";
+  }
+
+  if (!pwdNumReg.test(password)) {
+    outputString += " Password must contain at least one digit. ";
+  }
+
+
+  return outputString;
+
+}
+
 router.post('/user/update', (req, res) => {
-  userService.update(req, res);
+  if(req.body.email == undefined){
+    res.status(400).json({
+      message: "You must have an email in the body."
+    })
+    return false;
+  }
+  if(req.body.newPassword == undefined && req.body.newEmail != undefined){
+    var updateCheck = validUpdateCheck(req.body.newEmail, "Abc1234");
+  }else if(req.body.newPassword != undefined && req.body.newEmail == undefined){
+    var updateCheck = validUpdateCheck("abc@gmail.com", req.body.newPassword);
+  }else if(req.body.newPassword != undefined && req.body.newEmail != undefined){
+    var updateCheck = validUpdateCheck(req.body.newEmail, req.body.newPassword);
+  }else{
+    var updateCheck = "";
+  }
+  
+  if(updateCheck.length > 0){
+    res.status(400).json({
+      message: updateCheck
+    })
+  }else{
+    userService.update(req, res);
+  }
 });
 
 router.delete('/user/:email', (req, res) => {

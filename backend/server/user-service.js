@@ -82,7 +82,7 @@ function create(req, res) {
                 if(error){
                   console.log(error);
                 }else{
-                  console.log("Message was sent successfully!");
+                  console.log("Confirmation email sent successfully!");
                 }
               });
               res.status(201).json({
@@ -107,6 +107,7 @@ function create(req, res) {
 function update(req, res) {
   const {
     email,
+    newEmail,
     name,
     currentPassword,
     newPassword,
@@ -122,6 +123,12 @@ function update(req, res) {
       email
     })
     .then(user => {
+      if(user.emailVerified == false){
+        res.status(403).json({
+          message: "You cannot change account details without first confirming your email."
+        })
+        return false;
+      }
       if(name != undefined){
         user.name = name;
       }
@@ -138,11 +145,55 @@ function update(req, res) {
       bcrypt.compare(currentPassword, user.passwordHash, function (err, valid) {
           if (err) {
             res.status(401).json({
-              message: "Error authenticating.",
-              loggedIn: false
+              message: "Error authenticating."
             });
           } else if (valid) {
-            if(changePass == true){
+            if(newEmail != undefined && newEmail != email){
+              let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+              host = req.get('host');
+              console.log("host = " + host);
+              //local host testing
+              //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
+              //website testing
+              link = "http://" + "104.42.36.29:3001" + "/api/verify/" + newEmail + "&" + emailVerifCode;
+              mailOptions={
+                to : newEmail,
+                subject : "Please confirm your account",
+                html : "Hello, <br> Please click on the link to verify your email. <br><a href=" + link + ">Click here to verify</a>"
+              }
+              smtpTransport.sendMail(mailOptions, function(error, response){
+                if(error){
+                  console.log(error);
+                }else{
+                  console.log("Confirmation email sent successfully!");
+                  user.email = newEmail;
+                  user.emailVerifCode = emailVerifCode;
+                  user.emailVerified = false;
+                  if(changePass == true){
+                    bcrypt.genSalt(10, function (err, salt) {
+                      bcrypt.hash(newPassword, salt, function (err, passwordHash) {
+                        if(!err){
+                          user.passwordHash = passwordHash;
+                          user.save();
+                          res.status(200).json({
+                            message: "You have updated your information successfully.",
+                          });
+                          return true;
+                        }
+                      })
+                    })
+                  }
+                  else{
+                    user.save();
+                    res.status(200).json({
+                      message: "You have updated your information successfully.",
+                    });
+                    return true;
+                  }
+                }
+              });
+            }
+            else if(changePass == true){
               bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(newPassword, salt, function (err, passwordHash) {
                   if(!err){
@@ -163,14 +214,15 @@ function update(req, res) {
             }
           } else {
             res.status(401).json({
-              message: "Your current password entered is incorrect.",
-              loggedIn: false
+              message: "Your current password entered is incorrect."
             })
           }
         })
     })
     .catch(err => {
-      res.status(500).send(err);
+      res.status(500).json({
+        message: "Account with that email address doesn't exist"
+      });
     });
   }
   
@@ -383,12 +435,21 @@ function verify(req, res){
         message: "The verification link is incorrect, please try again or request a new verification email be sent.",
       });
     }else {
-      if(code === user.emailVerifCode){
+      if(user.emailVerified == true){
+        res.status(202).json({
+          message: "Your email has already been verified."
+        })
+      }
+      else if(code === user.emailVerifCode){
         user.emailVerified = true;
         user.save();
         res.status(201).json({
           message: "Email successfully verified! You may now login."
         });
+      }else if(code != user.emailVerifCode){
+        res.status(401).json({
+          message: "Incorrect verification code, please check if you have a newer verification link, or request a new confirmation link."
+        })
       }else{
         res.status(401).json({
           message: "Error occured, please try again later"
