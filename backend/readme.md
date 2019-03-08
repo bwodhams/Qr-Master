@@ -40,10 +40,17 @@ Sample usage to restart node server
 | ctrl + a + d | detach from screen and leave node service running |
 
 
+Sample usage to restart front end
+---------------------------------
+| Command | Description |
+| ------- | ----------- |
+| serve -s build -l 80 | Serve frontend page on port 80 |
+
+
 
 Server routes
 =============
-HOST : http://104.42.36.29:3001
+HOST : http://104.42.36.29:8080   OR  http://www.microsoftgive.com:8080
 
 Sample account {"email": "bpwodhams@gmail.com", "password": "Abc1234"}
 
