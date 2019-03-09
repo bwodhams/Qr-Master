@@ -3,16 +3,33 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const chalk = require('chalk');
 
 const index = require('./routes/index');
 
 const app = express();
 
+const morganMiddleware = logger(function (tokens, req, res) {
+  return [
+      chalk.hex('#34ace0').bold(tokens.method(req, res)),
+      chalk.hex('#ffb142').bold(tokens.status(req, res)),
+      chalk.hex('#ff5252').bold(tokens.url(req, res)),
+      chalk.hex('#2ed573').bold(tokens['response-time'](req, res) + ' ms'),
+      chalk.hex('#f78fb3').bold('@ ' + tokens.date(req, res)),
+      chalk.yellow(tokens['remote-addr'](req, res)),
+      '\n',
+  ].join(' ');
+});
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+//app.use(logger('dev'));
+//app.use(logger(':date[clf] :remote-addr :method :url :status - :response-time ms'));
+app.use(morganMiddleware);
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'build')));
 
@@ -22,18 +39,20 @@ app.set('view engine', 'jade');
 
 app.use('/api', index);
 app.get('*', (req, res) => {
-  res.sendFile('build/index.html', { root: root });
+  res.sendFile('build/index.html', {
+    root: root
+  });
 });
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
