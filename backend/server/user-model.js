@@ -25,7 +25,9 @@ const userSchema = new Schema(
       billingZip : [{type: String, default: null}],
       billingState : [{type: String, default: null}],
       billingCity : [{type: String, default: null}]
-    }
+    },
+    resetPassword: {type: Boolean, default: false},
+    resetPasswordCode: {type: String}
   },
   { autoIndex: false }
 );

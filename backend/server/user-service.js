@@ -6,6 +6,8 @@ var jwt = require('jsonwebtoken');
 
 require('./mongo').connect();
 
+var port = "8080";
+var hostLink = "www.microsoftgive.com";
 function get(req, res) {
   const docquery = User.find({}).read(ReadPreference.NEAREST);
   docquery
@@ -72,7 +74,7 @@ function create(req, res) {
               //local host testing
               //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
               //website testing
-              link = "http://" + "104.42.36.29:3001" + "/api/verify/" + email + "&" + emailVerifCode;
+              link = "http://" + hostLink + ":" + port + "/api/verify/" + email + "&" + emailVerifCode;
               mailOptions={
                 to : email,
                 subject : "Please confirm your account",
@@ -155,7 +157,7 @@ function update(req, res) {
               //local host testing
               //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
               //website testing
-              link = "http://" + "104.42.36.29:3001" + "/api/verify/" + newEmail + "&" + emailVerifCode;
+              link = "http://" + hostLink + ":" + port + "/api/verify/" + newEmail + "&" + emailVerifCode;
               mailOptions={
                 to : newEmail,
                 subject : "Please confirm your account",
@@ -285,6 +287,7 @@ function login(req, res) {
                   if(loginAuthToken == user.loginAuthToken){
                     var currentTime = (new Date).getTime();
                     user.lastAccess = currentTime;
+                    user.resetPassword = false;
                     user.save();
                     res.status(200).json({
                       message: "You have signed in successfully.",
@@ -313,6 +316,7 @@ function login(req, res) {
                 var loginAuthToken = jwt.sign({email: email}, '2CWukLuOME4D16I',{expiresIn: 600});
                 user.lastAccess = currentTime;
                 user.loginAuthToken = loginAuthToken;
+                user.resetPassword = false;
                 user.save();
                 res.status(200).json({
                   message: "You have signed in successfully.",
@@ -459,6 +463,144 @@ function verify(req, res){
   })
 }
 
+function forgotPassword(req, res){
+  const{
+    email
+  } = req.body;
+  if(email == undefined){
+    res.status(400).json({
+      message: "Request must contain email."
+    })
+  }else{
+    User.findOne({
+      email
+    }, function(err, user){
+      if(err){
+        res.status(401).json({
+          message: "Error communicating with database.",
+        });
+      }else if(!user){
+        res.status(401).json({
+          message: "Account associated with this email address was not found.",
+        });
+      }else {
+        let resetPasswordCode = randomVerificationCode(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        host = req.get('host');
+        console.log("host = " + host);
+        //local host testing
+        //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
+        //website testing
+        link = "http://" + hostLink + ":" + port + "/api/user/resetPassword/" + email + "&" + resetPasswordCode;
+        mailOptions={
+          to : email,
+          subject : "Reset your password",
+          html : "Hello " + user.name + ", <br> A request has been made to reset your password. <br><a href=" + link + ">Click here to reset your password</a>"
+        }
+        smtpTransport.sendMail(mailOptions, function(error, response){
+          if(error){
+            console.log(error);
+          }else{
+            console.log("Reset password email sent successfully!");
+            user.resetPasswordCode = resetPasswordCode;
+            user.save();
+            res.status(200).json({
+              message: "Reset password email has been sent successfully.",
+            });
+          }
+        });
+      }
+    })
+  }
+}
+
+function resetPassword(req, res){
+  const{
+    email,
+    code
+  } = req.params;
+  console.log("email = " + email);
+  console.log("code = " + code);
+  if(email == undefined || code == undefined){
+    res.status(400).json({
+      message: "Request must contain email."
+    })
+  }else{
+    User.findOne({
+      email
+    }, function(err, user){
+      if(err){
+        res.status(401).json({
+          message: "Error communicating with database.",
+        });
+      }else if(!user){
+        res.status(401).json({
+          message: "Account associated with this email address was not found.",
+        });
+      }else{
+        if(user.resetPasswordCode === code){
+          user.resetPassword = true;
+          user.save();
+          res.status(200).json({
+            message: "You may now reset your password"
+          });
+        }else{
+          res.status(401).json({
+            message: "Incorrect verification code."
+          });
+        }
+      }
+    })
+  }
+}
+
+function updateResetPassword(req, res){
+  const{
+    email,
+    resetPasswordCode,
+    newPassword
+  } = req.body;
+
+  User.findOne({
+    email
+  }, function(err, user){
+    if(err){
+      res.status(401).json({
+        message: "Error communicating with database.",
+      });
+    }else if(!user){
+      res.status(401).json({
+        message: "Account associated with this email address was not found.",
+      });
+    }else{
+      if(user.resetPassword == true){
+        if(user.resetPasswordCode = resetPasswordCode){
+          bcrypt.genSalt(10, function (err, salt) {
+            bcrypt.hash(newPassword, salt, function (err, passwordHash) {
+              user.passwordHash = passwordHash;
+              user.resetPassword = false;
+              user.save();
+            })
+          })
+          user.resetPassword = true;
+          user.save();
+          res.status(200).json({
+            message: "Your password has been changed, please login now."
+          });
+          return true; 
+        }else{
+          res.status(401).json({
+            message: "Incorrect password reset code."
+          });
+        } 
+      }else{
+        res.status(403).json({
+          message: "Access Denied."
+        });
+      }
+    }
+  })
+}
+
 module.exports = {
   get,
   create,
@@ -467,5 +609,8 @@ module.exports = {
   login,
   verify,
   updateStripe,
-  getCards
+  getCards,
+  forgotPassword,
+  resetPassword,
+  updateResetPassword
 };
