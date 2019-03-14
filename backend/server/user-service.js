@@ -4,6 +4,8 @@ var bcrypt = require("bcryptjs");
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
 
+var secret = '2CWukLuOME4D16I';
+
 require('./mongo').connect();
 
 var port = "8080";
@@ -47,7 +49,7 @@ function create(req, res) {
     password
   } = req.body;
   let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  let loginAuthToken = jwt.sign({email: email}, '2CWukLuOME4D16I',{expiresIn: 600});
+  let loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
   User.findOne({
     email
   }, function (err, user) {
@@ -246,11 +248,69 @@ function destroy(req, res) {
     });
 }
 
+function bioLogin(req, res) {
+    const {
+        touchAuthToken,
+        devID
+    } = req.body;
+    if (touchAuthToken == undefined || devID == undefined){
+        res.status(400).json({
+            message: "Request must have a token and device ID",
+            loggedIn: false
+        })
+    }
+    else{
+        jwt.verify(touchAuthToken, secret, function(err, decoded){
+            if (decoded && decoded['devID'] == devID){
+                console.log(JSON.stringify(decoded));
+                email = decoded['email'];
+                User.findOne({
+                    email
+                }, function(err, user) {
+                    if (err){
+                        res.status(401).json({
+                            message: "Error communicating with database.",
+                            loggedIn: false
+                        });
+                    }
+                    else if (!user) {
+                        res.status(401).json({
+                            message: "The email or password provided was invalid.",
+                            loggedIn: false
+                        });
+                    }
+                    else{
+                        user.lastAccess = (new Date).getTime();
+                        user.resetPassword = false;
+                        user.save();
+                        var loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
+                        var touchAuthToken = jwt.sign({email: email, devID: devId, time: (new Date).getTime()}, secret, {expiresIn: 6000});
+                        res.status(200).json({
+                            message: "Authentication success",
+                            name: user.name,
+                            email: user.email,
+                            loginAuthToken: loginAuthToken,
+                            touchAuthToken: touchAuthToken,
+                            loggedIn: true
+                        });
+                    }
+                }
+            }
+            else{
+                res.status(401).json({
+                    message: "Incorrect token",
+                    loggedIn: false
+                });
+            }
+        });
+    }
+}
 function login(req, res) {
   const {
     email,
     inputPassword,
-    loginAuthToken
+    loginAuthToken,
+    devId
   } = req.body;
   if(email == undefined){
     res.status(400).json({
@@ -280,31 +340,7 @@ function login(req, res) {
               message: "Error communicating with database.",
               loggedIn: false
             });
-          } else if(loginAuthToken != undefined && email != undefined){
-              jwt.verify(loginAuthToken, '2CWukLuOME4D16I', function(err, decoded){
-                if(decoded){
-                  console.log(JSON.stringify(decoded));
-                  if(loginAuthToken == user.loginAuthToken){
-                    var currentTime = (new Date).getTime();
-                    user.lastAccess = currentTime;
-                    user.resetPassword = false;
-                    user.save();
-                    res.status(200).json({
-                      message: "You have signed in successfully.",
-                      name: user.name,
-                      loginAuthToken: user.loginAuthToken,
-                      loggedIn: true
-                    });
-                  }
-                }else{
-                  res.status(401).json({
-                    message: "Your login authentication token is incorrect or has expired. Please login with your username and password.",
-                    loggedIn: false
-                  });
-                }
-              });
-          } 
-          else if(inputPassword != undefined){
+          } else if(inputPassword != undefined){
             bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
               if (err) {
                 res.status(401).json({
@@ -313,15 +349,16 @@ function login(req, res) {
                 });
               } else if (valid) {
                 var currentTime = (new Date).getTime();
-                var loginAuthToken = jwt.sign({email: email}, '2CWukLuOME4D16I',{expiresIn: 600});
+                var loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
+                var touchAuthToken = jwt.sign({email: email, devID: devId, time: (new Date).getTime()}, secret, {expiresIn: 6000});
                 user.lastAccess = currentTime;
-                user.loginAuthToken = loginAuthToken;
                 user.resetPassword = false;
                 user.save();
                 res.status(200).json({
                   message: "You have signed in successfully.",
                   name: user.name,
                   loginAuthToken: loginAuthToken,
+                  touchAuthToken: touchAuthToken,
                   loggedIn: true
                 });
               } else {

@@ -140,6 +140,10 @@ router.post('/user/login', (req, res) => {
   userService.login(req, res);
 });
 
+router.post('/user/bioLogin', (req, res) => {
+    userService.bioLogin(req, res);
+});
+
 router.post('/user/updateStripe', (req, res) => {
   userService.updateStripe(req, res);
 });
