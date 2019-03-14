@@ -294,7 +294,7 @@ function bioLogin(req, res) {
                             loggedIn: true
                         });
                     }
-                }
+                });
             }
             else{
                 res.status(401).json({
