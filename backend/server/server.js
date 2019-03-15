@@ -6,7 +6,13 @@
 
 var app = require('./app');
 var debug = require('debug')('express-react:server');
-var http = require('http');
+var https = require('https');
+var fs = require('fs');
+var options = {
+  ca: fs.readFileSync('/home/qrcodes4good/ssl/qrcodes4good_com.ca-bundle'),
+  key: fs.readFileSync('/home/qrcodes4good/ssl/qrcodes4good_com.key'),
+  cert: fs.readFileSync('/home/qrcodes4good/ssl/qrcodes4good_com.crt')
+};
 
 /**
  * Get port from environment and store in Express.
@@ -21,7 +27,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
