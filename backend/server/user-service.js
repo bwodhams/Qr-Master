@@ -284,7 +284,7 @@ function bioLogin(req, res) {
                         user.resetPassword = false;
                         user.save();
                         var loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
-                        var touchAuthToken = jwt.sign({email: email, devID: devId, time: (new Date).getTime()}, secret, {expiresIn: 6000});
+                        var touchAuthToken = jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 6000});
                         res.status(200).json({
                             message: "Authentication success",
                             name: user.name,
@@ -310,7 +310,7 @@ function login(req, res) {
     email,
     inputPassword,
     loginAuthToken,
-    devId
+    devID
   } = req.body;
   if(email == undefined){
     res.status(400).json({
@@ -350,7 +350,7 @@ function login(req, res) {
               } else if (valid) {
                 var currentTime = (new Date).getTime();
                 var loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
-                var touchAuthToken = jwt.sign({email: email, devID: devId, time: (new Date).getTime()}, secret, {expiresIn: 6000});
+                var touchAuthToken = (devID == undefined)? "" : jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 6000});
                 user.lastAccess = currentTime;
                 user.resetPassword = false;
                 user.save();
@@ -644,6 +644,7 @@ module.exports = {
   update,
   destroy,
   login,
+  bioLogin,
   verify,
   updateStripe,
   getCards,
