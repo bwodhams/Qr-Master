@@ -58,7 +58,7 @@ Sample usage to restart front end
 
 Server routes
 =============
-HOST : http://104.42.36.29:8080   OR  http://www.microsoftgive.com:8080
+HOST : https://104.42.36.29:8080   OR  https://www.qrcodes4good.com:8080       http://www.microsoftgive.com:8080 (not working due to no SSL cert)
 
 Sample account {"email": "bpwodhams@gmail.com", "password": "Abc1234"}
 
@@ -75,3 +75,4 @@ Sample account {"email": "bpwodhams@gmail.com", "password": "Abc1234"}
 | POST | {HOST}/api/user/forgotPassword | Send email to reset password on an account. | Email address | JSON object {"message": "some message"} | /api/user/forgotPassword with request body of {"email": "random@gmail.com"} |
 | GET | {HOST}/api/user/resetPassword/ | Allow user's account to be allowed to reset password | Email address and verification code - these values are automatically included in the email sent to the user, so all they have to do is click the link. | JSON object {"message": "some message"} | /api/user/resetPassword/:email&:code |
 | POST | {HOST}/api/user/updateResetPassword | Change account's password after reset has been initiated | Email address, resetPasswordCode (obtained from resetPassword link), newPassword, confirmNewPassword | JSON object {"message" : "some message"} | /api/user/updateResetPassword with body of {"email": "random@gmail.com", "resetPasswordCode": "12345", "newPassword": "randomPassword", "confirmNewPassword": "randomPassword"} |
+| POST | {HOST}/api/user/generateQRCode | Generate a QR code | Body containing email, password, defaultAmount, paymentType | JSON object {"message": "some message", "qrcodeData": "generated qrcode in data form", "qrcodeString": "generated qrcode in string form (svg form for displaying in react)"} | /api/user/generateQRCode with body of {"email": "random@gmail.com", "password": "randomPassword", "defaultAmount": "5", "paymentType": "Tip"} |

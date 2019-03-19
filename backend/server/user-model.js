@@ -27,7 +27,11 @@ const userSchema = new Schema(
       billingCity : [{type: String, default: null}]
     },
     resetPassword: {type: Boolean, default: false},
-    resetPasswordCode: {type: String}
+    resetPasswordCode: {type: String},
+    generatedQRCodes : {
+      qrCodeString : [{type: String, default: null}],
+      qrCodeData : [{type: String, default: null}]
+    }
   },
   { autoIndex: false }
 );

@@ -8,11 +8,24 @@ var app = require('./app');
 var debug = require('debug')('express-react:server');
 var https = require('https');
 var fs = require('fs');
+
+//Local testing
+/*
+var options = {
+  ca: fs.readFileSync('C:/Users/Ben/Documents/Senior_Design_498/QRCodes4GoodDBWorking/Qr-Master/backend/server/ssl/qrcodes4good_com.ca-bundle'),
+  key: fs.readFileSync('C:/Users/Ben/Documents/Senior_Design_498/QRCodes4GoodDBWorking/Qr-Master/backend/server/ssl/qrcodes4good_com.key'),
+  cert: fs.readFileSync('C:/Users/Ben/Documents/Senior_Design_498/QRCodes4GoodDBWorking/Qr-Master/backend/server/ssl/qrcodes4good_com.crt')
+};
+*/
+
+//Public website testing
+
 var options = {
   ca: fs.readFileSync('/home/qrcodes4good/ssl/qrcodes4good_com.ca-bundle'),
   key: fs.readFileSync('/home/qrcodes4good/ssl/qrcodes4good_com.key'),
   cert: fs.readFileSync('/home/qrcodes4good/ssl/qrcodes4good_com.crt')
 };
+
 
 /**
  * Get port from environment and store in Express.

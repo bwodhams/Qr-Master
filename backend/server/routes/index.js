@@ -218,7 +218,7 @@ function validResetCheck(password) {
 router.post('/user/updateResetPassword', (req, res) => {
   if(req.body.email == undefined || req.body.resetPasswordCode == undefined || req.body.newPassword == undefined || req.body.confirmNewPassword == false){
     res.status(400).json({
-      message: "You request must contain a body of email, resetPasswordCode, newPassword, confirmNewPassword"
+      message: "Your request must contain a body of email, resetPasswordCode, newPassword, confirmNewPassword"
     });
   }else{
     var checkNewPassword = validResetCheck(req.body.newPassword);
@@ -233,6 +233,17 @@ router.post('/user/updateResetPassword', (req, res) => {
     }else{
       userService.updateResetPassword(req, res);
     }
+  }
+});
+
+router.post('/user/generateQRCode', (req, res) => {
+  var data = req.body;
+  if (data.email == undefined || data.password == undefined || data.paymentType == undefined || data.defaultAmount == undefined){
+    res.status(400).json({
+      message: "Your request must contain a body of email, password, paymentType, defaultAmount."
+    })
+  }else{
+    userService.generateQRCode(req, res);
   }
 });
 

@@ -3,6 +3,7 @@ const ReadPreference = require('mongodb').ReadPreference;
 var bcrypt = require("bcryptjs");
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
+var QRCode = require('qrcode');
 
 var secret = '2CWukLuOME4D16I';
 
@@ -638,6 +639,75 @@ function updateResetPassword(req, res){
   })
 }
 
+function generateQRCode(req, res) {
+  const {
+    email,
+    paymentType,
+    defaultAmount,
+    inputPassword
+  } = req.body;
+  User.findOne({
+    email
+  }, function (err, user) {
+    if (err) {
+      res.status(401).json({
+        message: "Error communicating with database."
+      });
+    } else if(!user){
+      res.status(401).json({
+        message: "The email or password provided was invalid."
+      })
+    } else if (user){
+      bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
+        if (err) {
+          res.status(401).json({
+            message: "Error authenticating."
+          });
+        } else if (valid) {
+          var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
+          QRCode.toDataURL(QRCodeData, { errorCorrectionLevel: 'H' })
+            .then(qrdata => {
+              QRCode.toString(QRCodeData, { errorCorrectionLevel: 'H' })
+                .then(qrstring => {
+                  user.generatedQRCodes.qrCodeData.push(qrdata);
+                  user.generatedQRCodes.qrCodeString.push(qrstring);
+                  user.save();
+                  res.status(200).json({
+                    message: "QRCode generated successfully",
+                    qrcodeData: qrdata,
+                    qrcodeString: qrstring
+                  });
+                })
+                .catch(err => {
+                  console.log("QRCode generation had an error of : " + err);
+                  res.status(200).json({
+                    message: "Error generating QRCode"
+                  });
+                  return;
+                })
+            })
+            .catch(err => {
+              console.log("QRCode generation had an error of : " + err);
+              res.status(200).json({
+                message: "Error generating QRCode"
+              });
+            })
+          
+        } else {
+          res.status(401).json({
+            message: "The email or password provided was invalid."
+          })
+        }
+      })
+    }
+    else {
+      res.status(401).json({
+        message: "Error. Please try again later."
+      });
+    }
+  });
+}
+
 module.exports = {
   get,
   create,
@@ -650,5 +720,6 @@ module.exports = {
   getCards,
   forgotPassword,
   resetPassword,
-  updateResetPassword
+  updateResetPassword, 
+  generateQRCode
 };
