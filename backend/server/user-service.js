@@ -644,7 +644,8 @@ function generateQRCode(req, res) {
     email,
     paymentType,
     defaultAmount,
-    inputPassword
+    inputPassword,
+    qrCodeName,
   } = req.body;
   User.findOne({
     email
@@ -671,6 +672,9 @@ function generateQRCode(req, res) {
                 .then(qrstring => {
                   user.generatedQRCodes.qrCodeData.push(qrdata);
                   user.generatedQRCodes.qrCodeString.push(qrstring);
+                  user.generatedQRCodes.qrCodeName.push(qrCodeName);
+                  user.generatedQRCodes.qrCodeDefaultAmount.push(defaultAmount);
+                  user.generatedQRCodes.qrCodeType.push(paymentType);
                   user.save();
                   res.status(200).json({
                     message: "QRCode generated successfully",
@@ -680,7 +684,7 @@ function generateQRCode(req, res) {
                 })
                 .catch(err => {
                   console.log("QRCode generation had an error of : " + err);
-                  res.status(200).json({
+                  res.status(401).json({
                     message: "Error generating QRCode"
                   });
                   return;
@@ -688,7 +692,7 @@ function generateQRCode(req, res) {
             })
             .catch(err => {
               console.log("QRCode generation had an error of : " + err);
-              res.status(200).json({
+              res.status(401).json({
                 message: "Error generating QRCode"
               });
             })

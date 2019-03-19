@@ -30,7 +30,10 @@ const userSchema = new Schema(
     resetPasswordCode: {type: String},
     generatedQRCodes : {
       qrCodeString : [{type: String, default: null}],
-      qrCodeData : [{type: String, default: null}]
+      qrCodeData : [{type: String, default: null}],
+      qrCodeName : [{type: String, default: null}],
+      qrCodeDefaultAmount : [{type: String, default: null}],
+      qrCodeType : [{type: String, default: null}]
     }
   },
   { autoIndex: false }

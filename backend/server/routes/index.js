@@ -238,9 +238,9 @@ router.post('/user/updateResetPassword', (req, res) => {
 
 router.post('/user/generateQRCode', (req, res) => {
   var data = req.body;
-  if (data.email == undefined || data.password == undefined || data.paymentType == undefined || data.defaultAmount == undefined){
+  if (data.email == undefined || data.inputPassword == undefined || data.paymentType == undefined || data.defaultAmount == undefined || data.qrCodeName == undefined){
     res.status(400).json({
-      message: "Your request must contain a body of email, password, paymentType, defaultAmount."
+      message: "Your request must contain a body of email, password, paymentType, defaultAmount, qrCodeName."
     })
   }else{
     userService.generateQRCode(req, res);
