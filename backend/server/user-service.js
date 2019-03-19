@@ -10,7 +10,7 @@ var secret = '2CWukLuOME4D16I';
 require('./mongo').connect();
 
 var port = "8080";
-var hostLink = "www.microsoftgive.com";
+var hostLink = "https://www.qrcodes4good.com";
 function get(req, res) {
   const docquery = User.find({}).read(ReadPreference.NEAREST);
   docquery
@@ -77,7 +77,7 @@ function create(req, res) {
               //local host testing
               //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
               //website testing
-              link = "http://" + hostLink + ":" + port + "/api/verify/" + email + "&" + emailVerifCode;
+              link = hostLink + ":" + port + "/api/verify/" + email + "&" + emailVerifCode;
               mailOptions={
                 to : email,
                 subject : "Please confirm your account",
@@ -160,7 +160,7 @@ function update(req, res) {
               //local host testing
               //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
               //website testing
-              link = "http://" + hostLink + ":" + port + "/api/verify/" + newEmail + "&" + emailVerifCode;
+              link = hostLink + ":" + port + "/api/verify/" + newEmail + "&" + emailVerifCode;
               mailOptions={
                 to : newEmail,
                 subject : "Please confirm your account",
@@ -528,7 +528,7 @@ function forgotPassword(req, res){
         //local host testing
         //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
         //website testing
-        link = "http://" + hostLink + ":" + port + "/api/user/resetPassword/" + email + "&" + resetPasswordCode;
+        link = hostLink + ":" + port + "/api/user/resetPassword/" + email + "&" + resetPasswordCode;
         mailOptions={
           to : email,
           subject : "Reset your password",
