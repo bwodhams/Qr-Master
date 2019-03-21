@@ -26,6 +26,8 @@ const userSchema = new Schema(
       billingState : [{type: String, default: null}],
       billingCity : [{type: String, default: null}]
     },
+    stripeToken: {type: String, default: null},
+    tosAccepted: {type: Boolean, default: false},
     resetPassword: {type: Boolean, default: false},
     resetPasswordCode: {type: String},
     generatedQRCodes : {

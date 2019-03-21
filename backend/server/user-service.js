@@ -3,7 +3,11 @@ const ReadPreference = require('mongodb').ReadPreference;
 var bcrypt = require("bcryptjs");
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
+<<<<<<< Updated upstream
 var QRCode = require('qrcode');
+=======
+var stripe = require("stripe")("sk_test_w5PEuWfNwsE2EODIr52JXvNu");
+>>>>>>> Stashed changes
 
 var secret = '2CWukLuOME4D16I';
 
@@ -42,8 +46,64 @@ function randomVerificationCode(length, chars){
   return result;
 }
 
+function createStripe(email, name, successCallback) {
+  stripe.accounts.create({
+    country: "US",
+    type: "custom",
+    email: email,
+    legal_entity:{
+        type: "individual",
+        first_name: name,
+        last_name: "Customer",
+    },
+  }).then(function(acct) {
+    successCallback(acct.id);
+  });
+}
 
-function create(req, res) {
+function StripeWrapper(email, name) {
+  return new Promise((resolve, reject) => {
+    createStripe(email, name, (successResponse) => {
+          resolve(successResponse);
+      });
+  });
+}
+
+function acceptTos(req, res) {
+  const {
+    email
+  } = req.body;
+  console.log("in tos");
+  User.findOne({
+    email
+  })
+  .then(user => {
+    stripe.accounts.update(
+      user.stripeToken,
+      {
+        tos_acceptance: {
+          date: Math.floor(Date.now() / 1000),
+          ip: "104.42.36.29"
+        }
+      }
+    );
+    user.tosAccepted = true
+    user.save();
+    res.status(200).json({
+      message: "You have successfully accepted our terms of service.",
+      tosAccepted: true
+    });
+    return true;
+  
+  })
+  .catch(err => {
+    res.status(500).json({
+      message: "Account with that email address doesn't exist"
+    });
+  });
+}
+
+async function create(req, res) {
   const {
     email,
     name,
@@ -53,13 +113,14 @@ function create(req, res) {
   let loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
   User.findOne({
     email
-  }, function (err, user) {
+  }, async function (err, user) {
     if (err) {
       res.status(401).json({
         message: "Error communicating with database.",
         accountCreated: false
       });
     } else if (!user) {
+      stripeToken = await StripeWrapper(email, name);
       bcrypt.genSalt(10, function (err, salt) {
         bcrypt.hash(password, salt, function (err, passwordHash) {
           const user = new User({
@@ -67,7 +128,8 @@ function create(req, res) {
             name,
             passwordHash,
             emailVerifCode,
-            loginAuthToken
+            loginAuthToken,
+            stripeToken
           });
           user
             .save()
@@ -360,7 +422,8 @@ function login(req, res) {
                   name: user.name,
                   loginAuthToken: loginAuthToken,
                   touchAuthToken: touchAuthToken,
-                  loggedIn: true
+                  loggedIn: true,
+                  tosAccepted: user.tosAccepted
                 });
               } else {
                 res.status(401).json({
@@ -724,6 +787,11 @@ module.exports = {
   getCards,
   forgotPassword,
   resetPassword,
+<<<<<<< Updated upstream
   updateResetPassword, 
   generateQRCode
+=======
+  updateResetPassword,
+  acceptTos
+>>>>>>> Stashed changes
 };

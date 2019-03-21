@@ -65,7 +65,6 @@ router.put('/user/create', (req, res) => {
   }else{
     userService.create(req, res);
   }
-  
 });
 
 
@@ -138,6 +137,10 @@ router.delete('/user/:email', (req, res) => {
 
 router.post('/user/login', (req, res) => {
   userService.login(req, res);
+});
+
+router.post('/user/tosUpdate', (req, res) => {
+  userService.acceptTos(req, res);
 });
 
 router.post('/user/bioLogin', (req, res) => {
