@@ -729,7 +729,6 @@ function generateQRCode(req, res) {
               message: "Error authenticating.",
             });
           }
-          
         } else if(valid){
             if(valid['email'] == user.email){
               var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
@@ -765,12 +764,60 @@ function generateQRCode(req, res) {
                 })
             } else {
               res.status(401).json({
-                message: "The email or password provided was invalid."
+                message: "The email or loginAuthToken provided was invalid."
               })
             }
         }
       })
+    } else {
+      res.status(401).json({
+        message: "Error. Please try again later."
+      });
+    }
+  });
+}
 
+function getQRCodes(req, res){
+  const {
+    email,
+    loginAuthToken
+  } = req.body;
+  User.findOne({
+    email
+  }, function (err, user) {
+    if (err) {
+      res.status(401).json({
+        message: "Error communicating with database."
+      });
+    } else if(!user){
+      res.status(401).json({
+        message: "Account doesn't exist."
+      })
+    } else if (user){
+      jwt.verify(loginAuthToken, secret, function(err, valid){
+        if (err) {
+          if(err.message == "jwt expired"){
+            res.status(401).json({
+              message: "Auth token has expired, please login again."
+            });
+          }else{
+            res.status(401).json({
+              message: "Error authenticating.",
+            });
+          }
+        } else if(valid){
+            if(valid['email'] == user.email){
+              res.status(200).json({
+                message: "Successfully retrieved QRCodes.",
+                qrcodes: user.generatedQRCodes
+              })
+            } else {
+              res.status(401).json({
+                message: "The email or loginAuthToken provided was invalid."
+              })
+            }
+        }
+      })
     } else {
       res.status(401).json({
         message: "Error. Please try again later."
@@ -793,5 +840,6 @@ module.exports = {
   resetPassword,
   updateResetPassword, 
   generateQRCode,
-  acceptTos
+  acceptTos,
+  getQRCodes
 };

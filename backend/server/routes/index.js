@@ -243,11 +243,22 @@ router.post('/user/generateQRCode', (req, res) => {
   var data = req.body;
   if (data.email == undefined || data.loginAuthToken == undefined || data.paymentType == undefined || data.defaultAmount == undefined || data.qrCodeName == undefined){
     res.status(400).json({
-      message: "Your request must contain a body of email, password, paymentType, defaultAmount, qrCodeName."
+      message: "Your request must contain a body of email, loginAuthToken, paymentType, defaultAmount, qrCodeName."
     })
   }else{
     userService.generateQRCode(req, res);
   }
 });
+
+router.post('/user/getQRCodes', (req, res) => {
+  var data = req.body;
+  if(data.email == undefined || data.loginAuthToken == undefined){
+    res.status(400).json({
+      message: "Your request must contain a body of email, loginAuthToken."
+    })
+  }else{
+    userService.getQRCodes(req, res);
+  }
+})
 
 module.exports = router;
