@@ -5,6 +5,15 @@ Also need npm install react-native-bcrypt  and npm install bcryptjs
 
 For more explicit instructions, check out the howTo.md file.
 
+Azure Database Login Information
+================================
+(Account is linked to my Arizona account, so you'll have to do 2FA, so just make sure you tell me before you attempt to login)
+
+https://azure.microsoft.com
+
+Username : bwodhams@email.arizona.edu
+
+Password : [r7:fXNcEx^Vc#P
 
 Server information (connect via SSH)
 ====================================
