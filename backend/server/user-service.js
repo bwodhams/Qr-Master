@@ -731,37 +731,43 @@ function generateQRCode(req, res) {
           }
         } else if(valid){
             if(valid['email'] == user.email){
-              var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
-              QRCode.toDataURL(QRCodeData, { errorCorrectionLevel: 'H' })
-                .then(qrdata => {
-                  QRCode.toString(QRCodeData, { errorCorrectionLevel: 'H' })
-                    .then(qrstring => {
-                      user.generatedQRCodes.qrCodeData.push(qrdata);
-                      user.generatedQRCodes.qrCodeString.push(qrstring);
-                      user.generatedQRCodes.qrCodeName.push(qrCodeName);
-                      user.generatedQRCodes.qrCodeDefaultAmount.push(defaultAmount);
-                      user.generatedQRCodes.qrCodeType.push(paymentType);
-                      user.save();
-                      res.status(200).json({
-                        message: "QRCode generated successfully",
-                        qrcodeData: qrdata,
-                        qrcodeString: qrstring
-                      });
-                    })
-                    .catch(err => {
-                      console.log("QRCode generation had an error of : " + err);
-                      res.status(401).json({
-                        message: "Error generating QRCode"
-                      });
-                      return;
-                    })
+              if(user.generatedQRCodes.qrCodeData.length + 1 > 5){
+                res.status(401).json({
+                  message: "User is only allowed to have 5 saved QRCodes at any given time."
                 })
-                .catch(err => {
-                  console.log("QRCode generation had an error of : " + err);
-                  res.status(401).json({
-                    message: "Error generating QRCode"
-                  });
-                })
+              }else{
+                var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
+                QRCode.toDataURL(QRCodeData, { errorCorrectionLevel: 'H' })
+                  .then(qrdata => {
+                    QRCode.toString(QRCodeData, { errorCorrectionLevel: 'H' })
+                      .then(qrstring => {
+                        user.generatedQRCodes.qrCodeData.push(qrdata);
+                        user.generatedQRCodes.qrCodeString.push(qrstring);
+                        user.generatedQRCodes.qrCodeName.push(qrCodeName);
+                        user.generatedQRCodes.qrCodeDefaultAmount.push(defaultAmount);
+                        user.generatedQRCodes.qrCodeType.push(paymentType);
+                        user.save();
+                        res.status(200).json({
+                          message: "QRCode generated successfully",
+                          qrcodeData: qrdata,
+                          qrcodeString: qrstring
+                        });
+                      })
+                      .catch(err => {
+                        console.log("QRCode generation had an error of : " + err);
+                        res.status(401).json({
+                          message: "Error generating QRCode"
+                        });
+                        return;
+                      })
+                  })
+                  .catch(err => {
+                    console.log("QRCode generation had an error of : " + err);
+                    res.status(401).json({
+                      message: "Error generating QRCode"
+                    });
+                  })
+                }
             } else {
               res.status(401).json({
                 message: "The email or loginAuthToken provided was invalid."
