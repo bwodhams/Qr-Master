@@ -3,11 +3,8 @@ const ReadPreference = require('mongodb').ReadPreference;
 var bcrypt = require("bcryptjs");
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
-<<<<<<< Updated upstream
 var QRCode = require('qrcode');
-=======
 var stripe = require("stripe")("sk_test_w5PEuWfNwsE2EODIr52JXvNu");
->>>>>>> Stashed changes
 
 var secret = '2CWukLuOME4D16I';
 
@@ -110,7 +107,7 @@ async function create(req, res) {
     password
   } = req.body;
   let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  let loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
+  let loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 6000});
   User.findOne({
     email
   }, async function (err, user) {
@@ -346,7 +343,7 @@ function bioLogin(req, res) {
                         user.lastAccess = (new Date).getTime();
                         user.resetPassword = false;
                         user.save();
-                        var loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
+                        var loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 6000});
                         var touchAuthToken = jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 6000});
                         res.status(200).json({
                             message: "Authentication success",
@@ -372,7 +369,6 @@ function login(req, res) {
   const {
     email,
     inputPassword,
-    loginAuthToken,
     devID
   } = req.body;
   if(email == undefined){
@@ -412,7 +408,7 @@ function login(req, res) {
                 });
               } else if (valid) {
                 var currentTime = (new Date).getTime();
-                var loginAuthToken = jwt.sign({email: email}, secret,{expiresIn: 600});
+                var loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 6000});
                 var touchAuthToken = (devID == undefined)? "" : jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 6000});
                 user.lastAccess = currentTime;
                 user.resetPassword = false;
@@ -707,7 +703,7 @@ function generateQRCode(req, res) {
     email,
     paymentType,
     defaultAmount,
-    inputPassword,
+    loginAuthToken,
     qrCodeName,
   } = req.body;
   User.findOne({
@@ -719,55 +715,63 @@ function generateQRCode(req, res) {
       });
     } else if(!user){
       res.status(401).json({
-        message: "The email or password provided was invalid."
+        message: "Account doesn't exist."
       })
     } else if (user){
-      bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
+      jwt.verify(loginAuthToken, secret, function(err, valid){
         if (err) {
-          res.status(401).json({
-            message: "Error authenticating."
-          });
-        } else if (valid) {
-          var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
-          QRCode.toDataURL(QRCodeData, { errorCorrectionLevel: 'H' })
-            .then(qrdata => {
-              QRCode.toString(QRCodeData, { errorCorrectionLevel: 'H' })
-                .then(qrstring => {
-                  user.generatedQRCodes.qrCodeData.push(qrdata);
-                  user.generatedQRCodes.qrCodeString.push(qrstring);
-                  user.generatedQRCodes.qrCodeName.push(qrCodeName);
-                  user.generatedQRCodes.qrCodeDefaultAmount.push(defaultAmount);
-                  user.generatedQRCodes.qrCodeType.push(paymentType);
-                  user.save();
-                  res.status(200).json({
-                    message: "QRCode generated successfully",
-                    qrcodeData: qrdata,
-                    qrcodeString: qrstring
-                  });
+          if(err.message == "jwt expired"){
+            res.status(401).json({
+              message: "Auth token has expired, please login again."
+            });
+          }else{
+            res.status(401).json({
+              message: "Error authenticating.",
+            });
+          }
+          
+        } else if(valid){
+            if(valid['email'] == user.email){
+              var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
+              QRCode.toDataURL(QRCodeData, { errorCorrectionLevel: 'H' })
+                .then(qrdata => {
+                  QRCode.toString(QRCodeData, { errorCorrectionLevel: 'H' })
+                    .then(qrstring => {
+                      user.generatedQRCodes.qrCodeData.push(qrdata);
+                      user.generatedQRCodes.qrCodeString.push(qrstring);
+                      user.generatedQRCodes.qrCodeName.push(qrCodeName);
+                      user.generatedQRCodes.qrCodeDefaultAmount.push(defaultAmount);
+                      user.generatedQRCodes.qrCodeType.push(paymentType);
+                      user.save();
+                      res.status(200).json({
+                        message: "QRCode generated successfully",
+                        qrcodeData: qrdata,
+                        qrcodeString: qrstring
+                      });
+                    })
+                    .catch(err => {
+                      console.log("QRCode generation had an error of : " + err);
+                      res.status(401).json({
+                        message: "Error generating QRCode"
+                      });
+                      return;
+                    })
                 })
                 .catch(err => {
                   console.log("QRCode generation had an error of : " + err);
                   res.status(401).json({
                     message: "Error generating QRCode"
                   });
-                  return;
                 })
-            })
-            .catch(err => {
-              console.log("QRCode generation had an error of : " + err);
+            } else {
               res.status(401).json({
-                message: "Error generating QRCode"
-              });
-            })
-          
-        } else {
-          res.status(401).json({
-            message: "The email or password provided was invalid."
-          })
+                message: "The email or password provided was invalid."
+              })
+            }
         }
       })
-    }
-    else {
+
+    } else {
       res.status(401).json({
         message: "Error. Please try again later."
       });
@@ -787,11 +791,7 @@ module.exports = {
   getCards,
   forgotPassword,
   resetPassword,
-<<<<<<< Updated upstream
   updateResetPassword, 
-  generateQRCode
-=======
-  updateResetPassword,
+  generateQRCode,
   acceptTos
->>>>>>> Stashed changes
 };
