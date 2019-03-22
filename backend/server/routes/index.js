@@ -57,12 +57,12 @@ function registrationErrorCheck(fullName, email, password, confirmPassword) {
 
 router.put('/user/create', (req, res) => {
   var errorCheck = registrationErrorCheck(req.body.name, req.body.email, req.body.password, req.body.confirmPassword);
-  if(errorCheck.length > 0){
+  if (errorCheck.length > 0) {
     res.status(400).json({
       message: errorCheck,
       accountCreated: false
     });
-  }else{
+  } else {
     userService.create(req, res);
   }
 });
@@ -106,27 +106,27 @@ function validUpdateCheck(email, password) {
 }
 
 router.post('/user/update', (req, res) => {
-  if(req.body.email == undefined){
+  if (req.body.email == undefined) {
     res.status(400).json({
       message: "You must have an email in the body."
     })
     return false;
   }
-  if(req.body.newPassword == undefined && req.body.newEmail != undefined){
+  if (req.body.newPassword == undefined && req.body.newEmail != undefined) {
     var updateCheck = validUpdateCheck(req.body.newEmail, "Abc1234");
-  }else if(req.body.newPassword != undefined && req.body.newEmail == undefined){
+  } else if (req.body.newPassword != undefined && req.body.newEmail == undefined) {
     var updateCheck = validUpdateCheck("abc@gmail.com", req.body.newPassword);
-  }else if(req.body.newPassword != undefined && req.body.newEmail != undefined){
+  } else if (req.body.newPassword != undefined && req.body.newEmail != undefined) {
     var updateCheck = validUpdateCheck(req.body.newEmail, req.body.newPassword);
-  }else{
+  } else {
     var updateCheck = "";
   }
-  
-  if(updateCheck.length > 0){
+
+  if (updateCheck.length > 0) {
     res.status(400).json({
       message: updateCheck
     })
-  }else{
+  } else {
     userService.update(req, res);
   }
 });
@@ -144,7 +144,7 @@ router.post('/user/tosUpdate', (req, res) => {
 });
 
 router.post('/user/bioLogin', (req, res) => {
-    userService.bioLogin(req, res);
+  userService.bioLogin(req, res);
 });
 
 router.post('/user/updateStripe', (req, res) => {
@@ -173,11 +173,11 @@ function validEmailCheck(email) {
 
 router.post('/user/forgotPassword', (req, res) => {
   var validEmail = validEmailCheck(req.body.email);
-  if(validEmail.length > 0){
+  if (validEmail.length > 0) {
     res.status(400).json({
       message: validEmail
     })
-  }else{
+  } else {
     userService.forgotPassword(req, res);
   }
 });
@@ -219,21 +219,21 @@ function validResetCheck(password) {
 }
 
 router.post('/user/updateResetPassword', (req, res) => {
-  if(req.body.email == undefined || req.body.resetPasswordCode == undefined || req.body.newPassword == undefined || req.body.confirmNewPassword == false){
+  if (req.body.email == undefined || req.body.resetPasswordCode == undefined || req.body.newPassword == undefined || req.body.confirmNewPassword == false) {
     res.status(400).json({
       message: "Your request must contain a body of email, resetPasswordCode, newPassword, confirmNewPassword"
     });
-  }else{
+  } else {
     var checkNewPassword = validResetCheck(req.body.newPassword);
-    if(checkNewPassword.length > 0){
+    if (checkNewPassword.length > 0) {
       res.status(400).json({
         message: checkNewPassword
       });
-    }else if(req.body.newPassword != req.body.confirmNewPassword){
+    } else if (req.body.newPassword != req.body.confirmNewPassword) {
       res.status(400).json({
         message: "New password and confirm new password don't match."
       });
-    }else{
+    } else {
       userService.updateResetPassword(req, res);
     }
   }
@@ -241,33 +241,33 @@ router.post('/user/updateResetPassword', (req, res) => {
 
 router.post('/user/generateQRCode', (req, res) => {
   var data = req.body;
-  if (data.email == undefined || data.loginAuthToken == undefined || data.paymentType == undefined || data.defaultAmount == undefined || data.qrCodeGivenName == undefined){
+  if (data.email == undefined || data.loginAuthToken == undefined || data.paymentType == undefined || data.defaultAmount == undefined || data.qrCodeGivenName == undefined) {
     res.status(400).json({
       message: "Your request must contain a body of email, loginAuthToken, paymentType, defaultAmount, qrCodeName."
     })
-  }else{
+  } else {
     userService.generateQRCode(req, res);
   }
 });
 
 router.post('/user/getQRCodes', (req, res) => {
   var data = req.body;
-  if(data.email == undefined || data.loginAuthToken == undefined){
+  if (data.email == undefined || data.loginAuthToken == undefined) {
     res.status(400).json({
       message: "Your request must contain a body of email, loginAuthToken."
     })
-  }else{
+  } else {
     userService.getQRCodes(req, res);
   }
 })
 
 router.post('/user/deleteQRCode', (req, res) => {
   var data = req.body;
-  if(data.email == undefined || data.loginAuthToken == undefined || data.deleteID == undefined){
+  if (data.email == undefined || data.loginAuthToken == undefined || data.deleteID == undefined) {
     res.status(400).json({
       message: "Your request must contain a body of email, loginAuthToken, deleteID"
     })
-  }else{
+  } else {
     userService.deleteQRCode(req, res);
   }
 })

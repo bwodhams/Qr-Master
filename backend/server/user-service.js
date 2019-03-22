@@ -12,6 +12,7 @@ require('./mongo').connect();
 
 var port = "8080";
 var hostLink = "https://www.qrcodes4good.com";
+
 function get(req, res) {
   const docquery = User.find({}).read(ReadPreference.NEAREST);
   docquery
@@ -27,7 +28,7 @@ function get(req, res) {
 //Email verification stuff
 var smtpTransport = nodemailer.createTransport({
   service: "hotmail",
-  auth:{
+  auth: {
     user: "qrcodes4good@outlook.com",
     pass: "MicrosoftGive4G"
   }
@@ -35,9 +36,9 @@ var smtpTransport = nodemailer.createTransport({
 
 var mailOptions, host, link;
 
-function randomVerificationCode(length, chars){
+function randomVerificationCode(length, chars) {
   let result = '';
-  for(let i = 0; i < length; i++){
+  for (let i = 0; i < length; i++) {
     result += chars[Math.floor(Math.random() * chars.length)];
   }
   return result;
@@ -48,12 +49,12 @@ function createStripe(email, name, successCallback) {
     country: "US",
     type: "custom",
     email: email,
-    legal_entity:{
-        type: "individual",
-        first_name: name,
-        last_name: "Customer",
+    legal_entity: {
+      type: "individual",
+      first_name: name,
+      last_name: "Customer",
     },
-  }).then(function(acct) {
+  }).then(function (acct) {
     successCallback(acct.id);
   });
 }
@@ -61,8 +62,8 @@ function createStripe(email, name, successCallback) {
 function StripeWrapper(email, name) {
   return new Promise((resolve, reject) => {
     createStripe(email, name, (successResponse) => {
-          resolve(successResponse);
-      });
+      resolve(successResponse);
+    });
   });
 }
 
@@ -72,32 +73,31 @@ function acceptTos(req, res) {
   } = req.body;
   console.log("in tos");
   User.findOne({
-    email
-  })
-  .then(user => {
-    stripe.accounts.update(
-      user.stripeToken,
-      {
-        tos_acceptance: {
-          date: Math.floor(Date.now() / 1000),
-          ip: "104.42.36.29"
+      email
+    })
+    .then(user => {
+      stripe.accounts.update(
+        user.stripeToken, {
+          tos_acceptance: {
+            date: Math.floor(Date.now() / 1000),
+            ip: "104.42.36.29"
+          }
         }
-      }
-    );
-    user.tosAccepted = true
-    user.save();
-    res.status(200).json({
-      message: "You have successfully accepted our terms of service.",
-      tosAccepted: true
+      );
+      user.tosAccepted = true
+      user.save();
+      res.status(200).json({
+        message: "You have successfully accepted our terms of service.",
+        tosAccepted: true
+      });
+      return true;
+
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: "Account with that email address doesn't exist"
+      });
     });
-    return true;
-  
-  })
-  .catch(err => {
-    res.status(500).json({
-      message: "Account with that email address doesn't exist"
-    });
-  });
 }
 
 async function create(req, res) {
@@ -107,7 +107,11 @@ async function create(req, res) {
     password
   } = req.body;
   let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  let loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 600});
+  let loginAuthToken = jwt.sign({
+    email: email
+  }, secret, {
+    expiresIn: 600
+  });
   User.findOne({
     email
   }, async function (err, user) {
@@ -137,15 +141,15 @@ async function create(req, res) {
               //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
               //website testing
               link = hostLink + ":" + port + "/api/verify/" + email + "&" + emailVerifCode;
-              mailOptions={
-                to : email,
-                subject : "Please confirm your account",
-                html : "Hello, <br> Please click on the link to verify your email. <br><a href=" + link + ">Click here to verify</a>"
+              mailOptions = {
+                to: email,
+                subject: "Please confirm your account",
+                html: "Hello, <br> Please click on the link to verify your email. <br><a href=" + link + ">Click here to verify</a>"
               }
-              smtpTransport.sendMail(mailOptions, function(error, response){
-                if(error){
+              smtpTransport.sendMail(mailOptions, function (error, response) {
+                if (error) {
                   console.log(error);
-                }else{
+                } else {
                   console.log("Confirmation email sent successfully!");
                 }
               });
@@ -178,41 +182,41 @@ function update(req, res) {
     confirmNewPassword
   } = req.body;
   var changePass = false;
-  if(email == undefined || currentPassword == undefined){
+  if (email == undefined || currentPassword == undefined) {
     res.status(400).json({
       message: "Request must contain email and currentPassword."
     })
-  }else{
+  } else {
     User.findOne({
-      email
-    })
-    .then(user => {
-      if(user.emailVerified == false){
-        res.status(403).json({
-          message: "You cannot change account details without first confirming your email."
-        })
-        return false;
-      }
-      if(name != undefined){
-        user.name = name;
-      }
-      if(newPassword != undefined){
-        if(newPassword != confirmNewPassword){
-          res.status(400).json({
-            message: "New password and confirm new password don't match."
+        email
+      })
+      .then(user => {
+        if (user.emailVerified == false) {
+          res.status(403).json({
+            message: "You cannot change account details without first confirming your email."
           })
           return false;
-        }else{
-          changePass = true;
         }
-      }
-      bcrypt.compare(currentPassword, user.passwordHash, function (err, valid) {
+        if (name != undefined) {
+          user.name = name;
+        }
+        if (newPassword != undefined) {
+          if (newPassword != confirmNewPassword) {
+            res.status(400).json({
+              message: "New password and confirm new password don't match."
+            })
+            return false;
+          } else {
+            changePass = true;
+          }
+        }
+        bcrypt.compare(currentPassword, user.passwordHash, function (err, valid) {
           if (err) {
             res.status(401).json({
               message: "Error authenticating."
             });
           } else if (valid) {
-            if(newEmail != undefined && newEmail != email){
+            if (newEmail != undefined && newEmail != email) {
               let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
               host = req.get('host');
               console.log("host = " + host);
@@ -220,23 +224,23 @@ function update(req, res) {
               //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
               //website testing
               link = hostLink + ":" + port + "/api/verify/" + newEmail + "&" + emailVerifCode;
-              mailOptions={
-                to : newEmail,
-                subject : "Please confirm your account",
-                html : "Hello, <br> Please click on the link to verify your email. <br><a href=" + link + ">Click here to verify</a>"
+              mailOptions = {
+                to: newEmail,
+                subject: "Please confirm your account",
+                html: "Hello, <br> Please click on the link to verify your email. <br><a href=" + link + ">Click here to verify</a>"
               }
-              smtpTransport.sendMail(mailOptions, function(error, response){
-                if(error){
+              smtpTransport.sendMail(mailOptions, function (error, response) {
+                if (error) {
                   console.log(error);
-                }else{
+                } else {
                   console.log("Confirmation email sent successfully!");
                   user.email = newEmail;
                   user.emailVerifCode = emailVerifCode;
                   user.emailVerified = false;
-                  if(changePass == true){
+                  if (changePass == true) {
                     bcrypt.genSalt(10, function (err, salt) {
                       bcrypt.hash(newPassword, salt, function (err, passwordHash) {
-                        if(!err){
+                        if (!err) {
                           user.passwordHash = passwordHash;
                           user.save();
                           res.status(200).json({
@@ -246,8 +250,7 @@ function update(req, res) {
                         }
                       })
                     })
-                  }
-                  else{
+                  } else {
                     user.save();
                     res.status(200).json({
                       message: "You have updated your information successfully.",
@@ -256,11 +259,10 @@ function update(req, res) {
                   }
                 }
               });
-            }
-            else if(changePass == true){
+            } else if (changePass == true) {
               bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(newPassword, salt, function (err, passwordHash) {
-                  if(!err){
+                  if (!err) {
                     user.passwordHash = passwordHash;
                     user.save();
                     res.status(200).json({
@@ -270,7 +272,7 @@ function update(req, res) {
                   }
                 })
               })
-            }else{
+            } else {
               user.save();
               res.status(200).json({
                 message: "You have updated your information successfully.",
@@ -282,14 +284,14 @@ function update(req, res) {
             })
           }
         })
-    })
-    .catch(err => {
-      res.status(500).json({
-        message: "Account with that email address doesn't exist"
+      })
+      .catch(err => {
+        res.status(500).json({
+          message: "Account with that email address doesn't exist"
+        });
       });
-    });
   }
-  
+
 }
 
 function destroy(req, res) {
@@ -309,75 +311,81 @@ function destroy(req, res) {
 }
 
 function bioLogin(req, res) {
-    const {
-        touchAuthToken,
-        devID
-    } = req.body;
-    if (touchAuthToken == undefined || devID == undefined){
-        res.status(400).json({
-            message: "Request must have a token and device ID",
-            loggedIn: false
-        })
-    }
-    else{
-        jwt.verify(touchAuthToken, secret, function(err, decoded){
-            if (decoded && decoded['devID'] == devID){
-                console.log(JSON.stringify(decoded));
-                email = decoded['email'];
-                User.findOne({
-                    email
-                }, function(err, user) {
-                    if (err){
-                        res.status(401).json({
-                            message: "Error communicating with database.",
-                            loggedIn: false
-                        });
-                    }
-                    else if (!user) {
-                        res.status(401).json({
-                            message: "The email or password provided was invalid.",
-                            loggedIn: false
-                        });
-                    }
-                    else{
-                        user.lastAccess = (new Date).getTime();
-                        user.resetPassword = false;
-                        user.save();
-                        var loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 600});
-                        var touchAuthToken = jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 604800});
-                        res.status(200).json({
-                            message: "Authentication success",
-                            name: user.name,
-                            email: user.email,
-                            loginAuthToken: loginAuthToken,
-                            touchAuthToken: touchAuthToken,
-                            loggedIn: true
-                        });
-                    }
-                });
-            }
-            else{
-                res.status(401).json({
-                    message: "Incorrect token",
-                    loggedIn: false
-                });
-            }
+  const {
+    touchAuthToken,
+    devID
+  } = req.body;
+  if (touchAuthToken == undefined || devID == undefined) {
+    res.status(400).json({
+      message: "Request must have a token and device ID",
+      loggedIn: false
+    })
+  } else {
+    jwt.verify(touchAuthToken, secret, function (err, decoded) {
+      if (decoded && decoded['devID'] == devID) {
+        console.log(JSON.stringify(decoded));
+        email = decoded['email'];
+        User.findOne({
+          email
+        }, function (err, user) {
+          if (err) {
+            res.status(401).json({
+              message: "Error communicating with database.",
+              loggedIn: false
+            });
+          } else if (!user) {
+            res.status(401).json({
+              message: "The email or password provided was invalid.",
+              loggedIn: false
+            });
+          } else {
+            user.lastAccess = (new Date).getTime();
+            user.resetPassword = false;
+            user.save();
+            var loginAuthToken = jwt.sign({
+              email: email
+            }, secret, {
+              expiresIn: 600
+            });
+            var touchAuthToken = jwt.sign({
+              email: email,
+              devID: devID,
+              time: (new Date).getTime()
+            }, secret, {
+              expiresIn: 604800
+            });
+            res.status(200).json({
+              message: "Authentication success",
+              name: user.name,
+              email: user.email,
+              loginAuthToken: loginAuthToken,
+              touchAuthToken: touchAuthToken,
+              loggedIn: true
+            });
+          }
         });
-    }
+      } else {
+        res.status(401).json({
+          message: "Incorrect token",
+          loggedIn: false
+        });
+      }
+    });
+  }
 }
+
 function login(req, res) {
   const {
     email,
     inputPassword,
     devID
   } = req.body;
-  if(email == undefined){
+  if (email == undefined) {
     res.status(400).json({
       message: "Request must have an email in the body.",
       loggedIn: false
     })
-  }
-  else{
+  } else {
     User.findOne({
       email
     }, function (err, user) {
@@ -386,20 +394,19 @@ function login(req, res) {
           message: "Error communicating with database.",
           loggedIn: false
         });
-      }
-      else if (!user) {
+      } else if (!user) {
         res.status(401).json({
           message: "The email or password provided was invalid.",
           loggedIn: false
         })
-      }else{
-        if(user.emailVerified === true){
+      } else {
+        if (user.emailVerified === true) {
           if (err) {
             res.status(401).json({
               message: "Error communicating with database.",
               loggedIn: false
             });
-          } else if(inputPassword != undefined){
+          } else if (inputPassword != undefined) {
             bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
               if (err) {
                 res.status(401).json({
@@ -408,8 +415,18 @@ function login(req, res) {
                 });
               } else if (valid) {
                 var currentTime = (new Date).getTime();
-                var loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 600});
-                var touchAuthToken = (devID == undefined)? "" : jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 604800});
+                var loginAuthToken = jwt.sign({
+                  email: email
+                }, secret, {
+                  expiresIn: 600
+                });
+                var touchAuthToken = (devID == undefined) ? "" : jwt.sign({
+                  email: email,
+                  devID: devID,
+                  time: (new Date).getTime()
+                }, secret, {
+                  expiresIn: 604800
+                });
                 user.lastAccess = currentTime;
                 user.resetPassword = false;
                 user.save();
@@ -428,13 +445,13 @@ function login(req, res) {
                 })
               }
             })
-          }else{
+          } else {
             res.status(400).json({
               message: "Unable to authenticate user.",
               loggedIn: false
             })
           }
-        }else{
+        } else {
           res.status(401).json({
             message: "You must confirm your email address before you may login.",
             loggedIn: false
@@ -442,10 +459,10 @@ function login(req, res) {
         }
       }
     })
-  }  
+  }
 }
 
-function updateStripe(req, res){
+function updateStripe(req, res) {
   const {
     email,
     creditCard,
@@ -462,16 +479,16 @@ function updateStripe(req, res){
   let ccLastDigits = 0;
   let ccType = "";
   let ccFirstDigit = creditCard.charAt(0);
-  if(ccFirstDigit == 3){
+  if (ccFirstDigit == 3) {
     ccType = "American Express";
     ccLastDigits = String(creditCard).substring(creditCard.length - 5, creditCard.length);
-  }else if(ccFirstDigit == 4){
+  } else if (ccFirstDigit == 4) {
     ccType = "Visa";
     ccLastDigits = String(creditCard).substring(creditCard.length - 4, creditCard.length);
-  }else if(ccFirstDigit == 5){
+  } else if (ccFirstDigit == 5) {
     ccType = "MasterCard";
     ccLastDigits = String(creditCard).substring(creditCard.length - 4, creditCard.length);
-  }else{
+  } else {
     ccType = "Discover Card";
     ccLastDigits = String(creditCard).substring(creditCard.length - 4, creditCard.length);
   }
@@ -500,74 +517,72 @@ function updateStripe(req, res){
     });
 }
 
-function getCards(req, res){
-    var authToken = req.headers['Authorization'];
-    const email = req.params.email;
-    jwt.verify(authToken, secret, function(err, decoded){
-        if (err){
-            res.status(401).json({
-                message: "Token has expired"
-            });
+function getCards(req, res) {
+  var authToken = req.headers['Authorization'];
+  const email = req.params.email;
+  jwt.verify(authToken, secret, function (err, decoded) {
+    if (err) {
+      res.status(401).json({
+        message: "Token has expired"
+      });
+    }
+    if (decoded && decoded['email'] == email) {
+      //TODO
+      User.findOne({
+        email
+      }, function (err, user) {
+        if (err) {
+          res.status(401).json({
+            message: "Error communicating with database",
+          });
+        } else if (!user) {
+          res.status(401).json({
+            message: "A user with this email address was not found",
+          });
+        } else {
+          res.status(200).json(user.stripeData);
         }
-        if (decoded && decoded['email'] == email){
-            //TODO
-            User.findOne({
-                email
-            }, function(err, user){
-                if (err){
-                    res.status(401).json({
-                        message: "Error communicating with database",
-                    });
-                }else if(!user){
-                    res.status(401).json({
-                        message: "A user with this email address was not found",
-                    });
-                }else{
-                    res.status(200).json(user.stripeData);
-                }
-            });
-        }
-        else{
-            res.status(401).json({
-                message: "Token has expired"
-            });
-        }
-    });
+      });
+    } else {
+      res.status(401).json({
+        message: "Token has expired"
+      });
+    }
+  });
 }
 
-function verify(req, res){
-  const{
+function verify(req, res) {
+  const {
     email,
     code
   } = req.params;
   User.findOne({
     email
-  }, function(err, user){
-    if(err){
+  }, function (err, user) {
+    if (err) {
       res.status(401).json({
         message: "Error communicating with database.",
       });
-    }else if(!user){
+    } else if (!user) {
       res.status(401).json({
         message: "The verification link is incorrect, please try again or request a new verification email be sent.",
       });
-    }else {
-      if(user.emailVerified == true){
+    } else {
+      if (user.emailVerified == true) {
         res.status(202).json({
           message: "Your email has already been verified."
         })
-      }
-      else if(code === user.emailVerifCode){
+      } else if (code === user.emailVerifCode) {
         user.emailVerified = true;
         user.save();
         res.status(201).json({
           message: "Email successfully verified! You may now login."
         });
-      }else if(code != user.emailVerifCode){
+      } else if (code != user.emailVerifCode) {
         res.status(401).json({
           message: "Incorrect verification code, please check if you have a newer verification link, or request a new confirmation link."
         })
-      }else{
+      } else {
         res.status(401).json({
           message: "Error occured, please try again later"
         })
@@ -576,27 +591,27 @@ function verify(req, res){
   })
 }
 
-function forgotPassword(req, res){
-  const{
+function forgotPassword(req, res) {
+  const {
     email
   } = req.body;
-  if(email == undefined){
+  if (email == undefined) {
     res.status(400).json({
       message: "Request must contain email."
     })
-  }else{
+  } else {
     User.findOne({
       email
-    }, function(err, user){
-      if(err){
+    }, function (err, user) {
+      if (err) {
         res.status(401).json({
           message: "Error communicating with database.",
         });
-      }else if(!user){
+      } else if (!user) {
         res.status(401).json({
           message: "Account associated with this email address was not found.",
         });
-      }else {
+      } else {
         let resetPasswordCode = randomVerificationCode(16, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
         host = req.get('host');
         console.log("host = " + host);
@@ -604,15 +619,15 @@ function forgotPassword(req, res){
         //link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
         //website testing
         link = hostLink + ":" + port + "/api/user/resetPassword/" + email + "&" + resetPasswordCode;
-        mailOptions={
-          to : email,
-          subject : "Reset your password",
-          html : "Hello " + user.name + ", <br> A request has been made to reset your password. <br><a href=" + link + ">Click here to reset your password</a>"
+        mailOptions = {
+          to: email,
+          subject: "Reset your password",
+          html: "Hello " + user.name + ", <br> A request has been made to reset your password. <br><a href=" + link + ">Click here to reset your password</a>"
         }
-        smtpTransport.sendMail(mailOptions, function(error, response){
-          if(error){
+        smtpTransport.sendMail(mailOptions, function (error, response) {
+          if (error) {
             console.log(error);
-          }else{
+          } else {
             console.log("Reset password email sent successfully!");
             user.resetPasswordCode = resetPasswordCode;
             user.save();
@@ -626,37 +641,37 @@ function forgotPassword(req, res){
   }
 }
 
-function resetPassword(req, res){
-  const{
+function resetPassword(req, res) {
+  const {
     email,
     code
   } = req.params;
   console.log("email = " + email);
   console.log("code = " + code);
-  if(email == undefined || code == undefined){
+  if (email == undefined || code == undefined) {
     res.status(400).json({
       message: "Request must contain email."
     })
-  }else{
+  } else {
     User.findOne({
       email
-    }, function(err, user){
-      if(err){
+    }, function (err, user) {
+      if (err) {
         res.status(401).json({
           message: "Error communicating with database.",
         });
-      }else if(!user){
+      } else if (!user) {
         res.status(401).json({
           message: "Account associated with this email address was not found.",
         });
-      }else{
-        if(user.resetPasswordCode === code){
+      } else {
+        if (user.resetPasswordCode === code) {
           user.resetPassword = true;
           user.save();
           res.status(200).json({
             message: "You may now reset your password"
           });
-        }else{
+        } else {
           res.status(401).json({
             message: "Incorrect verification code."
           });
@@ -666,8 +681,8 @@ function resetPassword(req, res){
   }
 }
 
-function updateResetPassword(req, res){
-  const{
+function updateResetPassword(req, res) {
+  const {
     email,
     resetPasswordCode,
     newPassword
@@ -675,18 +690,18 @@ function updateResetPassword(req, res){
 
   User.findOne({
     email
-  }, function(err, user){
-    if(err){
+  }, function (err, user) {
+    if (err) {
       res.status(401).json({
         message: "Error communicating with database.",
       });
-    }else if(!user){
+    } else if (!user) {
       res.status(401).json({
         message: "Account associated with this email address was not found.",
       });
-    }else{
-      if(user.resetPassword == true){
-        if(user.resetPasswordCode = resetPasswordCode){
+    } else {
+      if (user.resetPassword == true) {
+        if (user.resetPasswordCode = resetPasswordCode) {
           bcrypt.genSalt(10, function (err, salt) {
             bcrypt.hash(newPassword, salt, function (err, passwordHash) {
               user.passwordHash = passwordHash;
@@ -699,13 +714,13 @@ function updateResetPassword(req, res){
           res.status(200).json({
             message: "Your password has been changed, please login now."
           });
-          return true; 
-        }else{
+          return true;
+        } else {
           res.status(401).json({
             message: "Incorrect password reset code."
           });
-        } 
-      }else{
+        }
+      } else {
         res.status(403).json({
           message: "Access Denied."
         });
@@ -729,68 +744,79 @@ function generateQRCode(req, res) {
       res.status(401).json({
         message: "Error communicating with database."
       });
-    } else if(!user){
+    } else if (!user) {
       res.status(401).json({
         message: "Account doesn't exist."
       })
-    } else if (user){
-      jwt.verify(loginAuthToken, secret, function(err, valid){
+    } else if (user) {
+      jwt.verify(loginAuthToken, secret, function (err, valid) {
         if (err) {
-          if(err.message == "jwt expired"){
+          if (err.message == "jwt expired") {
             res.status(401).json({
               message: "Auth token has expired, please login again."
             });
-          }else{
+          } else {
             res.status(401).json({
               message: "Error authenticating.",
             });
           }
-        } else if(valid){
-            if(valid['email'] == user.email){
-              if(user.generatedQRCodes.length + 1 > 5){
-                res.status(401).json({
-                  message: "User is only allowed to have 5 saved QRCodes at any given time."
-                })
-              }else{
-                var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
-                var qrCodeIDNum = 0;
-                if(user.generatedQRCodes.length > 0){
-                  qrCodeIDNum = user.generatedQRCodes[user.generatedQRCodes.length - 1].qrCodeID + 1;
-                }
-                QRCode.toDataURL(QRCodeData, { errorCorrectionLevel: 'H' })
-                  .then(qrdata => {
-                    QRCode.toString(QRCodeData, { errorCorrectionLevel: 'H' })
-                      .then(qrstring => {
-                        user.generatedQRCodes.push({qrCodeID: qrCodeIDNum, qrCodeData: qrdata, qrCodeString: qrstring, qrCodeName: qrCodeGivenName, qrCodeDefaultAmount: defaultAmount, qrCodeType: paymentType});
-                        user.save();
-                        res.status(200).json({
-                          message: "QRCode generated successfully",
-                          qrcodeData: qrdata,
-                          qrcodeString: qrstring
-                        });
-                      })
-                      .catch(err => {
-                        console.log("QRCode generation had an error of : " + err);
-                        res.status(401).json({
-                          message: "Error generating QRCode 1",
-                          error: err
-                        });
-                        return;
-                      })
-                  })
-                  .catch(err => {
-                    console.log("QRCode generation had an error of : " + err);
-                    res.status(401).json({
-                      message: "Error generating QRCode 2",
-                      error: err
-                    });
-                  })
-                }
-            } else {
+        } else if (valid) {
+          if (valid['email'] == user.email) {
+            if (user.generatedQRCodes.length + 1 > 5) {
               res.status(401).json({
-                message: "The email or loginAuthToken provided was invalid."
+                message: "User is only allowed to have 5 saved QRCodes at any given time."
               })
+            } else {
+              var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
+              var qrCodeIDNum = 0;
+              if (user.generatedQRCodes.length > 0) {
+                qrCodeIDNum = user.generatedQRCodes[user.generatedQRCodes.length - 1].qrCodeID + 1;
+              }
+              QRCode.toDataURL(QRCodeData, {
+                  errorCorrectionLevel: 'H'
+                })
+                .then(qrdata => {
+                  QRCode.toString(QRCodeData, {
+                      errorCorrectionLevel: 'H'
+                    })
+                    .then(qrstring => {
+                      user.generatedQRCodes.push({
+                        qrCodeID: qrCodeIDNum,
+                        qrCodeData: qrdata,
+                        qrCodeString: qrstring,
+                        qrCodeName: qrCodeGivenName,
+                        qrCodeDefaultAmount: defaultAmount,
+                        qrCodeType: paymentType
+                      });
+                      user.save();
+                      res.status(200).json({
+                        message: "QRCode generated successfully",
+                        qrcodeData: qrdata,
+                        qrcodeString: qrstring
+                      });
+                    })
+                    .catch(err => {
+                      console.log("QRCode generation had an error of : " + err);
+                      res.status(401).json({
+                        message: "Error generating QRCode 1",
+                        error: err
+                      });
+                      return;
+                    })
+                })
+                .catch(err => {
+                  console.log("QRCode generation had an error of : " + err);
+                  res.status(401).json({
+                    message: "Error generating QRCode 2",
+                    error: err
+                  });
+                })
             }
+          } else {
+            res.status(401).json({
+              message: "The email or loginAuthToken provided was invalid."
+            })
+          }
         }
       })
     } else {
@@ -801,7 +827,7 @@ function generateQRCode(req, res) {
   });
 }
 
-function getQRCodes(req, res){
+function getQRCodes(req, res) {
   const {
     email,
     loginAuthToken
@@ -813,33 +839,33 @@ function getQRCodes(req, res){
       res.status(401).json({
         message: "Error communicating with database."
       });
-    } else if(!user){
+    } else if (!user) {
       res.status(401).json({
         message: "Account doesn't exist."
       })
-    } else if (user){
-      jwt.verify(loginAuthToken, secret, function(err, valid){
+    } else if (user) {
+      jwt.verify(loginAuthToken, secret, function (err, valid) {
         if (err) {
-          if(err.message == "jwt expired"){
+          if (err.message == "jwt expired") {
             res.status(401).json({
               message: "Auth token has expired, please login again."
             });
-          }else{
+          } else {
             res.status(401).json({
               message: "Error authenticating.",
             });
           }
-        } else if(valid){
-            if(valid['email'] == user.email){
-              res.status(200).json({
-                message: "Successfully retrieved QRCodes.",
-                qrcodes: user.generatedQRCodes
-              })
-            } else {
-              res.status(401).json({
-                message: "The email or loginAuthToken provided was invalid."
-              })
-            }
+        } else if (valid) {
+          if (valid['email'] == user.email) {
+            res.status(200).json({
+              message: "Successfully retrieved QRCodes.",
+              qrcodes: user.generatedQRCodes
+            })
+          } else {
+            res.status(401).json({
+              message: "The email or loginAuthToken provided was invalid."
+            })
+          }
         }
       })
     } else {
@@ -850,7 +876,7 @@ function getQRCodes(req, res){
   });
 }
 
-function deleteQRCode(req, res){
+function deleteQRCode(req, res) {
   const {
     email,
     loginAuthToken,
@@ -863,37 +889,42 @@ function deleteQRCode(req, res){
       res.status(401).json({
         message: "Error communicating with database."
       });
-    } else if(!user){
+    } else if (!user) {
       res.status(401).json({
         message: "Account doesn't exist."
       })
-    } else if (user){
-      jwt.verify(loginAuthToken, secret, function(err, valid){
+    } else if (user) {
+      jwt.verify(loginAuthToken, secret, function (err, valid) {
         if (err) {
-          if(err.message == "jwt expired"){
+          if (err.message == "jwt expired") {
             res.status(401).json({
               message: "Auth token has expired, please login again."
             });
-          }else{
+          } else {
             res.status(401).json({
               message: "Error authenticating.",
             });
           }
-        } else if(valid){
-            if(valid['email'] == user.email){  
-              User.collection.update(
-                { email: email},
-                { $pull: { 'generatedQRCodes' : { qrCodeID: deleteID}}}
-              );
-              res.status(200).json({
-                message: "Successfully deleted QRCode.",
-                qrcodes: user.generatedQRCodes
-              })
-            } else {
-              res.status(401).json({
-                message: "The email or loginAuthToken provided was invalid."
-              })
-            }
+        } else if (valid) {
+          if (valid['email'] == user.email) {
+            User.collection.update({
+              email: email
+            }, {
+              $pull: {
+                'generatedQRCodes': {
+                  qrCodeID: deleteID
+                }
+              }
+            });
+            res.status(200).json({
+              message: "Successfully deleted QRCode.",
+              qrcodes: user.generatedQRCodes
+            })
+          } else {
+            res.status(401).json({
+              message: "The email or loginAuthToken provided was invalid."
+            })
+          }
         }
       })
     } else {
@@ -916,7 +947,7 @@ module.exports = {
   getCards,
   forgotPassword,
   resetPassword,
-  updateResetPassword, 
+  updateResetPassword,
   generateQRCode,
   acceptTos,
   getQRCodes,

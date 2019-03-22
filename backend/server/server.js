@@ -12,7 +12,7 @@ var fs = require('fs');
 var localTesting = true;
 
 
-if(localTesting){
+if (localTesting) {
   //Local testing
 
   var options = {
@@ -20,7 +20,7 @@ if(localTesting){
     key: fs.readFileSync('C:/Users/Ben/Documents/Senior_Design_498/QRCodes4GoodDBWorking/Qr-Master/backend/server/ssl/qrcodes4good_com.key'),
     cert: fs.readFileSync('C:/Users/Ben/Documents/Senior_Design_498/QRCodes4GoodDBWorking/Qr-Master/backend/server/ssl/qrcodes4good_com.crt')
   };
-}else{
+} else {
   //Public website testing
 
   var options = {
@@ -39,7 +39,7 @@ if(localTesting){
  * Get port from environment and store in Express.
  */
 
-  //Set port for backend to 8080 to work with cloudflare http (will change once HTTPS is working)
+//Set port for backend to 8080 to work with cloudflare http (will change once HTTPS is working)
 
 var port = normalizePort(process.env.PORT || '8080');
 app.set('port', port);
@@ -89,9 +89,9 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  var bind = typeof port === 'string' ?
+    'Pipe ' + port :
+    'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -114,8 +114,8 @@ function onError(error) {
 
 function onListening() {
   var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  var bind = typeof addr === 'string' ?
+    'pipe ' + addr :
+    'port ' + addr.port;
   debug('Listening on ' + bind);
 }
