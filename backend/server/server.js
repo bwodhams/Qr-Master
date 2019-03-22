@@ -9,7 +9,7 @@ var debug = require('debug')('express-react:server');
 var https = require('https');
 var fs = require('fs');
 
-var localTesting = false;
+var localTesting = true;
 
 
 if(localTesting){

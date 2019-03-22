@@ -704,7 +704,7 @@ function generateQRCode(req, res) {
     paymentType,
     defaultAmount,
     loginAuthToken,
-    qrCodeName,
+    qrCodeGivenName,
   } = req.body;
   User.findOne({
     email
@@ -731,7 +731,7 @@ function generateQRCode(req, res) {
           }
         } else if(valid){
             if(valid['email'] == user.email){
-              if(user.generatedQRCodes.qrCodeData.length + 1 > 5){
+              if(user.generatedQRCodes.length + 1 > 5){
                 res.status(401).json({
                   message: "User is only allowed to have 5 saved QRCodes at any given time."
                 })
@@ -741,11 +741,7 @@ function generateQRCode(req, res) {
                   .then(qrdata => {
                     QRCode.toString(QRCodeData, { errorCorrectionLevel: 'H' })
                       .then(qrstring => {
-                        user.generatedQRCodes.qrCodeData.push(qrdata);
-                        user.generatedQRCodes.qrCodeString.push(qrstring);
-                        user.generatedQRCodes.qrCodeName.push(qrCodeName);
-                        user.generatedQRCodes.qrCodeDefaultAmount.push(defaultAmount);
-                        user.generatedQRCodes.qrCodeType.push(paymentType);
+                        user.generatedQRCodes.push({qrCodeData: qrdata, qrCodeString: qrstring, qrCodeName: qrCodeGivenName, qrCodeDefaultAmount: defaultAmount, qrCodeType: paymentType});
                         user.save();
                         res.status(200).json({
                           message: "QRCode generated successfully",
@@ -756,7 +752,8 @@ function generateQRCode(req, res) {
                       .catch(err => {
                         console.log("QRCode generation had an error of : " + err);
                         res.status(401).json({
-                          message: "Error generating QRCode"
+                          message: "Error generating QRCode 1",
+                          error: err
                         });
                         return;
                       })
@@ -764,7 +761,8 @@ function generateQRCode(req, res) {
                   .catch(err => {
                     console.log("QRCode generation had an error of : " + err);
                     res.status(401).json({
-                      message: "Error generating QRCode"
+                      message: "Error generating QRCode 2",
+                      error: err
                     });
                   })
                 }
@@ -831,6 +829,7 @@ function getQRCodes(req, res){
     }
   });
 }
+
 
 module.exports = {
   get,
