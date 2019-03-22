@@ -107,7 +107,7 @@ async function create(req, res) {
     password
   } = req.body;
   let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  let loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 6000});
+  let loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 600});
   User.findOne({
     email
   }, async function (err, user) {
@@ -343,8 +343,8 @@ function bioLogin(req, res) {
                         user.lastAccess = (new Date).getTime();
                         user.resetPassword = false;
                         user.save();
-                        var loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 6000});
-                        var touchAuthToken = jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 6000});
+                        var loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 600});
+                        var touchAuthToken = jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 604800});
                         res.status(200).json({
                             message: "Authentication success",
                             name: user.name,
@@ -408,8 +408,8 @@ function login(req, res) {
                 });
               } else if (valid) {
                 var currentTime = (new Date).getTime();
-                var loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 6000});
-                var touchAuthToken = (devID == undefined)? "" : jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 6000});
+                var loginAuthToken = jwt.sign({email: email}, secret, {expiresIn: 600});
+                var touchAuthToken = (devID == undefined)? "" : jwt.sign({email: email, devID: devID, time: (new Date).getTime()}, secret, {expiresIn: 604800});
                 user.lastAccess = currentTime;
                 user.resetPassword = false;
                 user.save();
@@ -501,22 +501,38 @@ function updateStripe(req, res){
 }
 
 function getCards(req, res){
-  const email = req.params.email;
-  User.findOne({
-    email
-  }, function(err, user){
-    if(err){
-      res.status(401).json({
-        message: "Error communicating with database.",
-      });
-    }else if(!user){
-      res.status(401).json({
-        message: "A user with this email address was not found.",
-      });
-    }else {
-      res.json(user.stripeData);
-    }
-  })
+    var authToken = req.headers['Authorization'];
+    const email = req.params.email;
+    jwt.verify(authToken, secret, function(err, decoded){
+        if (err){
+            res.status(401).json({
+                message: "Token has expired"
+            });
+        }
+        if (decoded && decoded['email'] == email){
+            //TODO
+            User.findOne({
+                email
+            }, function(err, user){
+                if (err){
+                    res.status(401).json({
+                        message: "Error communicating with database",
+                    });
+                }else if(!user){
+                    res.status(401).json({
+                        message: "A user with this email address was not found",
+                    });
+                }else{
+                    res.status(200).json(user.stripeData);
+                }
+            });
+        }
+        else{
+            res.status(401).json({
+                message: "Token has expired"
+            });
+        }
+    });
 }
 
 function verify(req, res){
