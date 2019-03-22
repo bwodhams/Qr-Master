@@ -261,4 +261,15 @@ router.post('/user/getQRCodes', (req, res) => {
   }
 })
 
+router.post('/user/deleteQRCode', (req, res) => {
+  var data = req.body;
+  if(data.email == undefined || data.loginAuthToken == undefined || data.deleteID == undefined){
+    res.status(400).json({
+      message: "Your request must contain a body of email, loginAuthToken, deleteID"
+    })
+  }else{
+    userService.deleteQRCode(req, res);
+  }
+})
+
 module.exports = router;

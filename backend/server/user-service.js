@@ -737,11 +737,15 @@ function generateQRCode(req, res) {
                 })
               }else{
                 var QRCodeData = '{"userID": "' + user._id + '","defaultAmount": "' + defaultAmount + '","paymentType": "' + paymentType + '"}';
+                var qrCodeIDNum = 0;
+                if(user.generatedQRCodes.length > 0){
+                  qrCodeIDNum = user.generatedQRCodes[user.generatedQRCodes.length - 1].qrCodeID + 1;
+                }
                 QRCode.toDataURL(QRCodeData, { errorCorrectionLevel: 'H' })
                   .then(qrdata => {
                     QRCode.toString(QRCodeData, { errorCorrectionLevel: 'H' })
                       .then(qrstring => {
-                        user.generatedQRCodes.push({qrCodeData: qrdata, qrCodeString: qrstring, qrCodeName: qrCodeGivenName, qrCodeDefaultAmount: defaultAmount, qrCodeType: paymentType});
+                        user.generatedQRCodes.push({qrCodeID: qrCodeIDNum, qrCodeData: qrdata, qrCodeString: qrstring, qrCodeName: qrCodeGivenName, qrCodeDefaultAmount: defaultAmount, qrCodeType: paymentType});
                         user.save();
                         res.status(200).json({
                           message: "QRCode generated successfully",
@@ -830,6 +834,59 @@ function getQRCodes(req, res){
   });
 }
 
+function deleteQRCode(req, res){
+  const {
+    email,
+    loginAuthToken,
+    deleteID
+  } = req.body;
+  User.findOne({
+    email
+  }, function (err, user) {
+    if (err) {
+      res.status(401).json({
+        message: "Error communicating with database."
+      });
+    } else if(!user){
+      res.status(401).json({
+        message: "Account doesn't exist."
+      })
+    } else if (user){
+      jwt.verify(loginAuthToken, secret, function(err, valid){
+        if (err) {
+          if(err.message == "jwt expired"){
+            res.status(401).json({
+              message: "Auth token has expired, please login again."
+            });
+          }else{
+            res.status(401).json({
+              message: "Error authenticating.",
+            });
+          }
+        } else if(valid){
+            if(valid['email'] == user.email){  
+              User.collection.update(
+                { email: email},
+                { $pull: { 'generatedQRCodes' : { qrCodeID: deleteID}}}
+              );
+              res.status(200).json({
+                message: "Successfully deleted QRCode.",
+                qrcodes: user.generatedQRCodes
+              })
+            } else {
+              res.status(401).json({
+                message: "The email or loginAuthToken provided was invalid."
+              })
+            }
+        }
+      })
+    } else {
+      res.status(401).json({
+        message: "Error. Please try again later."
+      });
+    }
+  });
+}
 
 module.exports = {
   get,
@@ -846,5 +903,6 @@ module.exports = {
   updateResetPassword, 
   generateQRCode,
   acceptTos,
-  getQRCodes
+  getQRCodes,
+  deleteQRCode
 };
