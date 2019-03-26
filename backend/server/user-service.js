@@ -775,7 +775,7 @@ function generateQRCode(req, res) {
 	jwt.verify(loginAuthToken, secret, function(err, decoded) {
 		if (err) {
 			res.status(401).json({
-				message: 'Error contacting database'
+				message: 'Login auth token has expired'
 			});
 		} else if (decoded) {
 			var email = decoded[`email`];
@@ -805,11 +805,11 @@ function generateQRCode(req, res) {
 								finalPaymentType = 'Donation';
 							}
 							var QRCodeData =
-								'{"userID": "' +
+								'{"u": "' +
 								user._id +
-								'","defaultAmount": "' +
+								'","a": "' +
 								defaultAmount +
-								'","paymentType": "' +
+								'","p": "' +
 								finalPaymentType +
 								'"}';
 							var qrCodeIDNum = 0;
@@ -817,11 +817,11 @@ function generateQRCode(req, res) {
 								qrCodeIDNum = user.generatedQRCodes[user.generatedQRCodes.length - 1].qrCodeID + 1;
 							}
 							QRCode.toDataURL(QRCodeData, {
-								errorCorrectionLevel: 'H'
+								errorCorrectionLevel: 'L'
 							})
 								.then((qrdata) => {
 									QRCode.toString(QRCodeData, {
-										errorCorrectionLevel: 'H'
+										errorCorrectionLevel: 'L'
 									})
 										.then((qrstring) => {
 											user.generatedQRCodes.push({
@@ -863,10 +863,6 @@ function generateQRCode(req, res) {
 					}
 				}
 			);
-		} else {
-			res.status(401).json({
-				message: 'Login auth token has expired'
-			});
 		}
 	});
 }
