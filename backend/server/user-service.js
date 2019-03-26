@@ -771,111 +771,104 @@ function updateResetPassword(req, res) {
 }
 
 function generateQRCode(req, res) {
-	const { email, paymentType, defaultAmount, loginAuthToken, qrCodeGivenName } = req.body;
-	User.findOne(
-		{
-			email
-		},
-		function(err, user) {
-			if (err) {
-				res.status(401).json({
-					message: 'Error communicating with database.'
-				});
-			} else if (!user) {
-				res.status(401).json({
-					message: "Account doesn't exist."
-				});
-			} else if (user) {
-				jwt.verify(loginAuthToken, secret, function(err, valid) {
+	const { paymentType, defaultAmount, loginAuthToken, qrCodeGivenName } = req.body;
+	jwt.verify(loginAuthToken, secret, function(err, decoded) {
+		if (err) {
+			res.status(401).json({
+				message: 'Error contacting database'
+			});
+		} else if (decoded) {
+			var email = decoded[`email`];
+			User.findOne(
+				{
+					email
+				},
+				function(err, user) {
 					if (err) {
-						if (err.message == 'jwt expired') {
+						res.status(401).json({
+							message: 'Error communicating with database.'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "Account doesn't exist."
+						});
+					} else if (user) {
+						if (user.generatedQRCodes.length + 1 > 5) {
 							res.status(401).json({
-								message: 'Auth token has expired, please login again.'
+								message: 'User is only allowed to have 5 saved QRCodes at any given time.'
 							});
 						} else {
-							res.status(401).json({
-								message: 'Error authenticating.'
-							});
-						}
-					} else if (valid) {
-						if (valid['email'] == user.email) {
-							if (user.generatedQRCodes.length + 1 > 5) {
-								res.status(401).json({
-									message: 'User is only allowed to have 5 saved QRCodes at any given time.'
-								});
+							var finalPaymentType = '';
+							if (paymentType == 0) {
+								finalPaymentType = 'Service';
 							} else {
-								var finalPaymentType = '';
-								if (paymentType == 0) {
-									finalPaymentType = 'Service';
-								} else {
-									finalPaymentType = 'Donation';
-								}
-								var QRCodeData =
-									'{"userID": "' +
-									user._id +
-									'","defaultAmount": "' +
-									defaultAmount +
-									'","paymentType": "' +
-									finalPaymentType +
-									'"}';
-								var qrCodeIDNum = 0;
-								if (user.generatedQRCodes.length > 0) {
-									qrCodeIDNum = user.generatedQRCodes[user.generatedQRCodes.length - 1].qrCodeID + 1;
-								}
-								QRCode.toDataURL(QRCodeData, {
-									errorCorrectionLevel: 'H'
-								})
-									.then((qrdata) => {
-										QRCode.toString(QRCodeData, {
-											errorCorrectionLevel: 'H'
-										})
-											.then((qrstring) => {
-												user.generatedQRCodes.push({
-													qrCodeID: qrCodeIDNum,
-													qrCodeData: qrdata,
-													qrCodeString: qrstring,
-													qrCodeName: qrCodeGivenName,
-													qrCodeDefaultAmount: defaultAmount,
-													qrCodeType: finalPaymentType
-												});
-												user.save();
-												res.status(200).json({
-													message: 'QRCode generated successfully',
-													qrcodeData: qrdata,
-													qrcodeString: qrstring
-												});
-											})
-											.catch((err) => {
-												console.log('QRCode generation had an error of : ' + err);
-												res.status(401).json({
-													message: 'Error generating QRCode 1',
-													error: err
-												});
-												return;
-											});
-									})
-									.catch((err) => {
-										console.log('QRCode generation had an error of : ' + err);
-										res.status(401).json({
-											message: 'Error generating QRCode 2',
-											error: err
-										});
-									});
+								finalPaymentType = 'Donation';
 							}
-						} else {
-							res.status(401).json({
-								message: 'The email or loginAuthToken provided was invalid.'
-							});
+							var QRCodeData =
+								'{"userID": "' +
+								user._id +
+								'","defaultAmount": "' +
+								defaultAmount +
+								'","paymentType": "' +
+								finalPaymentType +
+								'"}';
+							var qrCodeIDNum = 0;
+							if (user.generatedQRCodes.length > 0) {
+								qrCodeIDNum = user.generatedQRCodes[user.generatedQRCodes.length - 1].qrCodeID + 1;
+							}
+							QRCode.toDataURL(QRCodeData, {
+								errorCorrectionLevel: 'H'
+							})
+								.then((qrdata) => {
+									QRCode.toString(QRCodeData, {
+										errorCorrectionLevel: 'H'
+									})
+										.then((qrstring) => {
+											user.generatedQRCodes.push({
+												qrCodeID: qrCodeIDNum,
+												qrCodeData: qrdata,
+												qrCodeString: qrstring,
+												qrCodeName: qrCodeGivenName,
+												qrCodeDefaultAmount: defaultAmount,
+												qrCodeType: finalPaymentType
+											});
+											user.save();
+											res.status(200).json({
+												message: 'QRCode generated successfully',
+												qrcodeData: qrdata,
+												qrcodeString: qrstring
+											});
+										})
+										.catch((err) => {
+											console.log('QRCode generation had an error of : ' + err);
+											res.status(401).json({
+												message: 'Error generating QRCode 1',
+												error: err
+											});
+											return;
+										});
+								})
+								.catch((err) => {
+									console.log('QRCode generation had an error of : ' + err);
+									res.status(401).json({
+										message: 'Error generating QRCode 2',
+										error: err
+									});
+								});
 						}
+					} else {
+						res.status(401).json({
+							message: 'Error. Please try again later.'
+						});
 					}
-				});
-			} else {
-				res.status(401).json({
-					message: 'Error. Please try again later.'
-				});
-			}
+				}
+			);
+		} else {
+			res.status(401).json({
+				message: 'Login auth token has expired'
+			});
 		}
-	);
+	});
 }
 
 function getQRCodes(req, res) {

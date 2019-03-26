@@ -228,15 +228,13 @@ router.post('/user/generateQRCode', (req, res) => {
 	var data = req.body;
 	console.log(data);
 	if (
-		data.email == undefined ||
 		data.loginAuthToken == undefined ||
 		data.paymentType == undefined ||
 		data.defaultAmount == undefined ||
 		data.qrCodeGivenName == undefined
 	) {
 		res.status(400).json({
-			message:
-				'Your request must contain a body of email, loginAuthToken, paymentType, defaultAmount, qrCodeName.'
+			message: 'Your request must contain a body of loginAuthToken, paymentType, defaultAmount, qrCodeName.'
 		});
 	} else {
 		userService.generateQRCode(req, res);
