@@ -243,9 +243,9 @@ router.post('/user/generateQRCode', (req, res) => {
 
 router.post('/user/getQRCodes', (req, res) => {
 	var data = req.body;
-	if (data.email == undefined || data.loginAuthToken == undefined) {
+	if (data.loginAuthToken == undefined) {
 		res.status(400).json({
-			message: 'Your request must contain a body of email, loginAuthToken.'
+			message: 'Your request must contain a body of loginAuthToken.'
 		});
 	} else {
 		userService.getQRCodes(req, res);
@@ -254,9 +254,9 @@ router.post('/user/getQRCodes', (req, res) => {
 
 router.post('/user/deleteQRCode', (req, res) => {
 	var data = req.body;
-	if (data.email == undefined || data.loginAuthToken == undefined || data.deleteID == undefined) {
+	if (data.loginAuthToken == undefined || data.deleteID == undefined) {
 		res.status(400).json({
-			message: 'Your request must contain a body of email, loginAuthToken, deleteID'
+			message: 'Your request must contain a body of loginAuthToken, deleteID'
 		});
 	} else {
 		userService.deleteQRCode(req, res);

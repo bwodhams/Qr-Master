@@ -868,84 +868,76 @@ function generateQRCode(req, res) {
 }
 
 function getQRCodes(req, res) {
-	const { email, loginAuthToken } = req.body;
-	User.findOne(
-		{
-			email
-		},
-		function(err, user) {
-			if (err) {
+	const { loginAuthToken } = req.body;
+	jwt.verify(loginAuthToken, secret, function(err, valid) {
+		if (err) {
+			if (err.message == 'jwt expired') {
 				res.status(401).json({
-					message: 'Error communicating with database.'
-				});
-			} else if (!user) {
-				res.status(401).json({
-					message: "Account doesn't exist."
-				});
-			} else if (user) {
-				jwt.verify(loginAuthToken, secret, function(err, valid) {
-					if (err) {
-						if (err.message == 'jwt expired') {
-							res.status(401).json({
-								message: 'Auth token has expired, please login again.'
-							});
-						} else {
-							res.status(401).json({
-								message: 'Error authenticating.'
-							});
-						}
-					} else if (valid) {
-						if (valid['email'] == user.email) {
-							res.status(200).json({
-								message: 'Successfully retrieved QRCodes.',
-								qrcodes: user.generatedQRCodes
-							});
-						} else {
-							res.status(401).json({
-								message: 'The email or loginAuthToken provided was invalid.'
-							});
-						}
-					}
+					message: 'Auth token has expired, please login again.'
 				});
 			} else {
 				res.status(401).json({
-					message: 'Error. Please try again later.'
+					message: 'Error authenticating.'
 				});
 			}
+		} else if (valid) {
+			var email = valid[`email`];
+			User.findOne(
+				{
+					email
+				},
+				function(err, user) {
+					if (err) {
+						res.status(401).json({
+							message: 'Error communicating with database.'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "Account doesn't exist."
+						});
+					} else {
+						res.status(200).json({
+							message: 'Successfully retrieved QRCodes.',
+							qrcodes: user.generatedQRCodes
+						});
+					}
+				}
+			);
 		}
-	);
+	});
 }
 
 function deleteQRCode(req, res) {
-	const { email, loginAuthToken, deleteID } = req.body;
-	User.findOne(
-		{
-			email
-		},
-		function(err, user) {
-			if (err) {
+	const { loginAuthToken, deleteID } = req.body;
+	jwt.verify(loginAuthToken, secret, function(err, valid) {
+		if (err) {
+			if (err.message == 'jwt expired') {
 				res.status(401).json({
-					message: 'Error communicating with database.'
+					message: 'Login auth token has expired, please login again.'
 				});
-			} else if (!user) {
+			} else {
 				res.status(401).json({
-					message: "Account doesn't exist."
+					message: 'Error authenticating.'
 				});
-			} else if (user) {
-				jwt.verify(loginAuthToken, secret, function(err, valid) {
+			}
+		} else if (valid) {
+			var email = valid[`email`];
+			User.findOne(
+				{
+					email
+				},
+				function(err, user) {
 					if (err) {
-						if (err.message == 'jwt expired') {
-							res.status(401).json({
-								message: 'Auth token has expired, please login again.'
-							});
-						} else {
-							res.status(401).json({
-								message: 'Error authenticating.'
-							});
-						}
-					} else if (valid) {
-						if (valid['email'] == user.email) {
-							User.collection.update(
+						res.status(401).json({
+							message: 'Error communicating with database.'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "Account doesn't exist."
+						});
+					} else {
+						User.collection
+							.update(
 								{
 									email: email
 								},
@@ -956,25 +948,23 @@ function deleteQRCode(req, res) {
 										}
 									}
 								}
-							);
-							res.status(200).json({
-								message: 'Successfully deleted QRCode.',
-								qrcodes: user.generatedQRCodes
+							)
+							.then(() => {
+								res.status(200).json({
+									message: 'Successfully deleted QRCode.',
+									qrcodes: user.generatedQRCodes
+								});
+							})
+							.catch((err) => {
+								res.status(500).json({
+									message: 'Error deleting QRCode.'
+								});
 							});
-						} else {
-							res.status(401).json({
-								message: 'The email or loginAuthToken provided was invalid.'
-							});
-						}
 					}
-				});
-			} else {
-				res.status(401).json({
-					message: 'Error. Please try again later.'
-				});
-			}
+				}
+			);
 		}
-	);
+	});
 }
 
 module.exports = {
