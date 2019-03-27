@@ -105,6 +105,7 @@ function generateQRCode(req, res) {
 }
 
 function getQRCodes(req, res) {
+	console.log(req.body);
 	const { loginAuthToken } = req.body;
 	jwt.verify(loginAuthToken, secret, function(err, valid) {
 		if (err) {
