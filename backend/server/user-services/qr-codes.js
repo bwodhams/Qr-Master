@@ -4,8 +4,6 @@ var QRCode = require('qrcode');
 
 var secret = '2CWukLuOME4D16I';
 
-//require('../mongo').connect();
-
 var port = '8080';
 var hostLink = 'https://www.qrcodes4good.com';
 

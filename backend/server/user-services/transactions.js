@@ -4,8 +4,6 @@ var stripe = require('stripe')('sk_test_w5PEuWfNwsE2EODIr52JXvNu');
 
 var secret = '2CWukLuOME4D16I';
 
-//require('../mongo').connect();
-
 var port = '8080';
 var hostLink = 'https://www.qrcodes4good.com';
 
