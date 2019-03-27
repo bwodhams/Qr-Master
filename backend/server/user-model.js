@@ -20,6 +20,7 @@ const userSchema = new Schema(
       creditCardType : [{type: String, default: null}],
       numberOfDigits : [{type: String, default: null}]
     },
+    customerToken: {type: String, default: null},
     stripeToken: {type: String, default: null},
     tosAccepted: {type: Boolean, default: false},
     resetPassword: {type: Boolean, default: false},
