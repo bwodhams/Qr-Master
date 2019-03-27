@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
 
-const userService = require('../user-service');
+const loginService = require('../user-services/login');
+const qrService = require('../user-services/qr-codes');
+const transactionService = require('../user-services/transactions');
 
 router.get('/users', (req, res) => {
-	userService.get(req, res);
+	loginService.get(req, res);
 });
 
 router.get('/verify/:email&:code', (req, res) => {
-	userService.verify(req, res);
+	loginService.verify(req, res);
 });
 
 function registrationErrorCheck(fullName, email, password, confirmPassword) {
@@ -58,7 +60,7 @@ router.put('/user/create', (req, res) => {
 			accountCreated: false
 		});
 	} else {
-		userService.create(req, res);
+		loginService.create(req, res);
 	}
 });
 
@@ -115,32 +117,32 @@ router.post('/user/update', (req, res) => {
 			message: updateCheck
 		});
 	} else {
-		userService.update(req, res);
+		loginService.update(req, res);
 	}
 });
 
 router.delete('/user/:email', (req, res) => {
-	userService.destroy(req, res);
+	loginService.destroy(req, res);
 });
 
 router.post('/user/login', (req, res) => {
-	userService.login(req, res);
+	loginService.login(req, res);
 });
 
 router.post('/user/tosUpdate', (req, res) => {
-	userService.acceptTos(req, res);
+	loginService.acceptTos(req, res);
 });
 
 router.post('/user/bioLogin', (req, res) => {
-	userService.bioLogin(req, res);
+	loginService.bioLogin(req, res);
 });
 
 router.post('/user/updateStripe', (req, res) => {
-	userService.updateStripe(req, res);
+	transactionService.updateStripe(req, res);
 });
 
 router.get('/user/getCards/:email', (req, res) => {
-	userService.getCards(req, res);
+	transactionService.getCards(req, res);
 });
 
 function validEmailCheck(email) {
@@ -161,7 +163,7 @@ router.post('/user/forgotPassword', (req, res) => {
 			message: validEmail
 		});
 	} else {
-		userService.forgotPassword(req, res);
+		loginService.forgotPassword(req, res);
 	}
 });
 
@@ -169,7 +171,7 @@ router.get('/user/resetPassword/:email&:code', (req, res) => {
 	console.log('in here');
 	console.log(req.params.email + ' = email');
 	console.log(req.params.code + ' = code');
-	userService.resetPassword(req, res);
+	loginService.resetPassword(req, res);
 });
 
 function validResetCheck(password) {
@@ -219,7 +221,7 @@ router.post('/user/updateResetPassword', (req, res) => {
 				message: "New password and confirm new password don't match."
 			});
 		} else {
-			userService.updateResetPassword(req, res);
+			loginService.updateResetPassword(req, res);
 		}
 	}
 });
@@ -237,7 +239,7 @@ router.post('/user/generateQRCode', (req, res) => {
 			message: 'Your request must contain a body of loginAuthToken, paymentType, defaultAmount, qrCodeName.'
 		});
 	} else {
-		userService.generateQRCode(req, res);
+		qrService.generateQRCode(req, res);
 	}
 });
 
@@ -248,7 +250,7 @@ router.post('/user/getQRCodes', (req, res) => {
 			message: 'Your request must contain a body of loginAuthToken.'
 		});
 	} else {
-		userService.getQRCodes(req, res);
+		qrService.getQRCodes(req, res);
 	}
 });
 
@@ -259,7 +261,7 @@ router.post('/user/deleteQRCode', (req, res) => {
 			message: 'Your request must contain a body of loginAuthToken, deleteID'
 		});
 	} else {
-		userService.deleteQRCode(req, res);
+		qrService.deleteQRCode(req, res);
 	}
 });
 
