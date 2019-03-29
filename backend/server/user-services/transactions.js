@@ -168,7 +168,7 @@ function createBank(res, user, name, routing_number, account_number) {
 }
 
 function getCards(req, res) {
-	var authToken = req.headers['Authorization'];
+	var authToken = req.headers.authorization;
 	const email = req.params.email;
 	jwt.verify(authToken, secret, function(err, decoded) {
 		if (err) {
@@ -176,7 +176,7 @@ function getCards(req, res) {
 				message: 'Token has expired'
 			});
 		}
-		if (decoded && decoded['email'] == email) {
+		else if (decoded && decoded['email'] == email) {
 			//TODO
 			User.findOne(
 				{
