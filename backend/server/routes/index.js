@@ -244,14 +244,7 @@ router.post('/user/generateQRCode', (req, res) => {
 });
 
 router.get('/user/getQRCodes', (req, res) => {
-	var data = req.body;
-	if (data.loginAuthToken == undefined) {
-		res.status(400).json({
-			message: 'Your request must contain a body of loginAuthToken.'
-		});
-	} else {
-		qrService.getQRCodes(req, res);
-	}
+	qrService.getQRCodes(req, res);
 });
 
 router.delete('/user/deleteQRCode', (req, res) => {
