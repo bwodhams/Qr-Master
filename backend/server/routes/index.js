@@ -95,7 +95,7 @@ function validUpdateCheck(email, password) {
 	return outputString;
 }
 
-router.post('/user/update', (req, res) => {
+router.put('/user/update', (req, res) => {
 	if (req.body.email == undefined) {
 		res.status(400).json({
 			message: 'You must have an email in the body.'
@@ -243,7 +243,7 @@ router.post('/user/generateQRCode', (req, res) => {
 	}
 });
 
-router.post('/user/getQRCodes', (req, res) => {
+router.get('/user/getQRCodes', (req, res) => {
 	var data = req.body;
 	if (data.loginAuthToken == undefined) {
 		res.status(400).json({
@@ -254,7 +254,7 @@ router.post('/user/getQRCodes', (req, res) => {
 	}
 });
 
-router.post('/user/deleteQRCode', (req, res) => {
+router.delete('/user/deleteQRCode', (req, res) => {
 	var data = req.body;
 	if (data.loginAuthToken == undefined || data.deleteID == undefined) {
 		res.status(400).json({
