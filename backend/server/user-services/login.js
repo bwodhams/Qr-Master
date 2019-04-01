@@ -4,6 +4,10 @@ var bcrypt = require('bcryptjs');
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
 var stripe = require('stripe')('sk_test_w5PEuWfNwsE2EODIr52JXvNu');
+var fs = require('fs');
+var path = require('path');
+
+var verificationEmailTemplate = fs.readFileSync(path.resolve(__dirname, 'confirmationEmailHTML.html'), 'utf8');
 
 var secret = '2CWukLuOME4D16I';
 
@@ -26,10 +30,12 @@ function get(req, res) {
 
 //Email verification stuff
 var smtpTransport = nodemailer.createTransport({
-	service: 'hotmail',
+	host: 'mail.privateemail.com',
+	port: 465,
+	secure: true,
 	auth: {
-		user: 'qrcodes4good@outlook.com',
-		pass: 'MicrosoftGive4G'
+		user: 'support@qrcodes4good.com',
+		pass: '.48MuQJtj6Bzm'
 	}
 });
 
@@ -139,13 +145,19 @@ async function create(req, res) {
 								//link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
 								//website testing
 								link = hostLink + ':' + port + '/api/verify/' + email + '&' + emailVerifCode;
+								var finalVerificationLink = verificationEmailTemplate.replace(
+									'https://www.changeThisLinkToConfirmationLink.com',
+									link
+								);
+								finalVerificationLink = finalVerificationLink.replace(
+									'Hey there! Welcome to QRCodes4Good!',
+									'Hey there ' + name + '! Welcome to QRCodes4Good!'
+								);
 								mailOptions = {
+									from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
 									to: email,
 									subject: 'Please confirm your account',
-									html:
-										'Hello, <br> Please click on the link to verify your email. <br><a href=' +
-										link +
-										'>Click here to verify</a>'
+									html: finalVerificationLink
 								};
 								smtpTransport.sendMail(mailOptions, function(error, response) {
 									if (error) {
