@@ -1,6 +1,6 @@
 const User = require('../user-model');
 var jwt = require('jsonwebtoken');
-var stripe = require('stripe')('sk_test_w5PEuWfNwsE2EODIr52JXvNu');
+var stripe = require("stripe")("sk_test_w5PEuWfNwsE2EODIr52JXvNu");
 
 var secret = '2CWukLuOME4D16I';
 
@@ -136,7 +136,7 @@ function createBank(res, user, name, routing_number, account_number) {
 					console.log('Adding bank account failed with error: ' + err.message);
 					res.status(500).send(err);
 				} else {
-					console.log(token);
+					console.log(user);
 					stripe.accounts.createExternalAccount(
 							user.stripeToken,
 							{ external_account: token.id },
@@ -204,7 +204,73 @@ function getCards(req, res) {
 	});
 }
 
+function transaction(req, res) {
+	const {
+		email,
+		receiverID,
+		amount,
+	  } = req.body;
+	  User.findOne({
+		  email
+	  }, async function (err, user) {
+		  if (err) {
+			  res.status(401).json({
+				  message: "Error communicating with database",
+			  });
+		  } else if (!user) {
+			  res.status(401).json({
+				  message: "A user with this email address was not found",
+			  });
+		  } else {
+			processTransaction(res, user.customerToken, amount * 100, "5c9996d4eb78017178d2590b"); //receiverID
+		  }
+	  })
+	  .catch(err => {
+		  console.log("oh no!")
+		  res.status(500).send(err);
+	  });
+}
+
+async function processTransaction(res, customerToken, chargeAmmount, _id) {
+	User.findOne({
+		_id
+	}, async function (err, user) {
+		if (err) {
+			res.status(401).json({
+				message: "Error communicating with database",
+			});
+		} else if (!user) {
+			res.status(401).json({
+				message: "A user with this id was not found",
+			});
+		} else {
+			console.log(customerToken, chargeAmmount, user.stripeToken);
+			stripe.charges.create({
+				amount: chargeAmmount,
+				currency: "usd",
+				description: 'QR4G charge',
+				customer: customerToken,
+				transfer_data: {
+					amount: chargeAmmount - (Math.ceil(chargeAmmount * 0.029) + 30),
+					destination: user.stripeToken,
+				},
+			}).then(function(charge) {
+				// asynchronously called
+			});
+			res.status(200).json({
+				message: "Winning",
+				success: true
+		  	});
+		}
+	})
+	.catch(err => {
+		console.log("oh no!")
+		res.status(500).send(err);
+	});
+}
+
 module.exports = {
 	updateStripe,
-	getCards
+	getCards,
+	transaction
 };

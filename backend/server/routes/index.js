@@ -129,6 +129,8 @@ router.post('/user/login', (req, res) => {
 	loginService.login(req, res);
 });
 
+
+
 router.post('/user/tosUpdate', (req, res) => {
 	loginService.acceptTos(req, res);
 });
@@ -139,6 +141,10 @@ router.post('/user/bioLogin', (req, res) => {
 
 router.post('/user/updateStripe', (req, res) => {
 	transactionService.updateStripe(req, res);
+});
+
+router.post('/user/transaction', (req, res) => {
+	transactionService.transaction(req, res);
 });
 
 router.get('/user/getCards/:email', (req, res) => {
