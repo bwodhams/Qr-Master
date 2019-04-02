@@ -129,8 +129,6 @@ router.post('/user/login', (req, res) => {
 	loginService.login(req, res);
 });
 
-
-
 router.post('/user/tosUpdate', (req, res) => {
 	loginService.acceptTos(req, res);
 });
@@ -253,7 +251,7 @@ router.get('/user/getQRCodes', (req, res) => {
 	qrService.getQRCodes(req, res);
 });
 
-router.delete('/user/deleteQRCode', (req, res) => {
+router.post('/user/deleteQRCode', (req, res) => {
 	var data = req.body;
 	if (data.loginAuthToken == undefined || data.deleteID == undefined) {
 		res.status(400).json({
