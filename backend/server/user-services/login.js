@@ -137,7 +137,6 @@ async function create(req, res) {
 							stripeToken
 						});
 						user
-							.save()
 							.then(() => {
 								host = req.get('host');
 								console.log('host = ' + host);
@@ -164,6 +163,7 @@ async function create(req, res) {
 										console.log(error);
 									} else {
 										console.log('Confirmation email sent successfully!');
+										user.save();
 									}
 								});
 								res.status(201).json({
