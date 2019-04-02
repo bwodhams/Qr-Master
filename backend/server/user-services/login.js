@@ -136,44 +136,43 @@ async function create(req, res) {
 							loginAuthToken,
 							stripeToken
 						});
-						user
-							.then(() => {
-								host = req.get('host');
-								console.log('host = ' + host);
-								//local host testing
-								//link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
-								//website testing
-								link = hostLink + ':' + port + '/api/verify/' + email + '&' + emailVerifCode;
-								var finalVerificationLink = verificationEmailTemplate.replace(
-									'https://www.changeThisLinkToConfirmationLink.com',
-									link
-								);
-								finalVerificationLink = finalVerificationLink.replace(
-									'Hey there! Welcome to QRCodes4Good!',
-									'Hey there ' + name + '! Welcome to QRCodes4Good!'
-								);
-								mailOptions = {
-									from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
-									to: email,
-									subject: 'Please confirm your account',
-									html: finalVerificationLink
-								};
-								smtpTransport.sendMail(mailOptions, function(error, response) {
-									if (error) {
-										console.log(error);
-									} else {
-										console.log('Confirmation email sent successfully!');
-										user.save();
-									}
+
+						host = req.get('host');
+						console.log('host = ' + host);
+						//local host testing
+						//link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
+						//website testing
+						link = hostLink + ':' + port + '/api/verify/' + email + '&' + emailVerifCode;
+						var finalVerificationLink = verificationEmailTemplate.replace(
+							'https://www.changeThisLinkToConfirmationLink.com',
+							link
+						);
+						finalVerificationLink = finalVerificationLink.replace(
+							'Hey there! Welcome to QRCodes4Good!',
+							'Hey there ' + name + '! Welcome to QRCodes4Good!'
+						);
+						mailOptions = {
+							from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
+							to: email,
+							subject: 'Please confirm your account',
+							html: finalVerificationLink
+						};
+						smtpTransport.sendMail(mailOptions, function(error, response) {
+							if (error) {
+								console.log(error);
+								res.status(500).json({
+									message: 'Error creating account.',
+									error: error
 								});
-								res.status(201).json({
-									message: "User doesn't exist. Able to create account.",
-									accountCreated: true
-								});
-							})
-							.catch((err) => {
-								res.status(500).json(err);
-							});
+							} else {
+								console.log('Confirmation email sent successfully!');
+								user.save();
+							}
+						});
+						res.status(201).json({
+							message: "User doesn't exist. Able to create account.",
+							accountCreated: true
+						});
 					});
 				});
 			} else {
