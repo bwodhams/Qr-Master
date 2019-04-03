@@ -690,40 +690,49 @@ function resendConfirmationEmail(req, res) {
 				});
 			} else if (!user) {
 				res.status(201).json({
-					message: 'If an account with this email exists, an account confirmation email will be sent.'
+					message:
+						'If an account with this email exists and is not verified, an account confirmation email will be sent.'
 				});
 			} else if (user) {
-				host = req.get('host');
-				console.log('host = ' + host);
-				link = hostLink + ':' + port + '/api/verify/' + email + '&' + user.emailVerifCode;
-				var finalVerificationLink = verificationEmailTemplate.replace(
-					'https://www.changeThisLinkToConfirmationLink.com',
-					link
-				);
-				finalVerificationLink = finalVerificationLink.replace(
-					'Hey there! Welcome to QRCodes4Good!',
-					'Hey there ' + name + '! Welcome to QRCodes4Good!'
-				);
-				mailOptions = {
-					from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
-					to: email,
-					subject: 'Please confirm your account',
-					html: finalVerificationLink
-				};
-				smtpTransport.sendMail(mailOptions, function(error, response) {
-					if (error) {
-						console.log(error);
-						res.status(500).json({
-							message: 'Error sending confirmation email.',
-							error: error
-						});
-					} else {
-						console.log('Confirmation email sent successfully!');
-						res.status(201).json({
-							message: 'If an account with this email exists, an account confirmation email will be sent.'
-						});
-					}
-				});
+				if (user.emailVerified == false) {
+					host = req.get('host');
+					console.log('host = ' + host);
+					link = hostLink + ':' + port + '/api/verify/' + email + '&' + user.emailVerifCode;
+					var finalVerificationLink = verificationEmailTemplate.replace(
+						'https://www.changeThisLinkToConfirmationLink.com',
+						link
+					);
+					finalVerificationLink = finalVerificationLink.replace(
+						'Hey there! Welcome to QRCodes4Good!',
+						'Hey there ' + user.name + '! Welcome to QRCodes4Good!'
+					);
+					mailOptions = {
+						from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
+						to: email,
+						subject: 'Please confirm your account',
+						html: finalVerificationLink
+					};
+					smtpTransport.sendMail(mailOptions, function(error, response) {
+						if (error) {
+							console.log(error);
+							res.status(500).json({
+								message: 'Error sending confirmation email.',
+								error: error
+							});
+						} else {
+							console.log('Confirmation email sent successfully!');
+							res.status(201).json({
+								message:
+									'If an account with this email exists and is not verified, an account confirmation email will be sent.'
+							});
+						}
+					});
+				} else {
+					res.status(201).json({
+						message:
+							'If an account with this email exists and is not verified, an account confirmation email will be sent.'
+					});
+				}
 			}
 		}
 	);
