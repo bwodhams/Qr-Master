@@ -166,12 +166,21 @@ async function create(req, res) {
 								});
 							} else {
 								console.log('Confirmation email sent successfully!');
-								user.save();
+								user
+									.save()
+									.then((user) => {
+										res.status(201).json({
+											message: "User doesn't exist. Able to create account.",
+											accountCreated: true
+										});
+									})
+									.catch((err) => {
+										res.status(500).json({
+											message: 'Error saving account.',
+											error: error
+										});
+									});
 							}
-						});
-						res.status(201).json({
-							message: "User doesn't exist. Able to create account.",
-							accountCreated: true
 						});
 					});
 				});
