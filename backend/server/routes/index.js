@@ -262,4 +262,15 @@ router.post('/user/deleteQRCode', (req, res) => {
 	}
 });
 
+router.post('/user/resendConfirmationEmail', (req, res) => {
+	var data = req.body;
+	if (data.email == undefined) {
+		res.status(400).json({
+			message: 'Your request must contain a body of email.'
+		});
+	} else {
+		loginService.resendConfirmationEmail(req, res);
+	}
+});
+
 module.exports = router;

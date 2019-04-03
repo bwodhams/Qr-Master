@@ -677,6 +677,58 @@ function updateResetPassword(req, res) {
 	);
 }
 
+function resendConfirmationEmail(req, res) {
+	const { email } = req.body;
+	User.findOne(
+		{
+			email
+		},
+		async function(err, user) {
+			if (err) {
+				res.status(401).json({
+					message: 'Error communicating with database.'
+				});
+			} else if (!user) {
+				res.status(201).json({
+					message: 'If an account with this email exists, an account confirmation email will be sent.'
+				});
+			} else if (user) {
+				host = req.get('host');
+				console.log('host = ' + host);
+				link = hostLink + ':' + port + '/api/verify/' + email + '&' + user.emailVerifCode;
+				var finalVerificationLink = verificationEmailTemplate.replace(
+					'https://www.changeThisLinkToConfirmationLink.com',
+					link
+				);
+				finalVerificationLink = finalVerificationLink.replace(
+					'Hey there! Welcome to QRCodes4Good!',
+					'Hey there ' + name + '! Welcome to QRCodes4Good!'
+				);
+				mailOptions = {
+					from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
+					to: email,
+					subject: 'Please confirm your account',
+					html: finalVerificationLink
+				};
+				smtpTransport.sendMail(mailOptions, function(error, response) {
+					if (error) {
+						console.log(error);
+						res.status(500).json({
+							message: 'Error sending confirmation email.',
+							error: error
+						});
+					} else {
+						console.log('Confirmation email sent successfully!');
+						res.status(201).json({
+							message: 'If an account with this email exists, an account confirmation email will be sent.'
+						});
+					}
+				});
+			}
+		}
+	);
+}
+
 module.exports = {
 	get,
 	create,
@@ -688,5 +740,6 @@ module.exports = {
 	forgotPassword,
 	resetPassword,
 	updateResetPassword,
-	acceptTos
+	acceptTos,
+	resendConfirmationEmail
 };
