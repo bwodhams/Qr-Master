@@ -218,7 +218,7 @@ function saveQRCode(req, res) {
 			let email = decoded[`email`];
 			User.findOne(
 				{
-					_id
+					email
 				},
 				function(err, user) {
 					if (err) {
@@ -230,16 +230,17 @@ function saveQRCode(req, res) {
 							message: "Account doesn't exist."
 						});
 					} else if (user) {
-						let defaultAmount = '';
-						for (var i = 0; i < user.generatedQRCodes.length; i++) {
-							if (user.generatedQRCodes[i].qrCodeData == qrcodeData) {
-								defaultAmount = user.generatedQRCodes[i].qrCodeDefaultAmount;
+						for (var i = 0; i < user.savedQRCodes.length; i++) {
+							if (user.savedQRCodes[i].qrCodeData == qrcodeData) {
+								res.status(401).json({
+									message: 'QRCode already saved to account.'
+								});
+								return;
 							}
 						}
-						var qrCodeUser = user.name;
 						User.findOne(
 							{
-								email
+								_id
 							},
 							function(err, user) {
 								if (err) {
@@ -251,24 +252,49 @@ function saveQRCode(req, res) {
 										message: "Account doesn't exist."
 									});
 								} else if (user) {
-									var qrCodeIDNum = 0;
-									if (user.savedQRCodes.length > 0) {
-										qrCodeIDNum = user.savedQRCodes[user.savedQRCodes.length - 1].qrCodeID + 1;
+									let defaultAmount = '';
+									for (var i = 0; i < user.generatedQRCodes.length; i++) {
+										if (user.generatedQRCodes[i].qrCodeData == qrcodeData) {
+											defaultAmount = user.generatedQRCodes[i].qrCodeDefaultAmount;
+										}
 									}
-									user.savedQRCodes.push({
-										qrCodeID: qrCodeIDNum,
-										qrCodeData: qrcodeData,
-										qrCodeUser: qrCodeUser,
-										qrCodeDefaultAmount: defaultAmount
-									});
-									user.save();
-									res.status(200).json({
-										message: 'QRCode saved successfully'
-									});
-								} else {
-									res.status(401).json({
-										message: 'Error. Please try again later.'
-									});
+									var qrCodeUser = user.name;
+									User.findOne(
+										{
+											email
+										},
+										function(err, user) {
+											if (err) {
+												res.status(401).json({
+													message: 'Error communicating with database.'
+												});
+											} else if (!user) {
+												res.status(401).json({
+													message: "Account doesn't exist."
+												});
+											} else if (user) {
+												var qrCodeIDNum = 0;
+												if (user.savedQRCodes.length > 0) {
+													qrCodeIDNum =
+														user.savedQRCodes[user.savedQRCodes.length - 1].qrCodeID + 1;
+												}
+												user.savedQRCodes.push({
+													qrCodeID: qrCodeIDNum,
+													qrCodeData: qrcodeData,
+													qrCodeUser: qrCodeUser,
+													qrCodeDefaultAmount: defaultAmount
+												});
+												user.save();
+												res.status(200).json({
+													message: 'QRCode saved successfully'
+												});
+											} else {
+												res.status(401).json({
+													message: 'Error. Please try again later.'
+												});
+											}
+										}
+									);
 								}
 							}
 						);
