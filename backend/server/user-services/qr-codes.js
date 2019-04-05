@@ -205,8 +205,83 @@ function deleteQRCode(req, res) {
 	});
 }
 
+function saveQRCode(req, res) {
+	const { userID, qrcodeData } = req.body;
+	var _id = userID;
+	const loginAuthToken = req.headers.authorization;
+	jwt.verify(loginAuthToken, secret, function(err, decoded) {
+		if (err) {
+			res.status(401).json({
+				message: 'Login auth token has expired'
+			});
+		} else if (decoded) {
+			let email = decoded[`email`];
+			User.findOne(
+				{
+					_id
+				},
+				function(err, user) {
+					if (err) {
+						res.status(401).json({
+							message: 'Error communicating with database.'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "Account doesn't exist."
+						});
+					} else if (user) {
+						let defaultAmount = '';
+						for (var i = 0; i < user.generatedQRCodes.length; i++) {
+							if (user.generatedQRCodes[i].qrCodeData == qrcodeData) {
+								defaultAmount = user.generatedQRCodes[i].qrCodeDefaultAmount;
+							}
+						}
+						var qrCodeUser = user.name;
+						User.findOne(
+							{
+								email
+							},
+							function(err, user) {
+								if (err) {
+									res.status(401).json({
+										message: 'Error communicating with database.'
+									});
+								} else if (!user) {
+									res.status(401).json({
+										message: "Account doesn't exist."
+									});
+								} else if (user) {
+									var qrCodeIDNum = 0;
+									if (user.savedQRCodes.length > 0) {
+										qrCodeIDNum = user.savedQRCodes[user.savedQRCodes.length - 1].qrCodeID + 1;
+									}
+									user.savedQRCodes.push({
+										qrCodeID: qrCodeIDNum,
+										qrCodeData: qrcodeData,
+										qrCodeUser: qrCodeUser,
+										qrCodeDefaultAmount: defaultAmount
+									});
+									user.save();
+									res.status(200).json({
+										message: 'QRCode saved successfully'
+									});
+								} else {
+									res.status(401).json({
+										message: 'Error. Please try again later.'
+									});
+								}
+							}
+						);
+					}
+				}
+			);
+		}
+	});
+}
+
 module.exports = {
 	generateQRCode,
 	getQRCodes,
-	deleteQRCode
+	deleteQRCode,
+	saveQRCode
 };

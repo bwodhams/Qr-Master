@@ -273,4 +273,15 @@ router.post('/user/resendConfirmationEmail', (req, res) => {
 	}
 });
 
+router.put('/user/saveQRCode', (req, res) => {
+	var data = req.body;
+	if (data.userID == undefined || data.qrcodeData == undefined) {
+		res.status(400).json({
+			message: 'Your request must contain a body of userID and qrcodeData'
+		});
+	} else {
+		qrService.saveQRCode(req, res);
+	}
+});
+
 module.exports = router;
