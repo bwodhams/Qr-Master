@@ -305,9 +305,50 @@ function saveQRCode(req, res) {
 	});
 }
 
+function getSavedQRCodes(req, res) {
+	const loginAuthToken = req.headers.authorization;
+	jwt.verify(loginAuthToken, secret, function(err, valid) {
+		if (err) {
+			if (err.message == 'jwt expired') {
+				res.status(401).json({
+					message: 'Auth token has expired, please login again.'
+				});
+			} else {
+				res.status(401).json({
+					message: 'Error authenticating.'
+				});
+			}
+		} else if (valid) {
+			var email = valid[`email`];
+			User.findOne(
+				{
+					email
+				},
+				function(err, user) {
+					if (err) {
+						res.status(401).json({
+							message: 'Error communicating with database.'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "Account doesn't exist."
+						});
+					} else {
+						res.status(200).json({
+							message: 'Successfully retrieved QRCodes.',
+							qrcodes: user.savedQRCodes
+						});
+					}
+				}
+			);
+		}
+	});
+}
+
 module.exports = {
 	generateQRCode,
 	getQRCodes,
 	deleteQRCode,
-	saveQRCode
+	saveQRCode,
+	getSavedQRCodes
 };

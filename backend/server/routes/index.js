@@ -284,4 +284,8 @@ router.put('/user/saveQRCode', (req, res) => {
 	}
 });
 
+router.get('/user/getSavedQRCodes', (req, res) => {
+	qrService.getSavedQRCodes(req, res);
+});
+
 module.exports = router;
