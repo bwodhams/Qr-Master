@@ -206,7 +206,14 @@ function deleteQRCode(req, res) {
 }
 
 function saveQRCode(req, res) {
-	const { userID, qrcodeData } = req.body;
+	var { userID, qrcodeData } = req.body;
+	if (qrcodeData.includes('data') != true) {
+		QRCode.toDataURL(qrcodeData, {
+			errorCorrectionLevel: 'L'
+		}).then((qrdata) => {
+			qrcodeData = qrdata;
+		});
+	}
 	var _id = userID;
 	const loginAuthToken = req.headers.authorization;
 	jwt.verify(loginAuthToken, secret, function(err, decoded) {
