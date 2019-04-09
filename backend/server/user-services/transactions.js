@@ -222,6 +222,7 @@ function transaction(req, res) {
 				  message: "A user with this email address was not found",
 			  });
 		  } else {
+			logTransaction(req, email, amount, receiverID);
 			processTransaction(res, user.customerToken, amount * 100, "5c9996d4eb78017178d2590b"); //receiverID
 		  }
 	  })
@@ -229,6 +230,42 @@ function transaction(req, res) {
 		  console.log("oh no!")
 		  res.status(500).send(err);
 	  });
+}
+
+function logTransaction(req, email, amount, _id){
+    User.findOne({
+	_id
+    }, function(err, user) {
+	if(!err){
+	    User.findOne({
+		email
+	    }, function(err2, user2){
+		if (!err2){
+		    user.receivedPayments.push({
+			name: user2.name,
+			amount: amount,
+			anonymous: false,
+			date: new Date()
+		    });
+		    user2.sentPayments.push({
+			name: user.name,
+			amount: amount,
+			anonymous: false,
+			date: new Date()
+		    });
+		    user.save();
+		    user2.save();
+		    console.log("Transaction logged");
+		}
+		else{
+		    console.log("Couldn't find sender");
+		}
+	    });
+	}
+	else{
+	    console.log("Couldn't find receiver");
+	}
+    });
 }
 
 async function processTransaction(res, customerToken, chargeAmmount, _id) {
@@ -269,8 +306,49 @@ async function processTransaction(res, customerToken, chargeAmmount, _id) {
 	});
 }
 
+function getTransactions(req, res) {
+	var authToken = req.headers.authorization;
+	jwt.verify(authToken, secret, function(err, decoded) {
+		if (err) {
+			res.status(401).json({
+				message: 'Token has expired'
+			});
+		}
+		else if (decoded) {
+			var email = decoded['email'];
+			User.findOne(
+				{
+					email
+				},
+				function(err, user) {
+					if (err) {
+						res.status(401).json({
+							message: 'Error communicating with database'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: 'A user with this email address was not found'
+						});
+					} else {
+						res.status(200).json({
+                                                    sent: user.sentPayments,
+                                                    received: user.receivedPayments
+                                                });
+					}
+				}
+			);
+		} else {
+			res.status(401).json({
+				message: 'Token has expired'
+			});
+		}
+	});
+}
+
+
 module.exports = {
 	updateStripe,
 	getCards,
-	transaction
+	transaction,
+	getTransactions
 };

@@ -26,7 +26,9 @@ const userSchema = new Schema(
 		resetPassword: { type: Boolean, default: false },
 		resetPasswordCode: { type: String },
 		generatedQRCodes: [ {} ],
-		savedQRCodes: [ {} ]
+		savedQRCodes: [ {} ],
+		sentPayments: [ {} ],
+		receivedPayments: [ {} ]
 	},
 	{ autoIndex: false }
 );

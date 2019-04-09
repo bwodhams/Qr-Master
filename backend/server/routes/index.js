@@ -149,6 +149,10 @@ router.get('/user/getCards/:email', (req, res) => {
 	transactionService.getCards(req, res);
 });
 
+router.get('/user/transactionHistory', (req, res) => {
+	transactionService.getTransactions(req, res);
+});
+
 function validEmailCheck(email) {
 	let emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
 	let outputString = '';
