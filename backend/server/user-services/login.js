@@ -8,6 +8,7 @@ var fs = require('fs');
 var path = require('path');
 
 var verificationEmailTemplate = fs.readFileSync(path.resolve(__dirname, 'confirmationEmailHTML.html'), 'utf8');
+var passwordResetEmailTemplate = fs.readFileSync(path.resolve(__dirname, 'passwordResetEmailHTML.html'), 'utf8');
 
 var secret = '2CWukLuOME4D16I';
 
@@ -566,32 +567,34 @@ function forgotPassword(req, res) {
 						16,
 						'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 					);
-					host = req.get('host');
-					console.log('host = ' + host);
-					//local host testing
-					//link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
-					//website testing
 					link = hostLink + ':' + port + '/api/user/resetPassword/' + email + '&' + resetPasswordCode;
+					var finalVerificationLink = passwordResetEmailTemplate.replace(
+						'https://www.changeThisLinkToConfirmationLink.com',
+						link
+					);
+					finalVerificationLink = finalVerificationLink.replace(
+						'Seems like you forgot your password for',
+						'Hey there ' + user.name + '! Seems like you forgot your password for'
+					);
 					mailOptions = {
 						from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
 						to: email,
 						subject: 'Reset your password',
-						html:
-							'Hello ' +
-							user.name +
-							', <br> A request has been made to reset your password. <br><a href=' +
-							link +
-							'>Click here to reset your password</a>'
+						html: finalVerificationLink
 					};
 					smtpTransport.sendMail(mailOptions, function(error, response) {
 						if (error) {
 							console.log(error);
+							res.status(500).json({
+								message: 'Error sending password reset email.',
+								error: error
+							});
 						} else {
-							console.log('Reset password email sent successfully!');
+							console.log('Password reset email sent successfully!');
 							user.resetPasswordCode = resetPasswordCode;
 							user.save();
-							res.status(200).json({
-								message: 'Reset password email has been sent successfully.'
+							res.status(201).json({
+								message: 'Password reset email sent successfully!'
 							});
 						}
 					});
