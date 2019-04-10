@@ -572,6 +572,7 @@ function forgotPassword(req, res) {
 					//website testing
 					link = hostLink + ':' + port + '/api/user/resetPassword/' + email + '&' + resetPasswordCode;
 					mailOptions = {
+						from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
 						to: email,
 						subject: 'Reset your password',
 						html:
