@@ -243,6 +243,7 @@ function update(req, res) {
 							//website testing
 							link = hostLink + ':' + port + '/api/verify/' + newEmail + '&' + emailVerifCode;
 							mailOptions = {
+								from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
 								to: newEmail,
 								subject: 'Please confirm your account',
 								html:
@@ -572,6 +573,7 @@ function forgotPassword(req, res) {
 					//website testing
 					link = hostLink + ':' + port + '/api/user/resetPassword/' + email + '&' + resetPasswordCode;
 					mailOptions = {
+						from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
 						to: email,
 						subject: 'Reset your password',
 						html:
