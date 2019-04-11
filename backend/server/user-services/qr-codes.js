@@ -289,6 +289,7 @@ function saveQRCode(req, res) {
 													qrCodeID: qrCodeIDNum,
 													qrCodeData: qrcodeData,
 													qrCodeUser: qrCodeUser,
+													qrCodeUserID: _id,
 													qrCodeDefaultAmount: defaultAmount
 												});
 												user.save();
@@ -352,10 +353,73 @@ function getSavedQRCodes(req, res) {
 	});
 }
 
+function deleteSavedQRCode(req, res) {
+	const { deleteID } = req.body;
+	const loginAuthToken = req.headers.authorization;
+	jwt.verify(loginAuthToken, secret, function(err, valid) {
+		if (err) {
+			if (err.message == 'jwt expired') {
+				res.status(401).json({
+					message: 'Login auth token has expired, please login again.'
+				});
+			} else {
+				res.status(401).json({
+					message: 'Error authenticating.'
+				});
+			}
+		} else if (valid) {
+			var email = valid[`email`];
+			User.findOne(
+				{
+					email
+				},
+				function(err, user) {
+					if (err) {
+						res.status(401).json({
+							message: 'Error communicating with database.'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "Account doesn't exist."
+						});
+					} else {
+						User.collection
+							.update(
+								{
+									email: email
+								},
+								{
+									$pull: {
+										savedQRCodes: {
+											qrCodeID: deleteID
+										}
+									}
+								}
+							)
+							.then(() => {
+								res.status(200).json({
+									message: 'Successfully deleted QRCode.',
+									qrcodes: user.savedQRCodes
+								});
+							})
+							.catch((err) => {
+								res.status(500).json({
+									message: 'Error deleting QRCode.'
+								});
+							});
+					}
+				}
+			);
+		}
+	});
+}
+
+
 module.exports = {
 	generateQRCode,
 	getQRCodes,
 	deleteQRCode,
 	saveQRCode,
-	getSavedQRCodes
+	getSavedQRCodes,
+	deleteSavedQRCode
 };

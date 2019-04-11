@@ -292,6 +292,17 @@ router.put('/user/saveQRCode', (req, res) => {
 	}
 });
 
+router.post('/user/deleteSavedQRCode', (req, res) => {
+	var data = req.body;
+	if (data.deleteID == undefined){
+		res.status(400).json({
+			message: 'Your request must contain a body of deleteID'
+		});
+	} else {
+		qrService.deleteSavedQRCode(req, res);
+	}
+});
+
 router.get('/user/getSavedQRCodes', (req, res) => {
 	qrService.getSavedQRCodes(req, res);
 });
