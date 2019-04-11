@@ -475,39 +475,39 @@ function deletePayment(req, res) {
 							message: "Account doesn't exist."
 						});
 					} else {
-						token = user.stripeData.token[deleteIndex];
-						title = user.stripeData.title[deleteIndex];
-						name = user.stripeData.name[deleteIndex];
-						primaryCard = user.stripeData.primaryCard[deleteIndex];
-						creditCardLastDigits = user.stripeData.creditCardLastDigits[deleteIndex];
-						creditCardType = user.stripeData.creditCardType[deleteIndex];
-						numberOfDigits = user.stripeData.numberOfDigits[deleteIndex];
-						User.collection.update(
-								{
-									email: email
-								},
-								{ $pull: 
-									{ 'stripeData.token':  token,
-									 'stripeData.title':  title,
-									 'stripeData.name':  name,
-									 'stripeData.primaryCard':  primaryCard,
-									 'stripeData.creditCardLastDigits':  creditCardLastDigits,
-									 'stripeData.numberOfDigits':  numberOfDigits,
-									 'stripeData.creditCardType':  creditCardType,
-								 }
-								}
-							)
-							.then(() => {
-								res.status(200).json({
-									message: 'Successfully deleted Payment Method.',
-									stripeData: user.stripeData
-								});
-							})
-							.catch((err) => {
-								res.status(500).json({
-									message: 'Error deleting QRCode.'
-								});
+						user.stripeData.token = user.stripeData.token.filter(function(value, index, arr){
+						    return index != deleteIndex;
+						});
+						user.stripeData.title = user.stripeData.title.filter(function(value, index, arr){
+						    return index != deleteIndex;
+						});
+						user.stripeData.name = user.stripeData.name.filter(function(value, index, arr){
+						    return index != deleteIndex;
+						});
+						user.stripeData.primaryCard = user.stripeData.primaryCard.filter(function(value, index, arr){
+						    return index != deleteIndex;
+						});
+						user.stripeData.creditCardLastDigits = user.stripeData.creditCardLastDigits.filter(function(value, index, arr){
+						    return index != deleteIndex;
+						});
+						user.stripeData.creditCardType = user.stripeData.creditCardType.filter(function(value, index, arr){
+						    return index != deleteIndex;
+						});
+						user.stripeData.numberOfDigits = user.stripeData.numberOfDigits.filter(function(value, index, arr){
+						    return index != deleteIndex;
+						});
+						user.save()
+						.then(() => {
+							res.status(200).json({
+								message: 'Successfully deleted Payment Method.',
+								stripeData: user.stripeData
 							});
+						})
+						.catch((err) => {
+							res.status(500).json({
+								message: 'Error deleting QRCode.'
+							});
+						});
 					}
 				}
 			);
