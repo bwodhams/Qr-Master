@@ -179,13 +179,6 @@ router.post('/user/forgotPassword', (req, res) => {
 	}
 });
 
-router.get('/user/resetPassword/:email&:code', (req, res) => {
-	console.log('in here');
-	console.log(req.params.email + ' = email');
-	console.log(req.params.code + ' = code');
-	loginService.resetPassword(req, res);
-});
-
 function validResetCheck(password) {
 	let pwdLowerReg = /[a-z]+/;
 	let pwdUpperReg = /[A-Z]+/;
@@ -294,7 +287,7 @@ router.put('/user/saveQRCode', (req, res) => {
 
 router.post('/user/deleteSavedQRCode', (req, res) => {
 	var data = req.body;
-	if (data.deleteID == undefined){
+	if (data.deleteID == undefined) {
 		res.status(400).json({
 			message: 'Your request must contain a body of deleteID'
 		});
@@ -303,18 +296,16 @@ router.post('/user/deleteSavedQRCode', (req, res) => {
 	}
 });
 
-
 router.post('/user/deletePayment', (req, res) => {
-	    var data = req.body;
-	    if (data.loginAuthToken == undefined || data.deleteIndex == undefined) {
-	        res.status(400).json({
-	            message: 'Your request must contain a body of loginAuthToken, deleteID'
-	        });
-	    } else {
-	        transactionService.deletePayment(req, res);
-	    }
-	});
-	
+	var data = req.body;
+	if (data.loginAuthToken == undefined || data.deleteIndex == undefined) {
+		res.status(400).json({
+			message: 'Your request must contain a body of loginAuthToken, deleteID'
+		});
+	} else {
+		transactionService.deletePayment(req, res);
+	}
+});
 
 router.get('/user/getSavedQRCodes', (req, res) => {
 	qrService.getSavedQRCodes(req, res);

@@ -567,7 +567,8 @@ function forgotPassword(req, res) {
 						16,
 						'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 					);
-					link = hostLink + ':' + port + '/api/user/resetPassword/' + email + '&' + resetPasswordCode;
+					link =
+						hostLink + ':' + port + '/user/newPassword.html?email=' + email + '&code=' + resetPasswordCode;
 					var finalVerificationLink = passwordResetEmailTemplate.replace(
 						'https://www.changeThisLinkToConfirmationLink.com',
 						link
@@ -592,52 +593,13 @@ function forgotPassword(req, res) {
 						} else {
 							console.log('Password reset email sent successfully!');
 							user.resetPasswordCode = resetPasswordCode;
+							user.resetPassword = true;
 							user.save();
 							res.status(201).json({
 								message: 'Password reset email sent successfully!'
 							});
 						}
 					});
-				}
-			}
-		);
-	}
-}
-
-function resetPassword(req, res) {
-	const { email, code } = req.params;
-	console.log('email = ' + email);
-	console.log('code = ' + code);
-	if (email == undefined || code == undefined) {
-		res.status(400).json({
-			message: 'Request must contain email.'
-		});
-	} else {
-		User.findOne(
-			{
-				email
-			},
-			function(err, user) {
-				if (err) {
-					res.status(401).json({
-						message: 'Error communicating with database.'
-					});
-				} else if (!user) {
-					res.status(401).json({
-						message: 'Account associated with this email address was not found.'
-					});
-				} else {
-					if (user.resetPasswordCode === code) {
-						user.resetPassword = true;
-						user.save();
-						res.status(200).json({
-							message: 'You may now reset your password'
-						});
-					} else {
-						res.status(401).json({
-							message: 'Incorrect verification code.'
-						});
-					}
 				}
 			}
 		);
@@ -761,7 +723,6 @@ module.exports = {
 	bioLogin,
 	verify,
 	forgotPassword,
-	resetPassword,
 	updateResetPassword,
 	acceptTos,
 	resendConfirmationEmail
