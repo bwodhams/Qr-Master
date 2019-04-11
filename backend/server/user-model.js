@@ -10,6 +10,7 @@ const userSchema = new Schema(
 		lastAccess: { type: Date, default: Date.now },
 		emailVerified: { type: Boolean, default: false },
 		emailVerifCode: { type: String },
+		stripeVerified: { type: Boolean, default: false },
 		loginAuthToken: { type: String },
 		stripeData: {
 			token: [ { type: String, default: null } ],

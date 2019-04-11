@@ -49,8 +49,21 @@ function updateStripe(req, res) {
 		console.log("oh no!")
 		res.status(500).send(err);
 	});
+}
+
+function cardsDoNotExistCheck(user) {
+	if (user.stripeData.name.length == 0) {
+		return true;
+	} else {
+		for (i = 0; i < user.stripeData.name.length; i++) { 
+			if (user.stripeData.token[i].substring(0, 2) != "ba"){
+				return false;
+			}
+		}
 	}
+	return true;
 	
+}
 function createCard(res, user, cvc, exp_year, exp_month, ccLastDigits, name, number, postalCode, type) {
 	stripe.tokens.create({
 		card: {
@@ -66,7 +79,7 @@ function createCard(res, user, cvc, exp_year, exp_month, ccLastDigits, name, num
 			console.log('Adding card failed with error: ' + err.message);
 			res.status(500).send(err);
 		} else {
-		if (user.stripeData.name.length == 0) {
+		if (cardsDoNotExistCheck(user)) {
 			stripe.customers.create({
 				description: 'Customer for MSGive',
 				source: "tok_visa" //source: token.id,
@@ -98,6 +111,7 @@ function createCard(res, user, cvc, exp_year, exp_month, ccLastDigits, name, num
 				{ source: token.id},
 				function(err, card) {
 					if (err) {
+						console.log(err);
 						res.status(500).send(err);
 					} else {
 						user.stripeData.token.push(token.id);
@@ -155,7 +169,8 @@ function createBank(res, user, name, routing_number, account_number) {
 									.then(() => {
 										res.status(200).json({
 											message: "Bank Added.",
-											bankCreated: true
+											bankCreated: true,
+											stripeVerified: user.stripeVerified,
 										})
 									});
 								}
@@ -223,7 +238,7 @@ function transaction(req, res) {
 			  });
 		  } else {
 			logTransaction(req, email, amount, receiverID);
-			processTransaction(res, user.customerToken, amount * 100, "5c9996d4eb78017178d2590b"); //receiverID
+			processTransaction(res, user.customerToken, amount * 100, receiverID); 
 		  }
 	  })
 	  .catch(err => {
@@ -306,6 +321,76 @@ async function processTransaction(res, customerToken, chargeAmmount, _id) {
 	});
 }
 
+function verifyStripe (req, res) {
+	const {
+		email,
+		ssn_last_4,
+		dob_day, 
+		dob_month,
+		dob_year,
+        city,
+        line1,
+        postal_code,
+        state,
+	} = req.body;
+	console.log(req.body)
+	
+	User.findOne({
+		email
+	}, function (err, user) {
+		if (err) {
+			res.status(401).json({
+				message: "Error communicating with database",
+			});
+		} else if (!user) {
+			res.status(401).json({
+				message: "A user with this email address was not found",
+			});
+		} else {
+			console.log("in verify")
+			stripe.accounts.update(
+				user.stripeToken,
+				{
+				  legal_entity: {
+					ssn_last_4,
+					dob: { 
+					  day: dob_day, 
+					  month: dob_month, 
+					  year: dob_year 
+					},
+					address: { 
+					  city,
+					  country: 'US',
+					  line1,
+					  line2: null,
+					  postal_code,
+					  state,
+					},
+				  },
+				},
+				function(err, account) {
+				if (err) {
+					res.status(500).send(err);
+				} else {
+					user.stripeVerified = true;
+					user.save()
+					.then(() => {
+						res.status(200).json({
+							message: "Verification Sent",
+							verification: true
+						})
+					});
+				}
+				console.log(account)
+			  });
+		}
+	})
+	.catch(err => {
+		console.log("oh no!")
+		res.status(500).send(err);
+	});
+}
+
 function getTransactions(req, res) {
 	var authToken = req.headers.authorization;
 	jwt.verify(authToken, secret, function(err, decoded) {
@@ -350,5 +435,6 @@ module.exports = {
 	updateStripe,
 	getCards,
 	transaction,
-	getTransactions
+	getTransactions,
+	verifyStripe
 };

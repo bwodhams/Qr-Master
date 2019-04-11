@@ -141,6 +141,10 @@ router.post('/user/updateStripe', (req, res) => {
 	transactionService.updateStripe(req, res);
 });
 
+router.post('/user/verifyStripe', (req, res) => {
+	transactionService.verifyStripe(req, res);
+});
+
 router.post('/user/transaction', (req, res) => {
 	transactionService.transaction(req, res);
 });
