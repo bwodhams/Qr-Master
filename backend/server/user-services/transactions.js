@@ -430,11 +430,81 @@ function getTransactions(req, res) {
 	});
 }
 
+function deletePayment(req, res) {
+	const { loginAuthToken, deleteIndex } = req.body;
+	jwt.verify(loginAuthToken, secret, function(err, valid) {
+		if (err) {
+			if (err.message == 'jwt expired') {
+				res.status(401).json({
+					message: 'Login auth token has expired, please login again.'
+				});
+			} else {
+				res.status(401).json({
+					message: 'Error authenticating.'
+				});
+			}
+		} else if (valid) {
+			var email = valid[`email`];
+			User.findOne(
+				{
+					email
+				},
+				function(err, user) {
+					if (err) {
+						res.status(401).json({
+							message: 'Error communicating with database.'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "Account doesn't exist."
+						});
+					} else {
+						token = user.stripeData.token[deleteIndex];
+						title = user.stripeData.title[deleteIndex];
+						name = user.stripeData.name[deleteIndex];
+						primaryCard = user.stripeData.primaryCard[deleteIndex];
+						creditCardLastDigits = user.stripeData.creditCardLastDigits[deleteIndex];
+						creditCardType = user.stripeData.creditCardType[deleteIndex];
+						numberOfDigits = user.stripeData.numberOfDigits[deleteIndex];
+						User.collection.update(
+								{
+									email: email
+								},
+								{ $pull: 
+									{ 'stripeData.token':  token,
+									 'stripeData.title':  title,
+									 'stripeData.name':  name,
+									 'stripeData.primaryCard':  primaryCard,
+									 'stripeData.creditCardLastDigits':  creditCardLastDigits,
+									 'stripeData.numberOfDigits':  numberOfDigits,
+									 'stripeData.creditCardType':  creditCardType,
+								 }
+								}
+							)
+							.then(() => {
+								res.status(200).json({
+									message: 'Successfully deleted Payment Method.',
+									stripeData: user.stripeData
+								});
+							})
+							.catch((err) => {
+								res.status(500).json({
+									message: 'Error deleting QRCode.'
+								});
+							});
+					}
+				}
+			);
+		}
+	});
+}
+
 
 module.exports = {
 	updateStripe,
 	getCards,
 	transaction,
 	getTransactions,
-	verifyStripe
+	verifyStripe,
+	deletePayment
 };

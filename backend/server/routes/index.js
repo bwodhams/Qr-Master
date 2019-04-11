@@ -303,6 +303,19 @@ router.post('/user/deleteSavedQRCode', (req, res) => {
 	}
 });
 
+
+router.post('/user/deletePayment', (req, res) => {
+	    var data = req.body;
+	    if (data.loginAuthToken == undefined || data.deleteIndex == undefined) {
+	        res.status(400).json({
+	            message: 'Your request must contain a body of loginAuthToken, deleteID'
+	        });
+	    } else {
+	        transactionService.deletePayment(req, res);
+	    }
+	});
+	
+
 router.get('/user/getSavedQRCodes', (req, res) => {
 	qrService.getSavedQRCodes(req, res);
 });
