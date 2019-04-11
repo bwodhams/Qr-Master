@@ -225,26 +225,42 @@ function transaction(req, res) {
 		receiverID,
 		amount,
 	  } = req.body;
-	  User.findOne({
-		  email
-	  }, async function (err, user) {
-		  if (err) {
-			  res.status(401).json({
-				  message: "Error communicating with database",
-			  });
-		  } else if (!user) {
-			  res.status(401).json({
-				  message: "A user with this email address was not found",
-			  });
-		  } else {
-			logTransaction(req, email, amount, receiverID);
-			processTransaction(res, user.customerToken, amount * 100, receiverID); 
-		  }
-	  })
-	  .catch(err => {
-		  console.log("oh no!")
-		  res.status(500).send(err);
-	  });
+	const authToken = req.headers.authorization;
+	jwt.verify(authToken, secret, function(err, valid){
+	    if (err) {
+		if (err.message == 'jwt expired') {
+		    res.status(401).json({
+			message: 'Auth token has expired'
+		    });
+		} else{
+		    res.status(401).json({
+			message: 'Error authenticating'
+		    });
+		}
+	    } else if (valid) {
+		var payer = valid['email'];
+		  User.findOne({
+		      email: payer
+		  }, async function (err, user) {
+			  if (err) {
+				  res.status(401).json({
+					  message: "Error communicating with database",
+				  });
+			  } else if (!user) {
+				  res.status(401).json({
+					  message: "A user with this email address was not found",
+				  });
+			  } else {
+				logTransaction(req, email, amount, receiverID);
+				processTransaction(res, user.customerToken, amount * 100, receiverID); 
+			  }
+		  })
+		  .catch(err => {
+			  console.log("oh no!")
+			  res.status(500).send(err);
+		  });
+	    }
+	});
 }
 
 function logTransaction(req, email, amount, _id){
