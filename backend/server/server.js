@@ -41,7 +41,7 @@ if (localTesting) {
 
 //Set port for backend to 8080 to work with cloudflare http (will change once HTTPS is working)
 
-var port = normalizePort(process.env.PORT || '8080');
+var port = normalizePort(process.env.PORT || '443');
 app.set('port', port);
 
 /**

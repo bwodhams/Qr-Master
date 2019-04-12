@@ -14,7 +14,6 @@ var secret = '2CWukLuOME4D16I';
 
 require('../mongo').connect();
 
-var port = '8080';
 var hostLink = 'https://www.qrcodes4good.com';
 
 function get(req, res) {
@@ -62,7 +61,7 @@ function createStripe(email, name, successCallback) {
 				last_name: 'Customer'
 			}
 		})
-		.then(function(acct) {
+		.then(function (acct) {
 			successCallback(acct.id);
 		});
 }
@@ -76,11 +75,13 @@ function StripeWrapper(email, name) {
 }
 
 function acceptTos(req, res) {
-	const { email } = req.body;
+	const {
+		email
+	} = req.body;
 	console.log('in tos');
 	User.findOne({
-		email
-	})
+			email
+		})
 		.then((user) => {
 			stripe.accounts.update(user.stripeToken, {
 				tos_acceptance: {
@@ -104,22 +105,23 @@ function acceptTos(req, res) {
 }
 
 async function create(req, res) {
-	const { email, name, password } = req.body;
+	const {
+		email,
+		name,
+		password
+	} = req.body;
 	let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-	let loginAuthToken = jwt.sign(
-		{
+	let loginAuthToken = jwt.sign({
 			email: email
 		},
-		secret,
-		{
+		secret, {
 			expiresIn: 600
 		}
 	);
-	User.findOne(
-		{
+	User.findOne({
 			email
 		},
-		async function(err, user) {
+		async function (err, user) {
 			if (err) {
 				res.status(401).json({
 					message: 'Error communicating with database.',
@@ -127,8 +129,8 @@ async function create(req, res) {
 				});
 			} else if (!user) {
 				stripeToken = await StripeWrapper(email, name);
-				bcrypt.genSalt(10, function(err, salt) {
-					bcrypt.hash(password, salt, function(err, passwordHash) {
+				bcrypt.genSalt(10, function (err, salt) {
+					bcrypt.hash(password, salt, function (err, passwordHash) {
 						const user = new User({
 							email,
 							name,
@@ -143,7 +145,7 @@ async function create(req, res) {
 						//local host testing
 						//link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
 						//website testing
-						link = hostLink + ':' + port + '/api/verify/' + email + '&' + emailVerifCode;
+						link = hostLink + '/api/verify/' + email + '&' + emailVerifCode;
 						var finalVerificationLink = verificationEmailTemplate.replace(
 							'https://www.changeThisLinkToConfirmationLink.com',
 							link
@@ -158,7 +160,7 @@ async function create(req, res) {
 							subject: 'Please confirm your account',
 							html: finalVerificationLink
 						};
-						smtpTransport.sendMail(mailOptions, function(error, response) {
+						smtpTransport.sendMail(mailOptions, function (error, response) {
 							if (error) {
 								console.log(error);
 								res.status(500).json({
@@ -196,7 +198,14 @@ async function create(req, res) {
 }
 
 function update(req, res) {
-	const { email, newEmail, name, currentPassword, newPassword, confirmNewPassword } = req.body;
+	const {
+		email,
+		newEmail,
+		name,
+		currentPassword,
+		newPassword,
+		confirmNewPassword
+	} = req.body;
 	var changePass = false;
 	if (email == undefined || currentPassword == undefined) {
 		res.status(400).json({
@@ -204,8 +213,8 @@ function update(req, res) {
 		});
 	} else {
 		User.findOne({
-			email
-		})
+				email
+			})
 			.then((user) => {
 				if (user.emailVerified == false) {
 					res.status(403).json({
@@ -226,7 +235,7 @@ function update(req, res) {
 						changePass = true;
 					}
 				}
-				bcrypt.compare(currentPassword, user.passwordHash, function(err, valid) {
+				bcrypt.compare(currentPassword, user.passwordHash, function (err, valid) {
 					if (err) {
 						res.status(401).json({
 							message: 'Error authenticating.'
@@ -242,17 +251,16 @@ function update(req, res) {
 							//local host testing
 							//link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
 							//website testing
-							link = hostLink + ':' + port + '/api/verify/' + newEmail + '&' + emailVerifCode;
+							link = hostLink + '/api/verify/' + newEmail + '&' + emailVerifCode;
 							mailOptions = {
 								from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
 								to: newEmail,
 								subject: 'Please confirm your account',
-								html:
-									'Hello, <br> Please click on the link to verify your email. <br><a href=' +
+								html: 'Hello, <br> Please click on the link to verify your email. <br><a href=' +
 									link +
 									'>Click here to verify</a>'
 							};
-							smtpTransport.sendMail(mailOptions, function(error, response) {
+							smtpTransport.sendMail(mailOptions, function (error, response) {
 								if (error) {
 									console.log(error);
 								} else {
@@ -261,8 +269,8 @@ function update(req, res) {
 									user.emailVerifCode = emailVerifCode;
 									user.emailVerified = false;
 									if (changePass == true) {
-										bcrypt.genSalt(10, function(err, salt) {
-											bcrypt.hash(newPassword, salt, function(err, passwordHash) {
+										bcrypt.genSalt(10, function (err, salt) {
+											bcrypt.hash(newPassword, salt, function (err, passwordHash) {
 												if (!err) {
 													user.passwordHash = passwordHash;
 													user.save();
@@ -283,8 +291,8 @@ function update(req, res) {
 								}
 							});
 						} else if (changePass == true) {
-							bcrypt.genSalt(10, function(err, salt) {
-								bcrypt.hash(newPassword, salt, function(err, passwordHash) {
+							bcrypt.genSalt(10, function (err, salt) {
+								bcrypt.hash(newPassword, salt, function (err, passwordHash) {
 									if (!err) {
 										user.passwordHash = passwordHash;
 										user.save();
@@ -317,11 +325,13 @@ function update(req, res) {
 }
 
 function destroy(req, res) {
-	const { email } = req.params;
+	const {
+		email
+	} = req.params;
 
 	User.findOneAndRemove({
-		email
-	})
+			email
+		})
 		.then((user) => {
 			res.json(user);
 		})
@@ -331,22 +341,24 @@ function destroy(req, res) {
 }
 
 function bioLogin(req, res) {
-	const { touchAuthToken, devID } = req.body;
+	const {
+		touchAuthToken,
+		devID
+	} = req.body;
 	if (touchAuthToken == undefined || devID == undefined) {
 		res.status(400).json({
 			message: 'Request must have a token and device ID',
 			loggedIn: false
 		});
 	} else {
-		jwt.verify(touchAuthToken, secret, function(err, decoded) {
+		jwt.verify(touchAuthToken, secret, function (err, decoded) {
 			if (decoded && decoded['devID'] == devID) {
 				console.log(JSON.stringify(decoded));
 				email = decoded['email'];
-				User.findOne(
-					{
+				User.findOne({
 						email
 					},
-					function(err, user) {
+					function (err, user) {
 						if (err) {
 							res.status(401).json({
 								message: 'Error communicating with database.',
@@ -361,23 +373,19 @@ function bioLogin(req, res) {
 							user.lastAccess = new Date().getTime();
 							user.resetPassword = false;
 							user.save();
-							var loginAuthToken = jwt.sign(
-								{
+							var loginAuthToken = jwt.sign({
 									email: email
 								},
-								secret,
-								{
+								secret, {
 									expiresIn: 600
 								}
 							);
-							var touchAuthToken = jwt.sign(
-								{
+							var touchAuthToken = jwt.sign({
 									email: email,
 									devID: devID,
 									time: new Date().getTime()
 								},
-								secret,
-								{
+								secret, {
 									expiresIn: 604800
 								}
 							);
@@ -403,18 +411,21 @@ function bioLogin(req, res) {
 }
 
 function login(req, res) {
-	const { email, inputPassword, devID } = req.body;
+	const {
+		email,
+		inputPassword,
+		devID
+	} = req.body;
 	if (email == undefined) {
 		res.status(400).json({
 			message: 'Request must have an email in the body.',
 			loggedIn: false
 		});
 	} else {
-		User.findOne(
-			{
+		User.findOne({
 				email
 			},
-			function(err, user) {
+			function (err, user) {
 				if (err) {
 					res.status(401).json({
 						message: 'Error communicating with database.',
@@ -433,7 +444,7 @@ function login(req, res) {
 								loggedIn: false
 							});
 						} else if (inputPassword != undefined) {
-							bcrypt.compare(inputPassword, user.passwordHash, function(err, valid) {
+							bcrypt.compare(inputPassword, user.passwordHash, function (err, valid) {
 								if (err) {
 									res.status(401).json({
 										message: 'Error authenticating.',
@@ -441,29 +452,25 @@ function login(req, res) {
 									});
 								} else if (valid) {
 									var currentTime = new Date().getTime();
-									var loginAuthToken = jwt.sign(
-										{
+									var loginAuthToken = jwt.sign({
 											email: email
 										},
-										secret,
-										{
+										secret, {
 											expiresIn: 600
 										}
 									);
 									var touchAuthToken =
-										devID == undefined
-											? ''
-											: jwt.sign(
-													{
-														email: email,
-														devID: devID,
-														time: new Date().getTime()
-													},
-													secret,
-													{
-														expiresIn: 604800
-													}
-												);
+										devID == undefined ?
+										'' :
+										jwt.sign({
+												email: email,
+												devID: devID,
+												time: new Date().getTime()
+											},
+											secret, {
+												expiresIn: 604800
+											}
+										);
 									user.lastAccess = currentTime;
 									user.resetPassword = false;
 									user.save();
@@ -501,20 +508,21 @@ function login(req, res) {
 }
 
 function verify(req, res) {
-	const { email, code } = req.params;
-	User.findOne(
-		{
+	const {
+		email,
+		code
+	} = req.params;
+	User.findOne({
 			email
 		},
-		function(err, user) {
+		function (err, user) {
 			if (err) {
 				res.status(401).json({
 					message: 'Error communicating with database.'
 				});
 			} else if (!user) {
 				res.status(401).json({
-					message:
-						'The verification link is incorrect, please try again or request a new verification email be sent.'
+					message: 'The verification link is incorrect, please try again or request a new verification email be sent.'
 				});
 			} else {
 				if (user.emailVerified == true) {
@@ -529,8 +537,7 @@ function verify(req, res) {
 					});
 				} else if (code != user.emailVerifCode) {
 					res.status(401).json({
-						message:
-							'Incorrect verification code, please check if you have a newer verification link, or request a new confirmation link.'
+						message: 'Incorrect verification code, please check if you have a newer verification link, or request a new confirmation link.'
 					});
 				} else {
 					res.status(401).json({
@@ -543,17 +550,18 @@ function verify(req, res) {
 }
 
 function forgotPassword(req, res) {
-	const { email } = req.body;
+	const {
+		email
+	} = req.body;
 	if (email == undefined) {
 		res.status(400).json({
 			message: 'Request must contain email.'
 		});
 	} else {
-		User.findOne(
-			{
+		User.findOne({
 				email
 			},
-			function(err, user) {
+			function (err, user) {
 				if (err) {
 					res.status(401).json({
 						message: 'Error communicating with database.'
@@ -568,7 +576,7 @@ function forgotPassword(req, res) {
 						'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 					);
 					link =
-						hostLink + ':' + port + '/user/newPassword.html?email=' + email + '&code=' + resetPasswordCode;
+						hostLink + '/user/newPassword.html?email=' + email + '&code=' + resetPasswordCode;
 					var finalVerificationLink = passwordResetEmailTemplate.replace(
 						'https://www.changeThisLinkToConfirmationLink.com',
 						link
@@ -583,7 +591,7 @@ function forgotPassword(req, res) {
 						subject: 'Reset your password',
 						html: finalVerificationLink
 					};
-					smtpTransport.sendMail(mailOptions, function(error, response) {
+					smtpTransport.sendMail(mailOptions, function (error, response) {
 						if (error) {
 							console.log(error);
 							res.status(500).json({
@@ -607,13 +615,16 @@ function forgotPassword(req, res) {
 }
 
 function updateResetPassword(req, res) {
-	const { email, resetPasswordCode, newPassword } = req.body;
+	const {
+		email,
+		resetPasswordCode,
+		newPassword
+	} = req.body;
 
-	User.findOne(
-		{
+	User.findOne({
 			email
 		},
-		function(err, user) {
+		function (err, user) {
 			if (err) {
 				res.status(401).json({
 					message: 'Error communicating with database.'
@@ -625,8 +636,8 @@ function updateResetPassword(req, res) {
 			} else {
 				if (user.resetPassword == true) {
 					if ((user.resetPasswordCode = resetPasswordCode)) {
-						bcrypt.genSalt(10, function(err, salt) {
-							bcrypt.hash(newPassword, salt, function(err, passwordHash) {
+						bcrypt.genSalt(10, function (err, salt) {
+							bcrypt.hash(newPassword, salt, function (err, passwordHash) {
 								user.passwordHash = passwordHash;
 								user.resetPassword = false;
 								user.save();
@@ -654,26 +665,26 @@ function updateResetPassword(req, res) {
 }
 
 function resendConfirmationEmail(req, res) {
-	const { email } = req.body;
-	User.findOne(
-		{
+	const {
+		email
+	} = req.body;
+	User.findOne({
 			email
 		},
-		async function(err, user) {
+		async function (err, user) {
 			if (err) {
 				res.status(401).json({
 					message: 'Error communicating with database.'
 				});
 			} else if (!user) {
 				res.status(201).json({
-					message:
-						'If an account with this email exists and is not verified, an account confirmation email will be sent.'
+					message: 'If an account with this email exists and is not verified, an account confirmation email will be sent.'
 				});
 			} else if (user) {
 				if (user.emailVerified == false) {
 					host = req.get('host');
 					console.log('host = ' + host);
-					link = hostLink + ':' + port + '/api/verify/' + email + '&' + user.emailVerifCode;
+					link = hostLink + '/api/verify/' + email + '&' + user.emailVerifCode;
 					var finalVerificationLink = verificationEmailTemplate.replace(
 						'https://www.changeThisLinkToConfirmationLink.com',
 						link
@@ -688,7 +699,7 @@ function resendConfirmationEmail(req, res) {
 						subject: 'Please confirm your account',
 						html: finalVerificationLink
 					};
-					smtpTransport.sendMail(mailOptions, function(error, response) {
+					smtpTransport.sendMail(mailOptions, function (error, response) {
 						if (error) {
 							console.log(error);
 							res.status(500).json({
@@ -698,15 +709,13 @@ function resendConfirmationEmail(req, res) {
 						} else {
 							console.log('Confirmation email sent successfully!');
 							res.status(201).json({
-								message:
-									'If an account with this email exists and is not verified, an account confirmation email will be sent.'
+								message: 'If an account with this email exists and is not verified, an account confirmation email will be sent.'
 							});
 						}
 					});
 				} else {
 					res.status(201).json({
-						message:
-							'If an account with this email exists and is not verified, an account confirmation email will be sent.'
+						message: 'If an account with this email exists and is not verified, an account confirmation email will be sent.'
 					});
 				}
 			}

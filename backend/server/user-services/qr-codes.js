@@ -4,23 +4,26 @@ var QRCode = require('qrcode');
 
 var secret = '2CWukLuOME4D16I';
 
-var port = '8080';
 var hostLink = 'https://www.qrcodes4good.com';
 
 function generateQRCode(req, res) {
-	const { paymentType, defaultAmount, loginAuthToken, qrCodeGivenName } = req.body;
-	jwt.verify(loginAuthToken, secret, function(err, decoded) {
+	const {
+		paymentType,
+		defaultAmount,
+		loginAuthToken,
+		qrCodeGivenName
+	} = req.body;
+	jwt.verify(loginAuthToken, secret, function (err, decoded) {
 		if (err) {
 			res.status(401).json({
 				message: 'Login auth token has expired'
 			});
 		} else if (decoded) {
 			var email = decoded[`email`];
-			User.findOne(
-				{
+			User.findOne({
 					email
 				},
-				function(err, user) {
+				function (err, user) {
 					if (err) {
 						res.status(401).json({
 							message: 'Error communicating with database.'
@@ -54,12 +57,12 @@ function generateQRCode(req, res) {
 								qrCodeIDNum = user.generatedQRCodes[user.generatedQRCodes.length - 1].qrCodeID + 1;
 							}
 							QRCode.toDataURL(QRCodeData, {
-								errorCorrectionLevel: 'L'
-							})
+									errorCorrectionLevel: 'L'
+								})
 								.then((qrdata) => {
 									QRCode.toString(QRCodeData, {
-										errorCorrectionLevel: 'L'
-									})
+											errorCorrectionLevel: 'L'
+										})
 										.then((qrstring) => {
 											user.generatedQRCodes.push({
 												qrCodeID: qrCodeIDNum,
@@ -107,7 +110,7 @@ function generateQRCode(req, res) {
 function getQRCodes(req, res) {
 	console.log(req.body);
 	const loginAuthToken = req.headers.authorization;
-	jwt.verify(loginAuthToken, secret, function(err, valid) {
+	jwt.verify(loginAuthToken, secret, function (err, valid) {
 		if (err) {
 			if (err.message == 'jwt expired') {
 				res.status(401).json({
@@ -120,11 +123,10 @@ function getQRCodes(req, res) {
 			}
 		} else if (valid) {
 			var email = valid[`email`];
-			User.findOne(
-				{
+			User.findOne({
 					email
 				},
-				function(err, user) {
+				function (err, user) {
 					if (err) {
 						res.status(401).json({
 							message: 'Error communicating with database.'
@@ -146,8 +148,11 @@ function getQRCodes(req, res) {
 }
 
 function deleteQRCode(req, res) {
-	const { loginAuthToken, deleteID } = req.body;
-	jwt.verify(loginAuthToken, secret, function(err, valid) {
+	const {
+		loginAuthToken,
+		deleteID
+	} = req.body;
+	jwt.verify(loginAuthToken, secret, function (err, valid) {
 		if (err) {
 			if (err.message == 'jwt expired') {
 				res.status(401).json({
@@ -160,11 +165,10 @@ function deleteQRCode(req, res) {
 			}
 		} else if (valid) {
 			var email = valid[`email`];
-			User.findOne(
-				{
+			User.findOne({
 					email
 				},
-				function(err, user) {
+				function (err, user) {
 					if (err) {
 						res.status(401).json({
 							message: 'Error communicating with database.'
@@ -175,18 +179,15 @@ function deleteQRCode(req, res) {
 						});
 					} else {
 						User.collection
-							.update(
-								{
-									email: email
-								},
-								{
-									$pull: {
-										generatedQRCodes: {
-											qrCodeID: deleteID
-										}
+							.update({
+								email: email
+							}, {
+								$pull: {
+									generatedQRCodes: {
+										qrCodeID: deleteID
 									}
 								}
-							)
+							})
 							.then(() => {
 								res.status(200).json({
 									message: 'Successfully deleted QRCode.',
@@ -206,7 +207,10 @@ function deleteQRCode(req, res) {
 }
 
 function saveQRCode(req, res) {
-	var { userID, qrcodeData } = req.body;
+	var {
+		userID,
+		qrcodeData
+	} = req.body;
 	if (qrcodeData.includes('data') != true) {
 		QRCode.toDataURL(qrcodeData, {
 			errorCorrectionLevel: 'L'
@@ -216,18 +220,17 @@ function saveQRCode(req, res) {
 	}
 	var _id = userID;
 	const loginAuthToken = req.headers.authorization;
-	jwt.verify(loginAuthToken, secret, function(err, decoded) {
+	jwt.verify(loginAuthToken, secret, function (err, decoded) {
 		if (err) {
 			res.status(401).json({
 				message: 'Login auth token has expired'
 			});
 		} else if (decoded) {
 			let email = decoded[`email`];
-			User.findOne(
-				{
+			User.findOne({
 					email
 				},
-				function(err, user) {
+				function (err, user) {
 					if (err) {
 						res.status(401).json({
 							message: 'Error communicating with database.'
@@ -245,11 +248,10 @@ function saveQRCode(req, res) {
 								return;
 							}
 						}
-						User.findOne(
-							{
+						User.findOne({
 								_id
 							},
-							function(err, user) {
+							function (err, user) {
 								if (err) {
 									res.status(401).json({
 										message: 'Error communicating with database.'
@@ -266,11 +268,10 @@ function saveQRCode(req, res) {
 										}
 									}
 									var qrCodeUser = user.name;
-									User.findOne(
-										{
+									User.findOne({
 											email
 										},
-										function(err, user) {
+										function (err, user) {
 											if (err) {
 												res.status(401).json({
 													message: 'Error communicating with database.'
@@ -315,7 +316,7 @@ function saveQRCode(req, res) {
 
 function getSavedQRCodes(req, res) {
 	const loginAuthToken = req.headers.authorization;
-	jwt.verify(loginAuthToken, secret, function(err, valid) {
+	jwt.verify(loginAuthToken, secret, function (err, valid) {
 		if (err) {
 			if (err.message == 'jwt expired') {
 				res.status(401).json({
@@ -328,11 +329,10 @@ function getSavedQRCodes(req, res) {
 			}
 		} else if (valid) {
 			var email = valid[`email`];
-			User.findOne(
-				{
+			User.findOne({
 					email
 				},
-				function(err, user) {
+				function (err, user) {
 					if (err) {
 						res.status(401).json({
 							message: 'Error communicating with database.'
@@ -354,9 +354,11 @@ function getSavedQRCodes(req, res) {
 }
 
 function deleteSavedQRCode(req, res) {
-	const { deleteID } = req.body;
+	const {
+		deleteID
+	} = req.body;
 	const loginAuthToken = req.headers.authorization;
-	jwt.verify(loginAuthToken, secret, function(err, valid) {
+	jwt.verify(loginAuthToken, secret, function (err, valid) {
 		if (err) {
 			if (err.message == 'jwt expired') {
 				res.status(401).json({
@@ -369,11 +371,10 @@ function deleteSavedQRCode(req, res) {
 			}
 		} else if (valid) {
 			var email = valid[`email`];
-			User.findOne(
-				{
+			User.findOne({
 					email
 				},
-				function(err, user) {
+				function (err, user) {
 					if (err) {
 						res.status(401).json({
 							message: 'Error communicating with database.'
@@ -384,18 +385,15 @@ function deleteSavedQRCode(req, res) {
 						});
 					} else {
 						User.collection
-							.update(
-								{
-									email: email
-								},
-								{
-									$pull: {
-										savedQRCodes: {
-											qrCodeID: deleteID
-										}
+							.update({
+								email: email
+							}, {
+								$pull: {
+									savedQRCodes: {
+										qrCodeID: deleteID
 									}
 								}
-							)
+							})
 							.then(() => {
 								res.status(200).json({
 									message: 'Successfully deleted QRCode.',
