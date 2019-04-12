@@ -33,6 +33,6 @@ function changePasswordResponse() {
 		document.getElementById('response').innerHTML = JSON.stringify(this.response);
 	}
 }
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('submitBtn').addEventListener('click', changePassword);
 });
