@@ -5,8 +5,10 @@
  */
 
 var app = require('./app');
+var httpApp = require('./app');
 var debug = require('debug')('express-react:server');
 var https = require('https');
+var http = require('http');
 var fs = require('fs');
 
 var localTesting = false;
@@ -45,9 +47,15 @@ var port = normalizePort(process.env.PORT || '443');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTP server to redirect if user doesn't go to HTTPS website
+ * 
  */
-
+http.createServer(function (req, res) {
+	res.writeHead(301, {
+		"Location": "https://" + req.headers['host'] + req.url
+	});
+	res.end();
+}).listen(80);
 var server = https.createServer(options, app);
 
 /**
