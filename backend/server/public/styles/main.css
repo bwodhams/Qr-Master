@@ -1983,3 +1983,11 @@ a {
 .footer a:hover {
     text-decoration: underline;
 }
+
+.linkNoDecoration a {
+    text-decoration: none;
+}
+
+.linkNoDecoration a:hover {
+    text-decoration: underline;
+}
