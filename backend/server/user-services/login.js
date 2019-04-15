@@ -532,9 +532,10 @@ function verify(req, res) {
 				} else if (code === user.emailVerifCode) {
 					user.emailVerified = true;
 					user.save();
-					res.status(201).json({
-						message: 'Email successfully verified! You may now login.'
+					res.writeHead(301, {
+						Location: "https://" + req.headers['host'] + "/user/accountVerified.html"
 					});
+					res.end();
 				} else if (code != user.emailVerifCode) {
 					res.status(401).json({
 						message: 'Incorrect verification code, please check if you have a newer verification link, or request a new confirmation link.'

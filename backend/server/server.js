@@ -5,7 +5,6 @@
  */
 
 var app = require('./app');
-var httpApp = require('./app');
 var debug = require('debug')('express-react:server');
 var https = require('https');
 var http = require('http');
