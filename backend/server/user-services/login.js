@@ -136,6 +136,13 @@ async function create(req, res) {
 			expiresIn: 600
 		}
 	);
+	let loginAuthTokenDesktop = jwt.sign({
+			email: email,
+			name: name
+		},
+		secret, {
+			expiresIn: 6000
+		});
 	User.findOne({
 			email
 		},
@@ -155,6 +162,7 @@ async function create(req, res) {
 							passwordHash,
 							emailVerifCode,
 							loginAuthToken,
+							loginAuthTokenDesktop,
 							stripeToken
 						});
 
@@ -477,6 +485,15 @@ function login(req, res) {
 											expiresIn: 600
 										}
 									);
+									var loginAuthTokenDesktop =
+										devID == undefined ?
+										jwt.sign({
+												email: email,
+												name: user.name
+											},
+											secret, {
+												expiresIn: 6000
+											}) : '';
 									var touchAuthToken =
 										devID == undefined ?
 										'' :
@@ -496,6 +513,7 @@ function login(req, res) {
 										message: 'You have signed in successfully.',
 										name: user.name,
 										loginAuthToken: loginAuthToken,
+										loginAuthTokenDesktop: loginAuthTokenDesktop,
 										touchAuthToken: touchAuthToken,
 										loggedIn: true,
 										tosAccepted: user.tosAccepted
@@ -742,6 +760,33 @@ function resendConfirmationEmail(req, res) {
 	);
 }
 
+function getSimpleInformation(req, res) {
+	const loginAuthTokenDesktop = req.headers.authorization;
+	jwt.verify(loginAuthTokenDesktop, secret, function (err, valid) {
+		if (err) {
+			if (err.message == 'jwt expired') {
+				res.status(401).json({
+					message: 'Auth token has expired, please login again.'
+				});
+			} else {
+				res.status(401).json({
+					message: 'Error authenticating.'
+				});
+			}
+		} else if (valid) {
+			var name = valid['name'];
+			res.status(200).json({
+				name: name
+			});
+		} else {
+			res.status(401).json({
+				message: 'Error'
+			});
+		}
+	})
+}
+
+
 module.exports = {
 	get,
 	create,
@@ -753,5 +798,6 @@ module.exports = {
 	forgotPassword,
 	updateResetPassword,
 	acceptTos,
-	resendConfirmationEmail
+	resendConfirmationEmail,
+	getSimpleInformation
 };

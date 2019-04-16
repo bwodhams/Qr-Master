@@ -311,4 +311,8 @@ router.get('/user/getSavedQRCodes', (req, res) => {
 	qrService.getSavedQRCodes(req, res);
 });
 
+router.get('/user/getSimpleInfo', (req, res) => {
+	loginService.getSimpleInformation(req, res);
+})
+
 module.exports = router;

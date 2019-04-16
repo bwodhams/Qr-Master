@@ -12,6 +12,7 @@ const userSchema = new Schema(
 		emailVerifCode: { type: String },
 		stripeVerified: { type: Boolean, default: false },
 		loginAuthToken: { type: String },
+		loginAuthTokenDesktop: { type: String},
 		stripeData: {
 			token: [ { type: String, default: null } ],
 			title: [ { type: String, default: null } ],
