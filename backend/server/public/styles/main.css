@@ -2038,3 +2038,11 @@ a {
 .red-response {
     color: red;
 }
+
+.loadingImage img {
+    position: relative;
+    z-index: 100;
+    top: 150px;
+    left: 0px;
+    margin-bottom: -125px;
+}
