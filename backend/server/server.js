@@ -10,7 +10,7 @@ var https = require('https');
 var http = require('http');
 var fs = require('fs');
 
-var localTesting = true;
+var localTesting = false;
 
 if (localTesting) {
 	//Local testing
