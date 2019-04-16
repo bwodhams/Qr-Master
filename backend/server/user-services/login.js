@@ -78,30 +78,48 @@ function acceptTos(req, res) {
 	const {
 		email
 	} = req.body;
-	console.log('in tos');
-	User.findOne({
-			email
-		})
-		.then((user) => {
-			stripe.accounts.update(user.stripeToken, {
-				tos_acceptance: {
-					date: Math.floor(Date.now() / 1000),
-					ip: '104.42.36.29'
-				}
+	const loginAuthToken = req.headers.authorization;
+	jwt.verify(loginAuthToken, secret, function (err, valid) {
+		if (err) {
+			if (err.message == 'jwt expired') {
+				res.status(401).json({
+					message: 'Auth token has expired, please login again.'
+				});
+			} else {
+				res.status(401).json({
+					message: 'Error authenticating.'
+				});
+			}
+		} else if (valid) {
+			User.findOne({
+					email
+				})
+				.then((user) => {
+					stripe.accounts.update(user.stripeToken, {
+						tos_acceptance: {
+							date: Math.floor(Date.now() / 1000),
+							ip: '104.42.36.29'
+						}
+					});
+					user.tosAccepted = true;
+					user.save();
+					res.status(200).json({
+						message: 'You have successfully accepted our terms of service.',
+						tosAccepted: true
+					});
+					return true;
+				})
+				.catch((err) => {
+					res.status(500).json({
+						message: "Account with that email address doesn't exist"
+					});
+				});
+		} else {
+			res.status(401).json({
+				message: 'Error'
 			});
-			user.tosAccepted = true;
-			user.save();
-			res.status(200).json({
-				message: 'You have successfully accepted our terms of service.',
-				tosAccepted: true
-			});
-			return true;
-		})
-		.catch((err) => {
-			res.status(500).json({
-				message: "Account with that email address doesn't exist"
-			});
-		});
+		}
+	})
 }
 
 async function create(req, res) {
