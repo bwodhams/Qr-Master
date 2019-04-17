@@ -11,6 +11,7 @@ function register() {
         if (password != confirmPassword) {
             serverResponse.innerHTML = "<span class='red-response'>Passwords don't match.</span>"
         } else {
+            serverResponse.innerHTML = "";
             var form = document.getElementById('inputForm');
             var loadingCircle = document.getElementById('loadingImg');
             form.style.filter = "blur(4px)";
@@ -35,7 +36,6 @@ function register() {
 }
 
 function registerResponse() {
-    console.log("in here");
     if (this.status === 201) {
         document.getElementById('inputForm').style.filter = "";
         document.getElementById('loadingImg').innerHTML = "";
