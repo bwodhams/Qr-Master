@@ -3,10 +3,8 @@ const router = express.Router();
 
 router.get('/home.html', (req, res) => {
     if (req.cookies['accName'] == undefined) {
-        console.log("no cookie found");
         res.redirect('/');
     } else {
-        console.log("cookie found, showing home page");
         res.sendFile(__dirname + '/public/home.html');
     }
 })
@@ -37,6 +35,8 @@ router.get('/transaction/*', (req, res) => {
 router.get('/user/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
+
+
 
 
 

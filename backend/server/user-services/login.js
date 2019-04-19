@@ -142,7 +142,7 @@ async function create(req, res) {
 			name: name
 		},
 		secret, {
-			expiresIn: 6000
+			expiresIn: 600
 		});
 	User.findOne({
 			email
@@ -493,7 +493,7 @@ function login(req, res) {
 												name: user.name
 											},
 											secret, {
-												expiresIn: 6000
+												expiresIn: 600
 											}) : '';
 									var touchAuthToken =
 										devID == undefined ?
