@@ -9,7 +9,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 
 var verificationEmailTemplate = fs.readFileSync(path.resolve(__dirname, 'confirmationEmailHTML.html'), 'utf8');
+var changedAccEmailTemplate = fs.readFileSync(path.resolve(__dirname, 'changedAccEmailHTML.html'), 'utf8');
 var passwordResetEmailTemplate = fs.readFileSync(path.resolve(__dirname, 'passwordResetEmailHTML.html'), 'utf8');
+
 
 var secret = '2CWukLuOME4D16I';
 
@@ -275,23 +277,30 @@ function update(req, res) {
 							);
 							host = req.get('host');
 							console.log('host = ' + host);
-							//local host testing
-							//link = "http://" + host + "/api/verify/" + req.body.email + "&" + req.body.emailVerifCode;
-							//website testing
+
 							link = hostLink + '/api/verify/' + newEmail + '&' + emailVerifCode;
+							var finalVerificationLink = changedAccEmailTemplate.replace(
+								'https://www.changeThisLinkToConfirmationLink.com',
+								link
+							);
+							finalVerificationLink = finalVerificationLink.replace(
+								'Hey there! Welcome to QRCodes4Good!',
+								'Hey there ' + user.name + '!'
+							);
 							mailOptions = {
 								from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
-								to: newEmail,
-								subject: 'Please confirm your account',
-								html: 'Hello, <br> Please click on the link to verify your email. <br><a href=' +
-									link +
-									'>Click here to verify</a>'
+								to: email,
+								subject: 'Please confirm your new email',
+								html: finalVerificationLink
 							};
 							smtpTransport.sendMail(mailOptions, function (error, response) {
 								if (error) {
 									console.log(error);
+									res.status(500).json({
+										message: 'Error changing email.',
+										error: error
+									});
 								} else {
-									console.log('Confirmation email sent successfully!');
 									user.email = newEmail;
 									user.emailVerifCode = emailVerifCode;
 									user.emailVerified = false;
