@@ -510,8 +510,10 @@ function login(req, res) {
 									user.lastAccess = currentTime;
 									user.resetPassword = false;
 									user.save();
-									var cookieData = user.name;
-									res.cookie('accName', cookieData, {
+									res.cookie('accName', user.name, {
+										maxAge: 600000,
+									});
+									res.cookie('accEmail', user.email, {
 										maxAge: 600000,
 									});
 									res.status(200).json({

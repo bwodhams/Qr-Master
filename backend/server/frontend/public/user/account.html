@@ -3,12 +3,97 @@
 <title>QR4G - My Account</title>
 
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="icon" href="../favicon.ico">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="../javascripts/user/account.js" defer></script>
 </head>
 
 
 <body>
-    <h1>PAGE IS UNDER CONSTRUCTION</h1>
+    <div id="header">
+        <!-- Navbar -->
+        <div class="w3-top">
+            <div class="w3-bar w3-blue w3-card">
+                <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
+                    href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i
+                        class="fa fa-bars"></i></a>
+                <a href="/" class="w3-bar-item w3-button w3-padding-large"><img src="../images/logo.png" alt="QR4G Logo"
+                        height="45" width="45"> QR4G</a>
+                <a href="" class="w3-bar-item w3-button w3-padding-large w3-hide-small" style="float:right"
+                    id="logoutBtn">LOGOUT</a>
+                <a href="qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">SAVED QR</a>
+                <a href="qrcode/create.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">CREATE QR</a>
+                <a href="wallet.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">WALLET</a>
+                <a href="transaction/history.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">TRANSACTIONS</a>
+            </div>
+        </div>
+
+        <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+        <div id="hamburgerButton" class="w3-bar-block w3-blue w3-hide w3-hide-large w3-hide-medium w3-top"
+            style="margin-top:70px">
+            <a href="transaction/history.html" class="w3-bar-item w3-button w3-padding-large"
+                onclick="myFunction()">TRANSACTIONS</a>
+            <a href="wallet.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">WALLET</a>
+            <a href="qrcode/create.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">CREATE
+                QR</a>
+            <a href="qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">SAVED
+                QR</a>
+            <a href="" class="w3-bar-item w3-button w3-padding-large" id="logoutBtnMini">LOGOUT</a>
+        </div>
+    </div>
+
+    <div id="mainSection">
+        <div class="w3-content" style="max-width:2000px;margin-top:46px">
+            <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
+                <h2 class="w3-wide">My Account</h2><br>
+                <div class="register-page">
+                    <div class="loadingImage" id="loadingImg"></div>
+                    <div class="form" id="inputForm">
+                        <div id="serverResponse"></div>
+                        <input type="text" name="ID" id="name" placeholder="name (first last)" value=""><br>
+                        <input type="text" name="ID" id="email" placeholder="email" value=""><br>
+                        <input type="password" name="password" id="password" placeholder="new password" value=""><br>
+                        <input type="password" name="password" id="confirmPassword" placeholder="confirm new password"
+                            value=""><br>
+                        <hr>
+                        <input type="password" name="password" id="currentPassword" placeholder="current password"
+                            value=""><br><br>
+                        <button id="submitBtn">submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <footer class="w3-container w3-padding-16 w3-center w3-opacity w3-blue w3-large footer">
+            <a href="../about.html">About</a>
+            <a href="../tos.html">Terms of use</a>
+            <a href="../contact.html">Contact</a>
+            <a href="../help.html">Help</a>
+        </footer>
+    </div>
+
+    <script>
+        // Used to toggle the menu on small screens when clicking on the menu button
+        function myFunction() {
+            var x = document.getElementById("hamburgerButton");
+            if (x.className.indexOf("w3-show") == -1) {
+                x.className += " w3-show";
+            } else {
+                x.className = x.className.replace(" w3-show", "");
+            }
+        }
+    </script>
+
 </body>
 
 </html>
