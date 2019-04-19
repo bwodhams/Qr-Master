@@ -271,72 +271,80 @@ function update(req, res) {
 						});
 					} else if (valid) {
 						if (newEmail != undefined && newEmail != email) {
-							let emailVerifCode = randomVerificationCode(
-								10,
-								'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-							);
-							host = req.get('host');
-							console.log('host = ' + host);
+							User.findOne({
+								newEmail
+							}).then((user) => {
+								res.status(401).json({
+									message: 'Account with this new email already exists.'
+								});
+							}).catch((err) => {
+								let emailVerifCode = randomVerificationCode(
+									10,
+									'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+								);
+								host = req.get('host');
+								console.log('host = ' + host);
 
-							link = hostLink + '/api/verify/' + newEmail + '&' + emailVerifCode;
-							var finalVerificationLink = changedAccEmailTemplate.replace(
-								'https://www.changeThisLinkToConfirmationLink.com',
-								link
-							);
-							finalVerificationLink = finalVerificationLink.replace(
-								'Hey there! Welcome to QRCodes4Good!',
-								'Hey there ' + user.name + '!'
-							);
-							mailOptions = {
-								from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
-								to: email,
-								subject: 'Please confirm your new email',
-								html: finalVerificationLink
-							};
-							smtpTransport.sendMail(mailOptions, function (error, response) {
-								if (error) {
-									console.log(error);
-									res.status(500).json({
-										message: 'Error changing email.',
-										error: error
-									});
-								} else {
-									user.email = newEmail;
-									user.emailVerifCode = emailVerifCode;
-									user.emailVerified = false;
-									if (changePass == true) {
-										bcrypt.genSalt(10, function (err, salt) {
-											bcrypt.hash(newPassword, salt, function (err, passwordHash) {
-												if (!err) {
-													user.passwordHash = passwordHash;
-													user.save();
-													res.cookie('accName', user.name, {
-														maxAge: 600000,
-													});
-													res.cookie('accEmail', user.email, {
-														maxAge: 600000,
-													});
-													res.status(200).json({
-														message: 'You have updated your information successfully.'
-													});
-													return true;
-												}
-											});
+								link = hostLink + '/api/verify/' + newEmail + '&' + emailVerifCode;
+								var finalVerificationLink = changedAccEmailTemplate.replace(
+									'https://www.changeThisLinkToConfirmationLink.com',
+									link
+								);
+								finalVerificationLink = finalVerificationLink.replace(
+									'Hey there! Welcome to QRCodes4Good!',
+									'Hey there ' + user.name + '!'
+								);
+								mailOptions = {
+									from: '"Support - QRCodes4Good" <support@qrcodes4good.com>',
+									to: email,
+									subject: 'Please confirm your new email',
+									html: finalVerificationLink
+								};
+								smtpTransport.sendMail(mailOptions, function (error, response) {
+									if (error) {
+										console.log(error);
+										res.status(500).json({
+											message: 'Error changing email.',
+											error: error
 										});
 									} else {
-										user.save();
-										res.cookie('accName', user.name, {
-											maxAge: 600000,
-										});
-										res.cookie('accEmail', user.email, {
-											maxAge: 600000,
-										});
-										res.status(200).json({
-											message: 'You have updated your information successfully.'
-										});
-										return true;
+										user.email = newEmail;
+										user.emailVerifCode = emailVerifCode;
+										user.emailVerified = false;
+										if (changePass == true) {
+											bcrypt.genSalt(10, function (err, salt) {
+												bcrypt.hash(newPassword, salt, function (err, passwordHash) {
+													if (!err) {
+														user.passwordHash = passwordHash;
+														user.save();
+														res.cookie('accName', user.name, {
+															maxAge: 600000,
+														});
+														res.cookie('accEmail', user.email, {
+															maxAge: 600000,
+														});
+														res.status(200).json({
+															message: 'You have updated your information successfully.'
+														});
+														return true;
+													}
+												});
+											});
+										} else {
+											user.save();
+											res.cookie('accName', user.name, {
+												maxAge: 600000,
+											});
+											res.cookie('accEmail', user.email, {
+												maxAge: 600000,
+											});
+											res.status(200).json({
+												message: 'You have updated your information successfully.'
+											});
+											return true;
+										}
 									}
-								}
+								});
 							});
 						} else if (changePass == true) {
 							bcrypt.genSalt(10, function (err, salt) {
