@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="../javascripts/user/account.js" defer></script>
+    <script src="../javascripts/user/logout.js" defer></script>
 </head>
 
 
@@ -24,9 +25,11 @@
                 <a href="/" class="w3-bar-item w3-button w3-padding-large"><img src="../images/logo.png" alt="QR4G Logo"
                         height="45" width="45"> QR4G</a>
                 <a href="" class="w3-bar-item w3-button w3-padding-large w3-hide-small" style="float:right"
-                    id="logoutBtn">LOGOUT</a>
+                    id="logoutBtn"><img src="../images/logout.png" alt="Logout Img" height="25" width="25"></a>
+                <a href="account.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">ACCOUNT</a>
                 <a href="qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
-                    style="float:right">SAVED QR</a>
+                    style="float:right">MY QR</a>
                 <a href="qrcode/create.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
                     style="float:right">CREATE QR</a>
                 <a href="wallet.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
@@ -58,11 +61,17 @@
                     <div class="loadingImage" id="loadingImg"></div>
                     <div class="form" id="inputForm">
                         <div id="serverResponse"></div>
-                        <input type="text" name="ID" id="name" placeholder="name (first last)" value=""><br>
-                        <input type="text" name="ID" id="email" placeholder="email" value=""><br>
-                        <input type="password" name="password" id="password" placeholder="new password" value=""><br>
-                        <input type="password" name="password" id="confirmPassword" placeholder="confirm new password"
-                            value=""><br>
+                        <input type="text" name="ID" id="name" placeholder="name (first last)" value=""
+                            disabled="disabled"><span class="editBtn" id="editName">edit</span><br>
+                        <input type="text" name="ID" id="email" placeholder="email" value="" disabled="disabled"><span
+                            class="editBtn" id="editEmail">edit</span><br>
+                        <span id="changePass">change password?</span>
+                        <div id="changePassDiv" hidden="true">
+                            <input type="password" name="password" id="password" placeholder="new password"
+                                value=""><br>
+                            <input type="password" name="password" id="confirmPassword"
+                                placeholder="confirm new password" value="">
+                        </div>
                         <hr>
                         <input type="password" name="password" id="currentPassword" placeholder="current password"
                             value=""><br><br>

@@ -7,7 +7,16 @@ router.get('/home.html', (req, res) => {
     } else {
         res.sendFile(__dirname + '/public/home.html');
     }
-})
+});
+
+router.get('/user/account.html', (req, res) => {
+    if (req.cookies['accName'] == undefined) {
+        res.redirect('/');
+    } else {
+        res.sendFile(__dirname + '/public/user/account.html');
+    }
+});
+
 router.get('/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });

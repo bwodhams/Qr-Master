@@ -1438,7 +1438,7 @@ a {
 }
 
 .w3-padding-large {
-    padding: 5px 8px !important
+    padding: 12px 8px !important
 }
 
 .w3-padding-16 {
@@ -2047,4 +2047,14 @@ a {
     top: 325px;
     left: 0;
     z-index: 2;
+}
+
+#inputForm input[disabled] {
+    color: rgb(146, 146, 146);
+    background-image: none;
+}
+
+.editBtn {
+    margin-left: -36px;
+    padding-right: 10px;
 }

@@ -301,6 +301,12 @@ function update(req, res) {
 												if (!err) {
 													user.passwordHash = passwordHash;
 													user.save();
+													res.cookie('accName', user.name, {
+														maxAge: 600000,
+													});
+													res.cookie('accEmail', user.email, {
+														maxAge: 600000,
+													});
 													res.status(200).json({
 														message: 'You have updated your information successfully.'
 													});
@@ -310,6 +316,12 @@ function update(req, res) {
 										});
 									} else {
 										user.save();
+										res.cookie('accName', user.name, {
+											maxAge: 600000,
+										});
+										res.cookie('accEmail', user.email, {
+											maxAge: 600000,
+										});
 										res.status(200).json({
 											message: 'You have updated your information successfully.'
 										});
@@ -323,6 +335,12 @@ function update(req, res) {
 									if (!err) {
 										user.passwordHash = passwordHash;
 										user.save();
+										res.cookie('accName', user.name, {
+											maxAge: 600000,
+										});
+										res.cookie('accEmail', user.email, {
+											maxAge: 600000,
+										});
 										res.status(200).json({
 											message: 'You have updated your information successfully.'
 										});
@@ -332,6 +350,12 @@ function update(req, res) {
 							});
 						} else {
 							user.save();
+							res.cookie('accName', user.name, {
+								maxAge: 600000,
+							});
+							res.cookie('accEmail', user.email, {
+								maxAge: 600000,
+							});
 							res.status(200).json({
 								message: 'You have updated your information successfully.'
 							});
