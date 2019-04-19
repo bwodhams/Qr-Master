@@ -36,8 +36,4 @@ router.get('/user/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
 
-
-
-
-
 module.exports = router;
