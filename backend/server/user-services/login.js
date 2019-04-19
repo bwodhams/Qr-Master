@@ -228,13 +228,13 @@ async function create(req, res) {
 
 function update(req, res) {
 	const {
-		email,
 		newEmail,
 		name,
 		currentPassword,
 		newPassword,
 		confirmNewPassword
 	} = req.body;
+	var email = req.body.email;
 	var changePass = false;
 	if (email == undefined || currentPassword == undefined) {
 		res.status(400).json({
@@ -272,8 +272,9 @@ function update(req, res) {
 						});
 					} else if (valid) {
 						if (newEmail != undefined && newEmail != email) {
+							email = newEmail;
 							User.findOne({
-									newEmail
+									email
 								},
 								async function (err, usedUser) {
 									if (err) {

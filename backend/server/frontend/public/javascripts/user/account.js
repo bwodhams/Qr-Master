@@ -43,9 +43,10 @@ function updateAccount() {
     var serverResponse = document.getElementById('serverResponse');
     var currentPassword = document.getElementById('currentPassword').value;
     var checkCurrentPassword = passwordErrorCheck(currentPassword);
+    serverResponse.innerHTML = "";
     if (currentPassword == "") {
         ready = false;
-        serverResponse.innerHTML = "<span class='red-response'>Current password field is required.</span>"
+        serverResponse.innerHTML = '<span class="red-response">Current password field is required.</span>';
     } else {
         if (checkCurrentPassword.length > 0) {
             errorResponse += checkCurrentPassword;
@@ -65,11 +66,12 @@ function updateAccount() {
                 newPassword = document.getElementById('password').value;
                 confirmNewPassword = document.getElementById('confirmPassword').value;
                 if (newPassword != confirmNewPassword) {
+                    errorResponse += " New password and confirm new password don't match."
                     ready = false;
                 } else {
                     var newPasswordCheck = newPasswordErrorCheck(newPassword);
                     if (newPasswordCheck.length > 0) {
-                        errorResponse += ""
+                        errorResponse += newPasswordCheck;
                         ready = false;
                     }
                 }
@@ -94,7 +96,9 @@ function updateAccount() {
             })
         );
     } else {
-        serverResponse.innerHTML = "<span class='red-response'>" + errorResponse + "</span>"
+        if (errorResponse.length > 0) {
+            serverResponse.innerHTML = "<span class='red-response'>" + errorResponse + "</span>";
+        }
     }
 
 }
