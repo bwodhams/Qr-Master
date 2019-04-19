@@ -6,6 +6,7 @@ var jwt = require('jsonwebtoken');
 var stripe = require('stripe')('sk_test_w5PEuWfNwsE2EODIr52JXvNu');
 var fs = require('fs');
 var path = require('path');
+var cookieParser = require('cookie-parser');
 
 var verificationEmailTemplate = fs.readFileSync(path.resolve(__dirname, 'confirmationEmailHTML.html'), 'utf8');
 var passwordResetEmailTemplate = fs.readFileSync(path.resolve(__dirname, 'passwordResetEmailHTML.html'), 'utf8');
@@ -509,6 +510,10 @@ function login(req, res) {
 									user.lastAccess = currentTime;
 									user.resetPassword = false;
 									user.save();
+									var cookieData = user.name;
+									res.cookie('accName', cookieData, {
+										maxAge: 600000,
+									});
 									res.status(200).json({
 										message: 'You have signed in successfully.',
 										name: user.name,

@@ -1,24 +1,31 @@
-if (!window.localStorage.getItem("qr4gloginAuthTokenDesktop")) {
-    window.location.replace("/");
+var accName = getCookie("accName");
+if (accName != "") {
+    if (!window.localStorage.getItem("qr4gloginAuthTokenDesktop")) {
+        window.location.replace("/");
+    } else {
+        getInfo();
+    }
 } else {
-    getInfo();
+    window.location.replace("/");
 }
 
 function getInfo() {
-    var loginAuthTokenDesktop = window.localStorage.getItem("qr4gloginAuthTokenDesktop");
-    var xhr = new XMLHttpRequest();
-    xhr.addEventListener('load', getInfoResponse);
-    xhr.responseType = 'json';
-    xhr.open('GET', '/api/user/getSimpleInfo');
-    xhr.setRequestHeader('Content-type', 'application/json');
-    xhr.setRequestHeader('authorization', loginAuthTokenDesktop);
-    xhr.send();
+    var accName = getCookie("accName");
+    document.getElementById("main").innerHTML = "<h2>You are logged in though......" + accName + "   ;)</h2>";
 }
 
-function getInfoResponse() {
-    if (this.status === 200) {
-        document.getElementById("main").innerHTML = "<h2>You are logged in though......" + this.response.name + "   ;)</h2>";
-    } else {
-        console.log("there was an error, couldn't get your name ;( ;( ;(");
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
     }
+    return "";
 }

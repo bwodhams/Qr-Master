@@ -10,6 +10,7 @@ function login() {
         if (loginErrorCheckResponse.length > 0) {
             serverResponse.innerHTML = "<span class='red-response'>" + loginErrorCheckResponse + "</span>";
         } else {
+            serverResponse.innerHTML = "";
             var xhr = new XMLHttpRequest();
             xhr.addEventListener('load', loginResponse);
             xhr.responseType = 'json';
