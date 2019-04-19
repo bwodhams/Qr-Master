@@ -45,10 +45,7 @@ function register() {
 
 function registerResponse() {
     if (this.status === 201) {
-        document.getElementById('inputForm').style.filter = "";
-        document.getElementById('loadingImg').innerHTML = "";
-        document.getElementById('serverResponse').innerHTML = "<span class='red-response'>" + "Account created successfully" + "</span>";
-        //window.location.href = "/";
+        window.location.href = "/newAccount.html";
     } else {
         resetFields();
         document.getElementById('inputForm').style.filter = "";
