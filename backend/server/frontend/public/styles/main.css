@@ -2058,3 +2058,11 @@ a {
     margin-left: -36px;
     padding-right: 10px;
 }
+
+#forgotPassword {
+    color: rgb(40, 40, 255);
+}
+
+#forgotPassword:hover {
+    cursor: pointer;
+}
