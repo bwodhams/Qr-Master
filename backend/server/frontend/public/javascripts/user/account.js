@@ -79,6 +79,10 @@ function updateAccount() {
         }
     }
     if (ready == true) {
+        var form = document.getElementById('inputForm');
+        var loadingCircle = document.getElementById('loadingImg');
+        form.style.filter = "blur(4px)";
+        loadingCircle.innerHTML = '<img src="../images/loading_screen.svg" alt="loading" height="125px" width="125px">';
         serverResponse.innerHTML = "";
         var xhr = new XMLHttpRequest();
         xhr.addEventListener('load', updateAccountResponse);
@@ -105,9 +109,19 @@ function updateAccount() {
 
 function updateAccountResponse() {
     if (this.status === 200) {
-        window.location.href = "/user/account.html";
-        //window.localStorage.setItem("qr4gloginAuthTokenDesktop", this.response.loginAuthTokenDesktop);
+        document.getElementById('inputForm').style.filter = "";
+        document.getElementById('loadingImg').innerHTML = "";
+        if (this.response.emailChanged === true) {
+            window.localStorage.removeItem("qr4gloginAuthTokenDesktop");
+            delete_cookie("accName");
+            delete_cookie("accEmail");
+            window.location.href = "/accountEmailUpdated.html";
+        } else {
+            window.location.href = "/user/account.html";
+        }
     } else {
+        document.getElementById('inputForm').style.filter = "";
+        document.getElementById('loadingImg').innerHTML = "";
         document.getElementById('serverResponse').innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
     }
 }
@@ -197,4 +211,8 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+
+function delete_cookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
 }

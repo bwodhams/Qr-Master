@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('logoutBtn').addEventListener('click', function () {
-        console.log("in here");
         window.localStorage.removeItem("qr4gloginAuthTokenDesktop");
         delete_cookie("accName");
         delete_cookie("accEmail");

@@ -326,7 +326,8 @@ function update(req, res) {
 																	maxAge: 600000,
 																});
 																res.status(200).json({
-																	message: 'You have updated your information successfully.'
+																	message: 'You have updated your information successfully.',
+																	emailChanged: true
 																});
 																return true;
 															}
@@ -341,7 +342,8 @@ function update(req, res) {
 														maxAge: 600000,
 													});
 													res.status(200).json({
-														message: 'You have updated your information successfully.'
+														message: 'You have updated your information successfully.',
+														emailChanged: true
 													});
 													return true;
 												}
