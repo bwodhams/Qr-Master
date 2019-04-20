@@ -17,6 +17,30 @@ router.get('/user/account.html', (req, res) => {
     }
 });
 
+router.get('/', (req, res) => {
+    if (req.cookies['accName'] != undefined) {
+        res.redirect('/home.html');
+    } else {
+        res.sendFile(__dirname + '/public/' + req.path);
+    }
+});
+
+router.get('/user/login.html', (req, res) => {
+    if (req.cookies['accName'] == undefined) {
+        res.sendFile(__dirname + '/public/user/login.html');
+    } else {
+        res.redirect('/home.html');
+    }
+});
+
+router.get('/user/register.html', (req, res) => {
+    if (req.cookies['accName'] == undefined) {
+        res.sendFile(__dirname + '/public/user/register.html');
+    } else {
+        res.redirect('/home.html');
+    }
+});
+
 router.get('/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
