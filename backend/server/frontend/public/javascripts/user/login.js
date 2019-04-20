@@ -84,7 +84,7 @@ function resetPassword() {
 
 function resetPasswordResponse() {
     if (this.status === 201) {
-        console.log("successful forgot password request");
+        window.location.href = "/user/forgotPassword.html";
     } else {
         document.getElementById('serverResponse').innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
     }

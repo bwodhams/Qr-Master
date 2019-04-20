@@ -2066,3 +2066,7 @@ a {
 #forgotPassword:hover {
     cursor: pointer;
 }
+
+.clickableText:hover {
+    cursor: pointer;
+}

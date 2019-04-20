@@ -3,12 +3,14 @@ document.addEventListener("DOMContentLoaded", function () {
         window.localStorage.removeItem("qr4gloginAuthTokenDesktop");
         delete_cookie("accName");
         delete_cookie("accEmail");
+        delete_cookie("autoLogout");
         window.location = "/";
     });
     document.getElementById('logoutBtnMini').addEventListener('click', function () {
         window.localStorage.removeItem("qr4gloginAuthTokenDesktop");
         delete_cookie("accName");
         delete_cookie("accEmail");
+        delete_cookie("autoLogout");
         window.location = "/";
     });
 });
