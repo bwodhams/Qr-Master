@@ -2,6 +2,7 @@ var changeName = false;
 var changeEmail = false;
 var changePassword = false;
 var oldEmail = undefined;
+var oldName = undefined;
 
 document.addEventListener("DOMContentLoaded", function () {
     var name = document.getElementById("name");
@@ -9,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     email.value = getCookie("accEmail");
     name.value = getCookie("accName");
     oldEmail = getCookie("accEmail");
+    oldName = getCookie("accName");
     document.getElementById('changePass').addEventListener('click', activateChangePass);
     document.getElementById('editName').addEventListener('click', editName);
     document.getElementById('editEmail').addEventListener('click', editEmail);
@@ -54,12 +56,21 @@ function updateAccount() {
         } else {
             if (changeName == true) {
                 name = document.getElementById('name').value;
+                if (name == oldName) {
+                    name = undefined;
+                    changeName = false;
+                }
             }
             if (changeEmail == true) {
                 newEmail = document.getElementById('email').value;
-                if (emailErrorCheck(newEmail).length > 0) {
-                    errorResponse += " Invalid email.";
-                    ready = false;
+                if (newEmail == oldEmail) {
+                    newEmail = undefined;
+                    changeEmail = false;
+                } else {
+                    if (emailErrorCheck(newEmail).length > 0) {
+                        errorResponse += " Invalid email.";
+                        ready = false;
+                    }
                 }
             }
             if (changePassword == true) {
@@ -76,6 +87,12 @@ function updateAccount() {
                     }
                 }
             }
+        }
+    }
+    if (ready == true) {
+        if (changeName == false && changeEmail == false && changePassword == false) {
+            ready = false;
+            serverResponse.innerHTML = '<span class="red-response">If nothing is changed, pressing submit does nothing.</span>';
         }
     }
     if (ready == true) {
