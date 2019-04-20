@@ -3,7 +3,11 @@ const router = express.Router();
 
 router.get('/home.html', (req, res) => {
     if (req.cookies['accName'] == undefined) {
-        res.redirect('/');
+        if (req.cookies['autoLogout'] == undefined) {
+            res.redirect('/');
+        } else {
+            res.redirect('/autoLogout.html');
+        }
     } else {
         res.sendFile(__dirname + '/public/home.html');
     }
@@ -11,7 +15,11 @@ router.get('/home.html', (req, res) => {
 
 router.get('/user/account.html', (req, res) => {
     if (req.cookies['accName'] == undefined) {
-        res.redirect('/');
+        if (req.cookies['autoLogout'] == undefined) {
+            res.redirect('/');
+        } else {
+            res.redirect('/autoLogout.html');
+        }
     } else {
         res.sendFile(__dirname + '/public/user/account.html');
     }
@@ -21,7 +29,11 @@ router.get('/', (req, res) => {
     if (req.cookies['accName'] != undefined) {
         res.redirect('/home.html');
     } else {
-        res.sendFile(__dirname + '/public/' + req.path);
+        if (req.cookies['autoLogout'] == undefined) {
+            res.sendFile(__dirname + '/public/' + req.path);
+        } else {
+            res.redirect('/autoLogout.html');
+        }
     }
 });
 

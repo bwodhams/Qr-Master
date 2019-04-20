@@ -325,6 +325,9 @@ function update(req, res) {
 																res.cookie('accEmail', user.email, {
 																	maxAge: 600000,
 																});
+																res.cookie('autoLogout', user.email, {
+																	maxAge: 1800000,
+																});
 																res.status(200).json({
 																	message: 'You have updated your information successfully.',
 																	emailChanged: true
@@ -340,6 +343,9 @@ function update(req, res) {
 													});
 													res.cookie('accEmail', user.email, {
 														maxAge: 600000,
+													});
+													res.cookie('autoLogout', user.email, {
+														maxAge: 1800000,
 													});
 													res.status(200).json({
 														message: 'You have updated your information successfully.',
@@ -368,6 +374,9 @@ function update(req, res) {
 										res.cookie('accEmail', user.email, {
 											maxAge: 600000,
 										});
+										res.cookie('autoLogout', user.email, {
+											maxAge: 1800000,
+										});
 										res.status(200).json({
 											message: 'You have updated your information successfully.'
 										});
@@ -382,6 +391,9 @@ function update(req, res) {
 							});
 							res.cookie('accEmail', user.email, {
 								maxAge: 600000,
+							});
+							res.cookie('autoLogout', user.email, {
+								maxAge: 1800000,
 							});
 							res.status(200).json({
 								message: 'You have updated your information successfully.'
@@ -566,6 +578,9 @@ function login(req, res) {
 									});
 									res.cookie('accEmail', user.email, {
 										maxAge: 600000,
+									});
+									res.cookie('autoLogout', user.email, {
+										maxAge: 1800000,
 									});
 									res.status(200).json({
 										message: 'You have signed in successfully.',
