@@ -1,3 +1,4 @@
+var myQRCodesArray = undefined;
 document.addEventListener("DOMContentLoaded", function () {
     getMyQRCodes();
     getMySavedQRCodes();
@@ -17,21 +18,42 @@ function getMyQRCodesResponse() {
     var myQRCodesDiv = document.getElementById('myQRCodes');
     var loadingMyQRDiv = document.getElementById('myQRLoadingImg');
     loadingMyQRDiv.style.display = "none";
-    var outputHTML = "";
     if (this.status === 200) {
+        myQRCodesArray = this.response.qrcodes;
         for (var i = 0; i < this.response.qrcodes.length; i++) {
             var qrItem = document.createElement('div');
             qrItem.className = "qrItem";
+            qrItem.id = i;
             qrItem.innerHTML = '<img src="' + this.response.qrcodes[i].qrCodeData + '" alt="QR Code" width="100%"><br><span>' + this.response.qrcodes[i].qrCodeName + '</span>';
             myQRCodesDiv.appendChild(qrItem);
-            //outputHTML += '<div class="qrItem"><img src="' + this.response.qrcodes[i].qrCodeData + '" alt="QR Code" width="70%"><br><span>' + this.response.qrcodes[i].qrCodeName + '</span></div>';
-            if (i % 2 == 1) {
-                //outputHTML += '<span style="margin-left: -50px">abcd</span> <span style="right: 0px">efgh</span><br>';
-                outputHTML += '<br>';
-            }
         }
         myQRCodesDiv.innerHTML += '<div style="clear: both;"></div>';
+        for (var i = 0; i < this.response.qrcodes.length; i++) {
+            document.getElementById(i).addEventListener('click', function () {
+                enlargeQR(this.id);
+            });
+        }
     }
+}
+
+function enlargeQR(index) {
+    var enlargedQRDiv = document.getElementById('enlargedQR');
+    var enlargedQRData = myQRCodesArray[index].qrCodeData;
+    var enlargedQRName = myQRCodesArray[index].qrCodeName;
+    var enlargedQRAmount = myQRCodesArray[index].qrCodeDefaultAmount;
+    var enlargedQRType = myQRCodesArray[index].qrCodeType;
+    var myQRCodesDiv = document.getElementById('myQRCodes');
+    myQRCodesDiv.style.display = "none";
+    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
+    enlargedQRDiv.style.display = "";
+}
+
+function closeEnlargedQR() {
+    var enlargedQR = document.getElementById('enlargedQR');
+    var myQRCodesDiv = document.getElementById('myQRCodes');
+    enlargedQR.style.display = "none";
+    myQRCodesDiv.style.display = "";
+
 }
 
 function getMySavedQRCodes() {

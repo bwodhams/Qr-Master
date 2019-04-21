@@ -2141,9 +2141,23 @@ a {
     user-select: none;
 }
 
-
-
 .qrItem {
     float: left;
     width: 50%;
+}
+
+#closeEnlarged {
+    font-size: 20px;
+}
+
+#closeEnlarged:hover {
+    cursor: pointer;
+}
+
+.myQR img {
+    image-rendering: pixelated;
+}
+
+.savedQR img {
+    image-rendering: pixelated;
 }
