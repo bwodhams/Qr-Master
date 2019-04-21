@@ -4,14 +4,14 @@ document.addEventListener("DOMContentLoaded", function () {
         delete_cookie("accName");
         delete_cookie("accEmail");
         delete_cookie("autoLogout");
-        window.location = "/";
+        window.location.href = "/";
     });
     document.getElementById('logoutBtnMini').addEventListener('click', function () {
         window.localStorage.removeItem("qr4gloginAuthTokenDesktop");
         delete_cookie("accName");
         delete_cookie("accEmail");
         delete_cookie("autoLogout");
-        window.location = "/";
+        window.location.href = "/";
     });
 });
 

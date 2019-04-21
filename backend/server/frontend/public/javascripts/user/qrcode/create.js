@@ -7,6 +7,12 @@ function createQR() {
     var qrName = document.getElementById('qrName').value;
     var defaultAmount = document.getElementById('defaultAmount').value;
     var serverResponse = document.getElementById('serverResponse');
+    var paymentType = 0;
+    for (var i = 0; i < document.getElementsByName('radio').length; i++) {
+        if (document.getElementsByName('radio')[i].checked) {
+            paymentType = i;
+        }
+    }
     serverResponse.innerHTML = "";
     if (qrName.length == 0) {
         if (defaultAmount.length == 0) {
@@ -22,12 +28,33 @@ function createQR() {
     }
 
     if (defaultAmount <= 0.00 || defaultAmount > 50.00) {
+        ready = false;
         serverResponse.innerHTML = "<span class='red-response'>Default payment amount must be greater than 0.00 and less than 50.00</span>";
     }
-
+    if (ready == true) {
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', createQRResponse);
+        xhr.responseType = 'json';
+        xhr.open('POST', '/api/user/generateQRCode');
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(
+            JSON.stringify({
+                loginAuthToken: localStorage.getItem('qr4gloginAuthTokenDesktop'),
+                defaultAmount: defaultAmount,
+                paymentType: paymentType,
+                qrCodeGivenName: qrName
+            })
+        );
+    }
 }
 
 function createQRResponse() {
+    if (this.status === 200) {
+        window.location.href = "/user/qrcode/saved.html";
+    } else {
+        var serverResponse = document.getElementById('serverResponse');
+        serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+    }
 
 }
 

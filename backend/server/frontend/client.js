@@ -69,7 +69,7 @@ router.get('/styles/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
 
-router.get('/qrcode/*', (req, res) => {
+router.get('/user/qrcode/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
 
