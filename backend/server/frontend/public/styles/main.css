@@ -2022,7 +2022,7 @@ a {
     width: 10%;
 }
 
-.form img {
+#animatedQR {
     margin-top: -65px;
     margin-bottom: -15px;
     width: 90%;
@@ -2139,4 +2139,10 @@ a {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+#myQRCodes img {}
+
+#myQRCodes span {
+    text-align: left !important;
 }
