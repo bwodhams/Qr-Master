@@ -20,6 +20,12 @@ function generateQRCode(req, res) {
 			});
 		} else if (decoded) {
 			var email = decoded[`email`];
+			if (defaultAmount > 50.00 || defaultAmount <= 0.00) {
+				res.status(401).json({
+					message: "Default amount must be greater than 0.00 and less than 50.00"
+				});
+				return;
+			}
 			User.findOne({
 					email
 				},
@@ -33,9 +39,9 @@ function generateQRCode(req, res) {
 							message: "Account doesn't exist."
 						});
 					} else if (user) {
-						if (user.generatedQRCodes.length + 1 > 5) {
+						if (user.generatedQRCodes.length + 1 > 10) {
 							res.status(401).json({
-								message: 'User is only allowed to have 5 saved QRCodes at any given time.'
+								message: 'User is only allowed to have 10 saved QRCodes at any given time.'
 							});
 						} else {
 							var finalPaymentType = '';

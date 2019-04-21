@@ -9,7 +9,7 @@ function login() {
     var serverResponse = document.getElementById('serverResponse');
 
     if (email == "" || password == "") {
-        serverResponse.innerHTML = "<span class='red-response'>Email and password fields required.</span>"
+        serverResponse.innerHTML = "<span class='red-response'>Email and password fields required.</span>";
     } else {
         var loginErrorCheckResponse = loginErrorCheck(email, password);
         if (loginErrorCheckResponse.length > 0) {
