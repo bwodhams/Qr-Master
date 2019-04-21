@@ -53,10 +53,6 @@ router.get('/user/register.html', (req, res) => {
     }
 });
 
-router.get('/*', (req, res) => {
-    res.sendFile(__dirname + '/public/' + req.path);
-});
-
 router.get('/images/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
@@ -70,7 +66,15 @@ router.get('/styles/*', (req, res) => {
 });
 
 router.get('/user/qrcode/*', (req, res) => {
-    res.sendFile(__dirname + '/public/' + req.path);
+    if (req.cookies['accName'] == undefined) {
+        if (req.cookies['autoLogout'] == undefined) {
+            res.redirect('/');
+        } else {
+            res.redirect('/autoLogout.html');
+        }
+    } else {
+        res.sendFile(__dirname + '/public/' + req.path);
+    }
 });
 
 router.get('/transaction/*', (req, res) => {
@@ -81,4 +85,7 @@ router.get('/user/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
 
+router.get('/*', (req, res) => {
+    res.sendFile(__dirname + '/public/' + req.path);
+});
 module.exports = router;
