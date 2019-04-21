@@ -2141,8 +2141,9 @@ a {
     user-select: none;
 }
 
-#myQRCodes img {}
 
-#myQRCodes span {
-    text-align: left !important;
+
+.qrItem {
+    float: left;
+    width: 50%;
 }

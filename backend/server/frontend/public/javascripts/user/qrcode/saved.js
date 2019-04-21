@@ -20,12 +20,17 @@ function getMyQRCodesResponse() {
     var outputHTML = "";
     if (this.status === 200) {
         for (var i = 0; i < this.response.qrcodes.length; i++) {
-            outputHTML += '<img src="' + this.response.qrcodes[i].qrCodeData + '" alt="QR Code" width="45%">';
+            var qrItem = document.createElement('div');
+            qrItem.className = "qrItem";
+            qrItem.innerHTML = '<img src="' + this.response.qrcodes[i].qrCodeData + '" alt="QR Code" width="100%"><br><span>' + this.response.qrcodes[i].qrCodeName + '</span>';
+            myQRCodesDiv.appendChild(qrItem);
+            //outputHTML += '<div class="qrItem"><img src="' + this.response.qrcodes[i].qrCodeData + '" alt="QR Code" width="70%"><br><span>' + this.response.qrcodes[i].qrCodeName + '</span></div>';
             if (i % 2 == 1) {
+                //outputHTML += '<span style="margin-left: -50px">abcd</span> <span style="right: 0px">efgh</span><br>';
                 outputHTML += '<br>';
             }
         }
-        myQRCodesDiv.innerHTML = outputHTML;
+        myQRCodesDiv.innerHTML += '<div style="clear: both;"></div>';
     }
 }
 
