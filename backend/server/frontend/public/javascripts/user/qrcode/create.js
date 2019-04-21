@@ -21,6 +21,10 @@ function createQR() {
         serverResponse.innerHTML = "<span class='red-response'>You must give your QR code a default payment amount.</span>";
     }
 
+    if (defaultAmount <= 0.00 || defaultAmount > 50.00) {
+        serverResponse.innerHTML = "<span class='red-response'>Default payment amount must be greater than 0.00 and less than 50.00</span>";
+    }
+
 }
 
 function createQRResponse() {
