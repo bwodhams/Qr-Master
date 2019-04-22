@@ -480,21 +480,11 @@ function bioLogin(req, res) {
 									expiresIn: 600
 								}
 							);
-							var touchAuthToken = jwt.sign({
-									email: email,
-									devID: devID,
-									time: new Date().getTime()
-								},
-								secret, {
-									expiresIn: 604800
-								}
-							);
 							res.status(200).json({
 								message: 'Authentication success',
 								name: user.name,
 								email: user.email,
 								loginAuthToken: loginAuthToken,
-								touchAuthToken: touchAuthToken,
 								loggedIn: true
 							});
 						}

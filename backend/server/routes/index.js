@@ -304,11 +304,22 @@ router.post('/user/deleteSavedQRCode', (req, res) => {
 	}
 });
 
+router.put('/user/updateDefaultPayment', (req, res) => {
+	var data = req.body;
+	if (data.defaultIndex == undefined) {
+		res.status(400).json({
+			message: 'Your request must contain a body of defaultIndex'
+		});
+	} else{
+		transactionService.updateDefaultPayment(req, res);
+	}
+});
+
 router.post('/user/deletePayment', (req, res) => {
 	var data = req.body;
-	if (data.loginAuthToken == undefined || data.deleteIndex == undefined) {
+	if (data.deleteIndex == undefined) {
 		res.status(400).json({
-			message: 'Your request must contain a body of loginAuthToken, deleteID'
+			message: 'Your request must contain a body of deleteIndex'
 		});
 	} else {
 		transactionService.deletePayment(req, res);
