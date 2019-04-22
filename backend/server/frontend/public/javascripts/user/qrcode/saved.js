@@ -61,10 +61,10 @@ function enlargeQR(index) {
     var enlargedQRType = myQRCodesArray[index].qrCodeType;
     var myQRCodesDiv = document.getElementById('myQRCodes');
     myQRCodesDiv.style.display = "none";
-    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><span id="printEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteEnlarged" class="red-response" style="font-size: 16px">delete</span><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
+    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><div id="qrOptions"><span id="printEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteEnlarged" class="red-response" style="font-size: 16px">delete</span></div><div id="deleteYesNo"></div><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
     enlargedQRDiv.style.display = "";
     document.getElementById('deleteEnlarged').addEventListener('click', function () {
-        deleteMyQR(enlargedQRIndex);
+        prepareDeleteMyQR(enlargedQRIndex);
     });
 }
 
@@ -74,6 +74,22 @@ function closeEnlargedQR() {
     enlargedQR.style.display = "none";
     myQRCodesDiv.style.display = "";
 
+}
+
+function prepareDeleteMyQR(index) {
+    var qrOptions = document.getElementById('qrOptions');
+    var deleteYesNo = document.getElementById('deleteYesNo');
+    qrOptions.style.display = "none";
+    deleteYesNo.style.display = "";
+    deleteYesNo.innerHTML = '<span style="font-size:16px">are you sure?</span><br>' + '<span id="deleteYes" style="color:blue; font-size:16px">yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteNo" style="color:red; font-size:16px">no</span>';
+    document.getElementById('deleteYes').addEventListener('click', function () {
+        deleteMyQR(index);
+        document.getElementById('deleteYesNo').style.display = "none";
+    });
+    document.getElementById('deleteNo').addEventListener('click', function () {
+        document.getElementById('deleteYesNo').style.display = "none";
+        document.getElementById('qrOptions').style.display = "";
+    });
 }
 
 function deleteMyQR(index) {
