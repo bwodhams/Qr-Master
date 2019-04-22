@@ -279,9 +279,11 @@ function saveQRCode(req, res) {
 									});
 								} else if (user) {
 									let defaultAmount = '';
+									let paymentType = '';
 									for (var i = 0; i < user.generatedQRCodes.length; i++) {
 										if (user.generatedQRCodes[i].qrCodeData == qrcodeData) {
 											defaultAmount = user.generatedQRCodes[i].qrCodeDefaultAmount;
+											paymentType = user.generatedQRCodes[i].qrCodeType;
 										}
 									}
 									var qrCodeUser = user.name;
@@ -308,7 +310,8 @@ function saveQRCode(req, res) {
 													qrCodeData: qrcodeData,
 													qrCodeUser: qrCodeUser,
 													qrCodeUserID: _id,
-													qrCodeDefaultAmount: defaultAmount
+													qrCodeDefaultAmount: defaultAmount,
+													qrCodeType: paymentType
 												});
 												user.save();
 												res.status(200).json({

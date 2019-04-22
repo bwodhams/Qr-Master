@@ -7,7 +7,9 @@
  */
 
 var myQRCodesArray = undefined;
-var currentDeleteID = undefined;
+var savedQRCodesArray = undefined;
+var currentMyDeleteID = undefined;
+var currentSavedDeleteID = undefined;
 document.addEventListener("DOMContentLoaded", function () {
     getMyQRCodes();
     getMySavedQRCodes();
@@ -93,7 +95,7 @@ function prepareDeleteMyQR(index) {
 }
 
 function deleteMyQR(index) {
-    currentDeleteID = index;
+    currentMyDeleteID = index;
     var xhr = new XMLHttpRequest();
     xhr.addEventListener('load', deleteMyQRResponse);
     xhr.responseType = 'json';
@@ -110,7 +112,7 @@ function deleteMyQR(index) {
 function deleteMyQRResponse() {
     if (this.status === 200) {
         for (var i = 0; i < myQRCodesArray.length; i++) {
-            if (myQRCodesArray[i].qrCodeID == currentDeleteID) {
+            if (myQRCodesArray[i].qrCodeID == currentMyDeleteID) {
                 myQRCodesArray.splice(i, 1);
             }
         }
@@ -152,5 +154,47 @@ function getMySavedQRCodes() {
 }
 
 function getMySavedQRCodesResponse() {
+    var savedQRCodesDiv = document.getElementById('savedQRCodes');
+    var loadingSavedQRDiv = document.getElementById('savedQRLoadingImg');
+    loadingSavedQRDiv.style.display = "none";
+    if (this.status === 200) {
+        savedQRCodesArray = this.response.qrcodes;
+        if (savedQRCodesArray.length == 0) {
+            savedQRCodesDiv.innerHTML = "<span class='red-response'>You currently have no saved QR codes.</span>";
+        } else {
+            for (var i = 0; i < savedQRCodesArray.length; i++) {
+                var qrItem = document.createElement('div');
+                qrItem.className = "qrItem";
+                qrItem.id = "saved" + i;
+                qrItem.innerHTML = '<img src="' + savedQRCodesArray[i].qrCodeData + '" alt="QR Code" width="100%"><br><span>' + savedQRCodesArray[i].qrCodeUser + '</span>';
+                savedQRCodesDiv.appendChild(qrItem);
+            }
+            savedQRCodesDiv.innerHTML += '<div style="clear: both;"></div>';
+            for (var i = 0; i < this.response.qrcodes.length; i++) {
+                document.getElementById("saved" + i).addEventListener('click', function () {
+                    enlargeSavedQR(this.id);
+                });
+            }
+        }
 
+    } else {
+        savedQRCodesDiv.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+    }
+}
+
+function enlargeSavedQR(index) {
+    var indexConverted = index.substring(5);
+    var enlargedQRDiv = document.getElementById('enlargedSavedQR');
+    var enlargedQRIndex = savedQRCodesArray[index].qrCodeID;
+    var enlargedQRData = savedQRCodesArray[index].qrCodeData;
+    var enlargedQRUser = savedQRCodesArray[index].qrCodeUser;
+    var enlargedQRAmount = savedQRCodesArray[index].qrCodeDefaultAmount;
+    var enlargedQRType = savedQRCodesArray[index].qrCodeType;
+    var myQRCodesDiv = document.getElementById('myQRCodes');
+    myQRCodesDiv.style.display = "none";
+    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><div id="qrOptions"><span id="printEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteEnlarged" class="red-response" style="font-size: 16px">delete</span></div><div id="deleteYesNo"></div><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
+    enlargedQRDiv.style.display = "";
+    document.getElementById('deleteEnlarged').addEventListener('click', function () {
+        prepareDeleteMyQR(enlargedQRIndex);
+    });
 }

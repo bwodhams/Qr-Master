@@ -2154,10 +2154,7 @@ a {
     cursor: pointer;
 }
 
-.myQR img {
-    image-rendering: pixelated;
-}
-
+.myQR,
 .savedQR img {
     image-rendering: pixelated;
 }
