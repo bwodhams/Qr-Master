@@ -60,7 +60,7 @@ function enlargeQR(index) {
     enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><span id="printEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteEnlarged" class="red-response" style="font-size: 16px">delete</span><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
     enlargedQRDiv.style.display = "";
     document.getElementById('deleteEnlarged').addEventListener('click', function () {
-        deleteMyQR(this.id);
+        deleteMyQR(this.id); //not working
     });
 }
 
