@@ -4,6 +4,7 @@
  *
  *  @author Corey Miner
  *  @author Benjamin Wodhams
+ *  @author Muneeb Ahmed
  *
  */
 
@@ -284,7 +285,7 @@ function logTransaction(req, email, amount, _id) {
 				if (!err2) {
 					user.receivedPayments.push({
 						name: user2.name,
-						amount: amount,
+						amount: amount - (Math.ceil(amount * 0.029) + 0.3),
 						anonymous: false,
 						date: new Date()
 					});
@@ -451,11 +452,64 @@ function getTransactions(req, res) {
 	});
 }
 
+function updateDefaultPayment(req, res) {
+	const {
+		defaultIndex
+	} = req.body;
+	const authToken = req.headers.authorization;
+	jwt.verify(authToken, secret, function (err, valid) {
+		if (err){
+			if (err.message == 'jwt expired') {
+				res.status(401).json({
+					message: 'Login auth token has expired, please login again.'
+				});
+			} else {
+				res.status(401).json({
+					message: 'Error authenticating.'
+				});
+			}
+		} else if (valid) {
+			var email = valid['email'];
+			User.findOne({
+					email
+				},
+				function (err, user) {
+					if (err) {
+						res.status(401).json({
+							message: 'Error communicating with database.'
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "Account doesn't exist."
+						});
+					} else {
+						var newArray = new Array(user.stripeData.primaryCard.length).fill(false);
+						newArray[defaultIndex] = true;
+						user.stripeData.primaryCard = newArray;
+						user.save()
+							.then(() => {
+								res.status(200).json({
+									message: 'Successfully updated default payment method.',
+									stripeData: user.stripeData
+								});
+							})
+							.catch((err) => {
+								res.status(500).json({
+									message: 'Error updating default payment method.'
+								});
+							});
+					}
+				}
+			);
+		}
+	});
+}
+
 function deletePayment(req, res) {
 	const {
-		loginAuthToken,
 		deleteIndex
 	} = req.body;
+	var loginAuthToken = req.headers.authorization;
 	jwt.verify(loginAuthToken, secret, function (err, valid) {
 		if (err) {
 			if (err.message == 'jwt expired') {
@@ -468,7 +522,7 @@ function deletePayment(req, res) {
 				});
 			}
 		} else if (valid) {
-			var email = valid[`email`];
+			var email = valid['email'];
 			User.findOne({
 					email
 				},
@@ -529,5 +583,6 @@ module.exports = {
 	transaction,
 	getTransactions,
 	verifyStripe,
+	updateDefaultPayment,
 	deletePayment
 };

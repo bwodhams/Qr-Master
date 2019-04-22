@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *
  *  @author Benjamin Wodhams
+ *  @author Muneeb Ahmed
+ *  @author Corey Miner
  *
  */
 
@@ -11,6 +13,7 @@ var jwt = require('jsonwebtoken');
 var QRCode = require('qrcode');
 
 var secret = '2CWukLuOME4D16I';
+var MAX_QR_CODES = 10;
 
 var hostLink = 'https://www.qrcodes4good.com';
 
@@ -47,7 +50,7 @@ function generateQRCode(req, res) {
 							message: "Account doesn't exist."
 						});
 					} else if (user) {
-						if (user.generatedQRCodes.length + 1 > 10) {
+						if (user.generatedQRCodes.length + 1 > MAX_QR_CODES) {
 							res.status(401).json({
 								message: 'User is only allowed to have 10 saved QRCodes at any given time.'
 							});
