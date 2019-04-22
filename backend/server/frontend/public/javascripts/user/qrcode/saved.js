@@ -28,6 +28,9 @@ function getMyQRCodesResponse() {
     loadingMyQRDiv.style.display = "none";
     if (this.status === 200) {
         myQRCodesArray = this.response.qrcodes;
+        if (myQRCodesArray.length == 0) {
+            myQRCodesDiv.innerHTML = "<span class='red-response'>You currently have no QR codes.</span>";
+        }
         for (var i = 0; i < this.response.qrcodes.length; i++) {
             var qrItem = document.createElement('div');
             qrItem.className = "qrItem";
@@ -41,6 +44,8 @@ function getMyQRCodesResponse() {
                 enlargeQR(this.id);
             });
         }
+    } else {
+        myQRCodesDiv.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
     }
 }
 
@@ -52,8 +57,11 @@ function enlargeQR(index) {
     var enlargedQRType = myQRCodesArray[index].qrCodeType;
     var myQRCodesDiv = document.getElementById('myQRCodes');
     myQRCodesDiv.style.display = "none";
-    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
+    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><span id="printEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteEnlarged" class="red-response" style="font-size: 16px">delete</span><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
     enlargedQRDiv.style.display = "";
+    document.getElementById('deleteEnlarged').addEventListener('click', function () {
+        deleteMyQR(this.id);
+    });
 }
 
 function closeEnlargedQR() {
@@ -62,6 +70,25 @@ function closeEnlargedQR() {
     enlargedQR.style.display = "none";
     myQRCodesDiv.style.display = "";
 
+}
+
+function deleteMyQR(index) {
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', deleteMyQRResponse);
+    xhr.responseType = 'json';
+    xhr.open('POST', '/api/user/deleteQRCode');
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.send(
+        JSON.stringify({
+            loginAuthToken: localStorage.getItem('qr4gloginAuthTokenDesktop'),
+            deleteID: index
+        })
+    );
+}
+
+function deleteMyQRResponse() {
+    console.log("status code = " + this.status);
+    console.log("message = " + this.response.message);
 }
 
 function getMySavedQRCodes() {
