@@ -1,3 +1,11 @@
+/*
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE in the project root for license information.
+ *
+ *  @author Benjamin Wodhams
+ *
+ */
+
 var url = new URL(window.location);
 var email = url.searchParams.get('email');
 var code = url.searchParams.get('code');

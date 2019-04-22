@@ -1,3 +1,13 @@
+/*
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE in the project root for license information.
+ *
+ *  @author Muneeb Ahmed
+ *  @author Corey Miner
+ *  @author Benjamin Wodhams
+ *
+ */
+
 const User = require('../user-model');
 const ReadPreference = require('mongodb').ReadPreference;
 var bcrypt = require('bcryptjs');

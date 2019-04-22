@@ -1,3 +1,12 @@
+/*
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE in the project root for license information.
+ *
+ *  @author Corey Miner
+ *  @author Benjamin Wodhams
+ *
+ */
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

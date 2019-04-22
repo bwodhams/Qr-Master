@@ -1,3 +1,11 @@
+/*
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE in the project root for license information.
+ *
+ *  @author Benjamin Wodhams
+ *
+ */
+
 function register() {
     var name = document.getElementById('name');
     var email = document.getElementById('email');

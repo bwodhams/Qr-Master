@@ -1,3 +1,11 @@
+/*
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE in the project root for license information.
+ *
+ *  @author Benjamin Wodhams
+ *
+ */
+
 var changeName = false;
 var changeEmail = false;
 var changePassword = false;

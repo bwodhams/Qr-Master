@@ -1,3 +1,12 @@
+/*
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE in the project root for license information.
+ *
+ *  @author Corey Miner
+ *  @author Benjamin Wodhams
+ *
+ */
+
 const User = require('../user-model');
 var jwt = require('jsonwebtoken');
 var stripe = require("stripe")("sk_test_w5PEuWfNwsE2EODIr52JXvNu");
