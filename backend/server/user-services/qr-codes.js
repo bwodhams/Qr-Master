@@ -232,7 +232,9 @@ function saveQRCode(req, res) {
 	} = req.body;
 	if (qrcodeData.includes('data') != true) {
 		QRCode.toDataURL(qrcodeData, {
-			errorCorrectionLevel: 'L'
+			errorCorrectionLevel: 'L',
+			margin: 1,
+			width: 1000
 		}).then((qrdata) => {
 			qrcodeData = qrdata;
 		});
