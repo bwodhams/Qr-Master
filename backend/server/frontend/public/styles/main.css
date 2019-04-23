@@ -2152,7 +2152,8 @@ a {
 }
 
 #closeEnlarged:hover,
-#closeSavedEnlarged:hover {
+#closeSavedEnlarged:hover,
+.smallQR:hover {
     cursor: pointer;
 }
 

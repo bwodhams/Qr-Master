@@ -39,7 +39,7 @@ function getMyQRCodesResponse() {
                 var qrItem = document.createElement('div');
                 qrItem.className = "qrItem";
                 qrItem.id = i;
-                qrItem.innerHTML = '<img src="' + myQRCodesArray[i].qrCodeData + '" alt="QR Code" width="100%"><br><span>' + myQRCodesArray[i].qrCodeName + '</span>';
+                qrItem.innerHTML = '<img src="' + myQRCodesArray[i].qrCodeData + '" alt="QR Code" class="smallQR" width="100%"><br><span class="smallQR">' + myQRCodesArray[i].qrCodeName + '</span>';
                 myQRCodesDiv.appendChild(qrItem);
             }
             myQRCodesDiv.innerHTML += '<div style="clear: both;"></div>';
@@ -134,7 +134,7 @@ function updateMyQRCodes() {
             var qrItem = document.createElement('div');
             qrItem.className = "qrItem";
             qrItem.id = i;
-            qrItem.innerHTML = '<img src="' + myQRCodesArray[i].qrCodeData + '" alt="QR Code" width="100%"><br><span>' + myQRCodesArray[i].qrCodeName + '</span>';
+            qrItem.innerHTML = '<img src="' + myQRCodesArray[i].qrCodeData + '" alt="QR Code" class="smallQR" width="100%"><br><span class="smallQR">' + myQRCodesArray[i].qrCodeName + '</span>';
             myQRCodesDiv.appendChild(qrItem);
         }
         myQRCodesDiv.innerHTML += '<div style="clear: both;"></div>';
@@ -172,7 +172,7 @@ function getMySavedQRCodesResponse() {
                 var qrItem = document.createElement('div');
                 qrItem.className = "qrItem";
                 qrItem.id = "saved" + i;
-                qrItem.innerHTML = '<img src="' + savedQRCodesArray[i].qrCodeData + '" alt="QR Code" width="100%"><br><span>' + savedQRCodesArray[i].qrCodeUser + '</span>';
+                qrItem.innerHTML = '<img src="' + savedQRCodesArray[i].qrCodeData + '" alt="QR Code" class="smallQR" width="100%"><br><span class="smallQR">' + savedQRCodesArray[i].qrCodeUser + '</span>';
                 savedQRCodesDiv.appendChild(qrItem);
             }
             savedQRCodesDiv.innerHTML += '<div style="clear: both;"></div>';
@@ -268,7 +268,7 @@ function updateSavedQRCodes() {
             var qrItem = document.createElement('div');
             qrItem.className = "qrItem";
             qrItem.id = "saved" + i;
-            qrItem.innerHTML = '<img src="' + savedQRCodesArray[i].qrCodeData + '" alt="QR Code" width="100%"><br><span>' + savedQRCodesArray[i].qrCodeUser + '</span>';
+            qrItem.innerHTML = '<img src="' + savedQRCodesArray[i].qrCodeData + '" alt="QR Code" class="smallQR" width="100%"><br><span class="smallQR">' + savedQRCodesArray[i].qrCodeUser + '</span>';
             myQRCodesDiv.appendChild(qrItem);
         }
         myQRCodesDiv.innerHTML += '<div style="clear: both;"></div>';
