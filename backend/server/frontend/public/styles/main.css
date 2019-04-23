@@ -2146,11 +2146,13 @@ a {
     width: 50%;
 }
 
-#closeEnlarged {
+#closeEnlarged,
+#closeSavedEnlarged {
     font-size: 20px;
 }
 
-#closeEnlarged:hover {
+#closeEnlarged:hover,
+#closeSavedEnlarged:hover {
     cursor: pointer;
 }
 
@@ -2162,6 +2164,11 @@ a {
 #printEnlarged,
 #deleteEnlarged,
 #deleteYes,
-#deleteNo {
+#deleteNo,
+#printSavedEnlarged,
+#deleteSavedEnlarged,
+#deleteYesNoSaved,
+#deleteYesSaved,
+#deleteNoSaved {
     cursor: pointer;
 }

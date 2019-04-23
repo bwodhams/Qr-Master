@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     getMySavedQRCodes();
 });
 
+//My QRCodes
 function getMyQRCodes() {
     var xhr = new XMLHttpRequest();
     xhr.addEventListener('load', getMyQRCodesResponse);
@@ -75,7 +76,6 @@ function closeEnlargedQR() {
     var myQRCodesDiv = document.getElementById('myQRCodes');
     enlargedQR.style.display = "none";
     myQRCodesDiv.style.display = "";
-
 }
 
 function prepareDeleteMyQR(index) {
@@ -143,6 +143,9 @@ function updateMyQRCodes() {
     }
 }
 
+
+//Saved QR Codes
+
 function getMySavedQRCodes() {
     var xhr = new XMLHttpRequest();
     xhr.addEventListener('load', getMySavedQRCodesResponse);
@@ -185,16 +188,88 @@ function getMySavedQRCodesResponse() {
 function enlargeSavedQR(index) {
     var indexConverted = index.substring(5);
     var enlargedQRDiv = document.getElementById('enlargedSavedQR');
-    var enlargedQRIndex = savedQRCodesArray[index].qrCodeID;
-    var enlargedQRData = savedQRCodesArray[index].qrCodeData;
-    var enlargedQRUser = savedQRCodesArray[index].qrCodeUser;
-    var enlargedQRAmount = savedQRCodesArray[index].qrCodeDefaultAmount;
-    var enlargedQRType = savedQRCodesArray[index].qrCodeType;
-    var myQRCodesDiv = document.getElementById('myQRCodes');
-    myQRCodesDiv.style.display = "none";
-    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><div id="qrOptions"><span id="printEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteEnlarged" class="red-response" style="font-size: 16px">delete</span></div><div id="deleteYesNo"></div><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
+    var enlargedQRIndex = savedQRCodesArray[indexConverted].qrCodeID;
+    var enlargedQRData = savedQRCodesArray[indexConverted].qrCodeData;
+    var enlargedQRUser = savedQRCodesArray[indexConverted].qrCodeUser;
+    var enlargedQRAmount = savedQRCodesArray[indexConverted].qrCodeDefaultAmount;
+    var enlargedQRType = savedQRCodesArray[indexConverted].qrCodeType;
+    var savedQRCodesDiv = document.getElementById('savedQRCodes');
+    savedQRCodesDiv.style.display = "none";
+    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>User : ' + enlargedQRUser + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><div id="savedQROptions"><span id="printSavedEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteSavedEnlarged" class="red-response" style="font-size: 16px">delete</span></div><div id="deleteYesNoSaved"></div><br><br><span id="closeSavedEnlarged" onClick="closeSavedEnlargedQR()">close</span>';
     enlargedQRDiv.style.display = "";
-    document.getElementById('deleteEnlarged').addEventListener('click', function () {
-        prepareDeleteMyQR(enlargedQRIndex);
+    document.getElementById('deleteSavedEnlarged').addEventListener('click', function () {
+        prepareSavedDeleteMyQR(enlargedQRIndex);
     });
+}
+
+function closeSavedEnlargedQR() {
+    var enlargedQR = document.getElementById('enlargedSavedQR');
+    var myQRCodesDiv = document.getElementById('savedQRCodes');
+    enlargedQR.style.display = "none";
+    myQRCodesDiv.style.display = "";
+}
+
+function prepareSavedDeleteMyQR(index) {
+    var qrOptions = document.getElementById('savedQROptions');
+    var deleteYesNo = document.getElementById('deleteYesNoSaved');
+    qrOptions.style.display = "none";
+    deleteYesNo.style.display = "";
+    deleteYesNo.innerHTML = '<span style="font-size:16px">are you sure?</span><br>' + '<span id="deleteYesSaved" style="color:blue; font-size:16px">yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteNoSaved" style="color:red; font-size:16px">no</span>';
+    document.getElementById('deleteYesSaved').addEventListener('click', function () {
+        deleteSavedQR(index);
+        document.getElementById('deleteYesNoSaved').style.display = "none";
+    });
+    document.getElementById('deleteNoSaved').addEventListener('click', function () {
+        document.getElementById('deleteYesNoSaved').style.display = "none";
+        document.getElementById('savedQROptions').style.display = "";
+    });
+}
+
+function deleteSavedQR(index) {
+    currentMyDeleteID = index;
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', deleteSavedQRResponse);
+    xhr.responseType = 'json';
+    xhr.open('POST', '/api/user/deleteSavedQRCode');
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.setRequestHeader('authorization', localStorage.getItem('qr4gloginAuthTokenDesktop'));
+    xhr.send(
+        JSON.stringify({
+            deleteID: index
+        })
+    );
+}
+
+function deleteSavedQRResponse() {
+    if (this.status === 200) {
+        for (var i = 0; i < savedQRCodesArray.length; i++) {
+            if (savedQRCodesArray[i].qrCodeID == currentMyDeleteID) {
+                savedQRCodesArray.splice(i, 1);
+            }
+        }
+        updateSavedQRCodes();
+    }
+}
+
+function updateSavedQRCodes() {
+    var myQRCodesDiv = document.getElementById('savedQRCodes');
+    myQRCodesDiv.innerHTML = "";
+    closeSavedEnlargedQR();
+    if (savedQRCodesArray.length == 0) {
+        myQRCodesDiv.innerHTML = "<span class='red-response'>You currently have no saved QR codes.</span>";
+    } else {
+        for (var i = 0; i < savedQRCodesArray.length; i++) {
+            var qrItem = document.createElement('div');
+            qrItem.className = "qrItem";
+            qrItem.id = "saved" + i;
+            qrItem.innerHTML = '<img src="' + savedQRCodesArray[i].qrCodeData + '" alt="QR Code" width="100%"><br><span>' + savedQRCodesArray[i].qrCodeUser + '</span>';
+            myQRCodesDiv.appendChild(qrItem);
+        }
+        myQRCodesDiv.innerHTML += '<div style="clear: both;"></div>';
+        for (var i = 0; i < savedQRCodesArray.length; i++) {
+            document.getElementById("saved" + i).addEventListener('click', function () {
+                enlargeSavedQR(this.id);
+            });
+        }
+    }
 }
