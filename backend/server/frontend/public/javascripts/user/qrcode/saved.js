@@ -10,6 +10,8 @@ var myQRCodesArray = undefined;
 var savedQRCodesArray = undefined;
 var currentMyDeleteID = undefined;
 var currentSavedDeleteID = undefined;
+var myServerResponse = document.getElementById('myServerResponse');
+var savedServerResponse = document.getElementById('savedServerResponse');
 document.addEventListener("DOMContentLoaded", function () {
     getMyQRCodes();
     getMySavedQRCodes();
@@ -51,7 +53,11 @@ function getMyQRCodesResponse() {
         }
 
     } else {
-        myQRCodesDiv.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+        if (this.response.message == "Error authenticating.") {
+            myQRCodesDiv.innerHTML = "<span class='red-response'>Error authenticating, please reload this page. If this message persists, please logout and then log back in.</span>";
+        } else {
+            myQRCodesDiv.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+        }
     }
 }
 
@@ -89,7 +95,6 @@ function prepareDeleteMyQR(index) {
     deleteYesNo.innerHTML = '<span style="font-size:16px">are you sure?</span><br>' + '<span id="deleteYes" style="color:blue; font-size:16px">yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteNo" style="color:red; font-size:16px">no</span>';
     document.getElementById('deleteYes').addEventListener('click', function () {
         deleteMyQR(index);
-        document.getElementById('deleteYesNo').style.display = "none";
     });
     document.getElementById('deleteNo').addEventListener('click', function () {
         document.getElementById('deleteYesNo').style.display = "none";
@@ -114,12 +119,19 @@ function deleteMyQR(index) {
 
 function deleteMyQRResponse() {
     if (this.status === 200) {
+        document.getElementById('deleteYesNo').style.display = "none";
         for (var i = 0; i < myQRCodesArray.length; i++) {
             if (myQRCodesArray[i].qrCodeID == currentMyDeleteID) {
                 myQRCodesArray.splice(i, 1);
             }
         }
         updateMyQRCodes();
+    } else {
+        if (this.response.message == "Error authenticating.") {
+            myServerResponse.innerHTML = "<span class='red-response'>Error authenticating, please reload this page. If this message persists, please logout and then log back in.</span>";
+        } else {
+            myServerResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+        }
     }
 }
 
@@ -184,7 +196,11 @@ function getMySavedQRCodesResponse() {
         }
 
     } else {
-        savedQRCodesDiv.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+        if (this.response.message == "Error authenticating.") {
+            savedQRCodesDiv.innerHTML = "<span class='red-response'>Error authenticating, please reload this page. If this message persists, please logout and then log back in.</span>";
+        } else {
+            savedQRCodesDiv.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+        }
     }
 }
 
@@ -223,7 +239,6 @@ function prepareSavedDeleteMyQR(index) {
     deleteYesNo.innerHTML = '<span style="font-size:16px">are you sure?</span><br>' + '<span id="deleteYesSaved" style="color:blue; font-size:16px">yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteNoSaved" style="color:red; font-size:16px">no</span>';
     document.getElementById('deleteYesSaved').addEventListener('click', function () {
         deleteSavedQR(index);
-        document.getElementById('deleteYesNoSaved').style.display = "none";
     });
     document.getElementById('deleteNoSaved').addEventListener('click', function () {
         document.getElementById('deleteYesNoSaved').style.display = "none";
@@ -248,12 +263,19 @@ function deleteSavedQR(index) {
 
 function deleteSavedQRResponse() {
     if (this.status === 200) {
+        document.getElementById('deleteYesNoSaved').style.display = "none";
         for (var i = 0; i < savedQRCodesArray.length; i++) {
             if (savedQRCodesArray[i].qrCodeID == currentMyDeleteID) {
                 savedQRCodesArray.splice(i, 1);
             }
         }
         updateSavedQRCodes();
+    } else {
+        if (this.response.message == "Error authenticating.") {
+            savedServerResponse.innerHTML = "<span class='red-response'>Error authenticating, please reload this page. If this message persists, please logout and then log back in.</span>";
+        } else {
+            savedServerResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+        }
     }
 }
 
