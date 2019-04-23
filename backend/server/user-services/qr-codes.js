@@ -74,7 +74,9 @@ function generateQRCode(req, res) {
 								qrCodeIDNum = user.generatedQRCodes[user.generatedQRCodes.length - 1].qrCodeID + 1;
 							}
 							QRCode.toDataURL(QRCodeData, {
-									errorCorrectionLevel: 'L'
+									errorCorrectionLevel: 'L',
+									margin: 1,
+									width: 1000
 								})
 								.then((qrdata) => {
 									QRCode.toString(QRCodeData, {

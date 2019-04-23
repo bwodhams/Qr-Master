@@ -64,10 +64,13 @@ function enlargeQR(index) {
     var enlargedQRType = myQRCodesArray[index].qrCodeType;
     var myQRCodesDiv = document.getElementById('myQRCodes');
     myQRCodesDiv.style.display = "none";
-    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><div id="qrOptions"><span id="printEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteEnlarged" class="red-response" style="font-size: 16px">delete</span></div><div id="deleteYesNo"></div><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
+    enlargedQRDiv.innerHTML = '<div id="myEnlargedQR"><img src="' + enlargedQRData + '" alt="QR Code" width="100%"></div><br><span>Name : ' + enlargedQRName + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><div id="qrOptions"><span id="printEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteEnlarged" class="red-response" style="font-size: 16px">delete</span></div><div id="deleteYesNo"></div><br><br><span id="closeEnlarged" onClick="closeEnlargedQR()">close</span>';
     enlargedQRDiv.style.display = "";
     document.getElementById('deleteEnlarged').addEventListener('click', function () {
         prepareDeleteMyQR(enlargedQRIndex);
+    });
+    document.getElementById('printEnlarged').addEventListener('click', function () {
+        printQR('myEnlargedQR');
     });
 }
 
@@ -118,6 +121,20 @@ function deleteMyQRResponse() {
         }
         updateMyQRCodes();
     }
+}
+
+function printQR(elem) {
+    var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+    mywindow.document.write(document.getElementById(elem).innerHTML);
+
+    mywindow.document.close(); // necessary for IE >= 10
+    mywindow.focus(); // necessary for IE >= 10*/
+
+    mywindow.print();
+    mywindow.close();
+
+    return true;
 }
 
 function updateMyQRCodes() {
@@ -195,7 +212,7 @@ function enlargeSavedQR(index) {
     var enlargedQRType = savedQRCodesArray[indexConverted].qrCodeType;
     var savedQRCodesDiv = document.getElementById('savedQRCodes');
     savedQRCodesDiv.style.display = "none";
-    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" width="100%"><br><span>User : ' + enlargedQRUser + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><div id="savedQROptions"><span id="printSavedEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteSavedEnlarged" class="red-response" style="font-size: 16px">delete</span></div><div id="deleteYesNoSaved"></div><br><br><span id="closeSavedEnlarged" onClick="closeSavedEnlargedQR()">close</span>';
+    enlargedQRDiv.innerHTML = '<img src="' + enlargedQRData + '" alt="QR Code" id="savedEnlargedQR" width="100%"><br><span>User : ' + enlargedQRUser + '</span><br><span>Default amount : $' + enlargedQRAmount + '</span><br><span>Type : ' + enlargedQRType + '</span><br><br><div id="savedQROptions"><span id="printSavedEnlarged" style="color:blue; font-size:16px">print</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteSavedEnlarged" class="red-response" style="font-size: 16px">delete</span></div><div id="deleteYesNoSaved"></div><br><br><span id="closeSavedEnlarged" onClick="closeSavedEnlargedQR()">close</span>';
     enlargedQRDiv.style.display = "";
     document.getElementById('deleteSavedEnlarged').addEventListener('click', function () {
         prepareSavedDeleteMyQR(enlargedQRIndex);
