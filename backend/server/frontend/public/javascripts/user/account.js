@@ -140,6 +140,8 @@ function updateAccountResponse() {
             window.localStorage.removeItem("qr4gloginAuthTokenDesktop");
             delete_cookie("accName");
             delete_cookie("accEmail");
+            delete_cookie("autoLogout");
+            delete_cookie("tosNotAccepted");
             window.location.href = "/accountEmailUpdated.html";
         } else {
             window.location.href = "/user/account.html";
