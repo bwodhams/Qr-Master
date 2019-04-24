@@ -647,7 +647,7 @@ function verify(req, res) {
 					user.emailVerified = true;
 					user.save();
 					res.writeHead(301, {
-						Location: "https://" + req.headers['host'] + "/user/accountVerified.html"
+						Location: "https://" + req.headers['host'] + "/accountVerified.html"
 					});
 					res.end();
 				} else if (code != user.emailVerifCode) {
@@ -691,7 +691,7 @@ function forgotPassword(req, res) {
 						'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 					);
 					link =
-						hostLink + '/user/newPassword.html?email=' + email + '&code=' + resetPasswordCode;
+						hostLink + '/newPassword.html?email=' + email + '&code=' + resetPasswordCode;
 					var finalVerificationLink = passwordResetEmailTemplate.replace(
 						'https://www.changeThisLinkToConfirmationLink.com',
 						link

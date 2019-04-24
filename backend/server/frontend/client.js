@@ -25,18 +25,6 @@ router.get('/home.html', (req, res) => {
     }
 });
 
-router.get('/user/account.html', (req, res) => {
-    if (req.cookies['accName'] == undefined) {
-        if (req.cookies['autoLogout'] == undefined) {
-            res.redirect('/');
-        } else {
-            res.redirect('/autoLogout.html');
-        }
-    } else {
-        res.sendFile(__dirname + '/public/user/account.html');
-    }
-});
-
 router.get('/user/acceptTos.html', (req, res) => {
     if (req.cookies['accName'] == undefined) {
         if (req.cookies['autoLogout'] == undefined) {
@@ -50,9 +38,25 @@ router.get('/user/acceptTos.html', (req, res) => {
         } else {
             res.redirect('/home.html');
         }
-
     }
 });
+
+router.get('/user/*', (req, res) => {
+    if (req.cookies['accName'] == undefined) {
+        if (req.cookies['autoLogout'] == undefined) {
+            res.redirect('/');
+        } else {
+            res.redirect('/autoLogout.html');
+        }
+    } else {
+        if (req.cookies['tosNotAccepted'] != undefined) {
+            res.redirect('/user/acceptTos.html');
+        } else {
+            res.sendFile(__dirname + '/public/' + req.path);
+        }
+    }
+});
+
 
 router.get('/', (req, res) => {
     if (req.cookies['accName'] != undefined) {
@@ -66,17 +70,17 @@ router.get('/', (req, res) => {
     }
 });
 
-router.get('/user/login.html', (req, res) => {
+router.get('/login.html', (req, res) => {
     if (req.cookies['accName'] == undefined) {
-        res.sendFile(__dirname + '/public/user/login.html');
+        res.sendFile(__dirname + '/public/login.html');
     } else {
         res.redirect('/home.html');
     }
 });
 
-router.get('/user/register.html', (req, res) => {
+router.get('/register.html', (req, res) => {
     if (req.cookies['accName'] == undefined) {
-        res.sendFile(__dirname + '/public/user/register.html');
+        res.sendFile(__dirname + '/public/register.html');
     } else {
         res.redirect('/home.html');
     }
@@ -94,23 +98,7 @@ router.get('/styles/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
 
-router.get('/user/qrcode/*', (req, res) => {
-    if (req.cookies['accName'] == undefined) {
-        if (req.cookies['autoLogout'] == undefined) {
-            res.redirect('/');
-        } else {
-            res.redirect('/autoLogout.html');
-        }
-    } else {
-        res.sendFile(__dirname + '/public/' + req.path);
-    }
-});
-
 router.get('/transaction/*', (req, res) => {
-    res.sendFile(__dirname + '/public/' + req.path);
-});
-
-router.get('/user/*', (req, res) => {
     res.sendFile(__dirname + '/public/' + req.path);
 });
 

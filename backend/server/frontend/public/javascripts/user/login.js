@@ -92,7 +92,7 @@ function resetPassword() {
 
 function resetPasswordResponse() {
     if (this.status === 201) {
-        window.location.href = "/user/forgotPassword.html";
+        window.location.href = "forgotPassword.html";
     } else {
         document.getElementById('serverResponse').innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
     }

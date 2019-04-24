@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     delete_cookie("accName");
     delete_cookie("accEmail");
     delete_cookie("autoLogout");
+    delete_cookie("tosNotAccepted");
 });
 
 function delete_cookie(name) {
