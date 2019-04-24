@@ -17,7 +17,11 @@ router.get('/home.html', (req, res) => {
             res.redirect('/autoLogout.html');
         }
     } else {
-        res.sendFile(__dirname + '/public/home.html');
+        if (req.cookies['tosNotAccepted'] != undefined) {
+            res.redirect('/user/acceptTos.html');
+        } else {
+            res.sendFile(__dirname + '/public/home.html');
+        }
     }
 });
 
@@ -30,6 +34,23 @@ router.get('/user/account.html', (req, res) => {
         }
     } else {
         res.sendFile(__dirname + '/public/user/account.html');
+    }
+});
+
+router.get('/user/acceptTos.html', (req, res) => {
+    if (req.cookies['accName'] == undefined) {
+        if (req.cookies['autoLogout'] == undefined) {
+            res.redirect('/');
+        } else {
+            res.redirect('/autoLogout.html');
+        }
+    } else {
+        if (req.cookies['tosNotAccepted'] != undefined) {
+            res.sendFile(__dirname + '/public/user/acceptTos.html');
+        } else {
+            res.redirect('/home.html');
+        }
+
     }
 });
 

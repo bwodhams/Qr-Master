@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
         delete_cookie("accName");
         delete_cookie("accEmail");
         delete_cookie("autoLogout");
+        delete_cookie("tosNotAccepted");
         window.location.href = "/";
     });
     document.getElementById('logoutBtnMini').addEventListener('click', function () {
@@ -19,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
         delete_cookie("accName");
         delete_cookie("accEmail");
         delete_cookie("autoLogout");
+        delete_cookie("tosNotAccepted");
         window.location.href = "/";
     });
 });

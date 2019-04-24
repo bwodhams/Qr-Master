@@ -30,6 +30,7 @@ function acceptTosResponse() {
     var serverResponse = document.getElementById('serverResponse');
     serverResponse.innerHTML = "";
     if (this.status === 200) {
+        delete_cookie("tosNotAccepted");
         window.location.href = "/home.html";
     } else {
         if (this.response.message == "Error authenticating.") {
@@ -54,4 +55,8 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+
+function delete_cookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
 }

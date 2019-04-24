@@ -573,6 +573,11 @@ function login(req, res) {
 									user.lastAccess = currentTime;
 									user.resetPassword = false;
 									user.save();
+									if (user.tosAccepted == false) {
+										res.cookie('tosNotAccepted', user.tosAccepted, {
+											maxAge: 1200000,
+										});
+									}
 									res.cookie('accName', user.name, {
 										maxAge: 600000,
 									});
