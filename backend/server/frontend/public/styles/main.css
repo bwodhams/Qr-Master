@@ -950,7 +950,7 @@ a {
 .w3-bottom {
     position: fixed;
     width: 100%;
-    z-index: 1
+    z-index: 10
 }
 
 .w3-top {
@@ -2195,4 +2195,12 @@ a {
 #acceptTosBtn {
     width: 200px;
     font-size: 16px;
+}
+
+.container-fluid {
+    margin-top: 15px;
+}
+
+.jp-card-container {
+    transform: scale(1);
 }

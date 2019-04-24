@@ -12,12 +12,142 @@
 <title>QR4G - My Wallet</title>
 
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="icon" href="../favicon.ico">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="../javascripts/user/wallet.js" defer></script>
+    <script src="../javascripts/user/logout.js" defer></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 </head>
 
 
 <body>
-    <h1>PAGE IS UNDER CONSTRUCTION</h1>
+    <div id="header">
+        <!-- Navbar -->
+        <div class="w3-top">
+            <div class="w3-bar w3-blue w3-card">
+                <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
+                    href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i
+                        class="fa fa-bars"></i></a>
+                <a href="/" class="w3-bar-item w3-button w3-padding-large"><img src="../images/logo.png" alt="QR4G Logo"
+                        height="45" width="45"> QR4G</a>
+                <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" style="float:right" id="logoutBtn"><img
+                        src="../images/logout.png" alt="Logout Img" height="25" width="25"></a>
+                <a href="account.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">ACCOUNT</a>
+                <a href="qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">MY QR</a>
+                <a href="qrcode/create.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">CREATE QR</a>
+                <a href="wallet.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">WALLET</a>
+                <a href="transaction/history.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                    style="float:right">TRANSACTIONS</a>
+            </div>
+        </div>
+
+        <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+        <div id="hamburgerButton" class="w3-bar-block w3-blue w3-hide w3-hide-large w3-hide-medium w3-top"
+            style="margin-top:70px">
+            <a href="transaction/history.html" class="w3-bar-item w3-button w3-padding-large"
+                onclick="myFunction()">TRANSACTIONS</a>
+            <a href="wallet.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">WALLET</a>
+            <a href="qrcode/create.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">CREATE
+                QR</a>
+            <a href="qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">SAVED
+                QR</a>
+            <a href="account.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">ACCOUNT</a>
+            <a class="w3-bar-item w3-button w3-padding-large" id="logoutBtnMini">LOGOUT</a>
+        </div>
+    </div>
+
+    <div id="mainSection">
+
+        <div class="w3-content" style="max-width:2000px;margin-top:46px">
+            <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
+                <h2 class="w3-wide">My Wallet</h2><br>
+                <div class="form" id="inputForm" style="max-width: 400px; padding: 15px">
+                    <div id="addNewCard" style="display: none">
+                        <form>
+                            <div class="well">
+                                <div class="row card">
+                                </div>
+                                <br><br><br>
+                                <div class="row-fluid">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label>Credit Card Number </label>
+                                            <input type="text" name="number" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Expiration</label>
+                                            <input type="text" placeholder="MM/YY" name="expiry" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label>Name</label>
+                                            <input type="text" name="name" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>CVV </label>
+                                            <input type="text" name="cvv" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="col-md-12 text-right">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <button id="addNewCardBtn">add card</button>
+                    <div class="register-page">
+                        <div class="loadingImage" id="loadingImg"></div>
+
+                        <div id="serverResponse"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div id="footer">
+        <footer class="w3-container w3-padding-16 w3-center w3-opacity w3-blue w3-large footer">
+            <a href="../about.html">About</a>
+            <a href="../tos.html">Terms of use</a>
+            <a href="../contact.html">Contact</a>
+            <a href="../help.html">Help</a>
+        </footer>
+    </div>
+    <script src="../javascripts/user/card.js"></script>
+    <script>
+        // Used to toggle the menu on small screens when clicking on the menu button
+        function myFunction() {
+            var x = document.getElementById("hamburgerButton");
+            if (x.className.indexOf("w3-show") == -1) {
+                x.className += " w3-show";
+            } else {
+                x.className = x.className.replace(" w3-show", "");
+            }
+        }
+    </script>
+
 </body>
 
 </html>
