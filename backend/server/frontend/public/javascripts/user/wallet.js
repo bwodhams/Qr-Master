@@ -31,8 +31,10 @@ function getCardsResponse() {
         var addNewCardBtn = document.getElementById('addNewCardBtn');
         var outputHTML = "";
         for (var i = 0; i < this.response.name.length; i++) {
-            outputHTML += "name = " + this.response.name[i] + " CCLastDigits = " + this.response.creditCardLastDigits[i] + "<br>";
+            outputHTML += '<div id="card' + i + '" style="position: relative"><img src="../images/creditCardImage.png" alt="creditCard" width="100%" style="z-index: 0; position: relative">' +
+                '<span class="ccType">' + this.response.creditCardType[i] + "</span><br>" + '<span class="ccDigits">**** **** **** ' + this.response.creditCardLastDigits[i] + "</span></div><br>";
         }
+        outputHTML += '<div style="clear: both;"></div>';
         allCards.innerHTML = outputHTML;
         loadingCircle.style.display = "none";
         addNewCardBtn.style.display = "";

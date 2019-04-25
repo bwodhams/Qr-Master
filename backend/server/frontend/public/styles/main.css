@@ -2793,3 +2793,23 @@ input[type=search] {
         line-height: 46px
     }
 }
+
+.ccType {
+    position: absolute;
+    text-transform: uppercase;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    top: 9px;
+}
+
+.ccDigits {
+    position: absolute;
+    left: 0px;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    top: 95px;
+    font-size: 18px;
+}
