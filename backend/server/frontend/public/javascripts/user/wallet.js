@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     loadingCircle.innerHTML = '<img src="../images/loading_screen.svg" alt="loading" height="125px" width="125px">';
     getCards();
     document.getElementById('addNewCardBtn').addEventListener('click', prepareAddNewCard);
+    document.getElementById('closeAddNewCardBtn').addEventListener('click', closeAddNewCardWindow);
 });
 
 function getCards() {
@@ -147,6 +148,13 @@ function prepareAddNewCard() {
         width: 350, // optional — default 350px
         formatting: true
     });
+}
+
+function closeAddNewCardWindow() {
+    var addNewCardContainer = document.getElementById('addNewCard');
+    var myCardsContainer = document.getElementById('myCardsContainer');
+    addNewCardContainer.style.display = "none";
+    myCardsContainer.style.display = "";
 }
 
 function getCookie(cname) {

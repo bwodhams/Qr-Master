@@ -2841,3 +2841,11 @@ input[type=search] {
 .deleteNo {
     cursor: pointer;
 }
+
+#closeAddNewCardBtn {
+    width: 7%;
+    float: right;
+    margin-top: -15px;
+    margin-right: -5px;
+    cursor: pointer;
+}
