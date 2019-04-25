@@ -5,6 +5,7 @@
  *  @author Benjamin Wodhams
  *
  */
+var allMyCards = undefined;
 
 document.addEventListener("DOMContentLoaded", function () {
     var loadingCircle = document.getElementById('loadingImg');
@@ -27,6 +28,7 @@ function getCardsResponse() {
     console.log(this.response);
     var response = this.response;
     if (this.status === 200) {
+        allMyCards = this.response;
         var loadingCircle = document.getElementById('loadingImg');
         var allCards = document.getElementById('myCards');
         var addNewCardBtn = document.getElementById('addNewCardBtn');
@@ -34,10 +36,10 @@ function getCardsResponse() {
         for (var i = 0; i < this.response.name.length; i++) {
             if (this.response.primaryCard[i] == true) {
                 outputHTML += '<div id="card' + i + '" style="position: relative"><div id="clickableCard' + i + '"><img src="../images/primaryCreditCardImage.png" id="cardImage' + i + '" alt="creditCard" width="100%" style="z-index: 0; position: relative">' +
-                    '<span class="ccType">' + this.response.creditCardType[i] + "</span><br>" + '<span class="ccName">' + this.response.name[i] + '</span>' + '<span class="ccDigits">**** **** **** ' + this.response.creditCardLastDigits[i] + "</span>" + '</div><span class="deleteCard" id="deleteCard' + i + '" style="font-size: 16px">delete</span>' + "</div><br>";
+                    '<span class="ccType">' + this.response.creditCardType[i] + "</span><br>" + '<span class="ccName">' + this.response.name[i] + '</span>' + '<span class="ccDigits">**** **** **** ' + this.response.creditCardLastDigits[i] + "</span>" + '</div><span class="deleteCard" id="deleteCard' + i + '" style="font-size: 16px">delete</span>' + "</div>" + '<span id="deleteYesNo' + i + '" style="display: none">' + '<span style="font-size:16px">are you sure?</span>&nbsp;&nbsp;&nbsp;&nbsp;' + '<span id="deleteYes' + i + '" class="deleteYes" style="color:blue; font-size:16px">yes</span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteNo' + i + '" class="deleteNo" style="color:red; font-size:16px">no</span><br>' + '</span><br>';
             } else {
                 outputHTML += '<div id="card' + i + '" style="position: relative"><div id="clickableCard' + i + '"><img src="../images/creditCardImage.png" id="cardImage' + i + '" alt="creditCard" width="100%" style="z-index: 0; position: relative">' +
-                    '<span class="ccType">' + this.response.creditCardType[i] + "</span><br>" + '<span class="ccName">' + this.response.name[i] + '</span>' + '<span class="ccDigits">**** **** **** ' + this.response.creditCardLastDigits[i] + "</span>" + '</div><span class="deleteCard" id="deleteCard' + i + '" style="font-size: 16px">delete</span>' + "</div><br>";
+                    '<span class="ccType">' + this.response.creditCardType[i] + "</span><br>" + '<span class="ccName">' + this.response.name[i] + '</span>' + '<span class="ccDigits">**** **** **** ' + this.response.creditCardLastDigits[i] + "</span>" + '</div><span class="deleteCard" id="deleteCard' + i + '" style="font-size: 16px">delete</span>' + "</div>" + '<span id="deleteYesNo' + i + '" style="display: none">' + '<span style="font-size:16px">are you sure?</span>&nbsp;&nbsp;&nbsp;&nbsp;' + '<span id="deleteYes' + i + '" class="deleteYes" style="color:blue; font-size:16px">yes</span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="deleteNo' + i + '" class="deleteNo" style="color:red; font-size:16px">no</span><br>' + '</span><br>';
             }
 
         }
@@ -67,7 +69,22 @@ function makePrimary(elem, response) {
 }
 
 function prepareDeleteCard(elem) {
-    console.log("preparing to delete card " + elem);
+    var deleteIndex = elem.substring(10);
+    var deleteYesNo = document.getElementById('deleteYesNo' + deleteIndex);
+    var deleteBtn = document.getElementById(elem);
+    deleteBtn.style.display = "none";
+    deleteYesNo.style.display = "";
+    document.getElementById('deleteYes' + deleteIndex).addEventListener('click', function () {
+        deleteCard(deleteIndex);
+    });
+    document.getElementById('deleteNo' + deleteIndex).addEventListener('click', function () {
+        deleteYesNo.style.display = "none";
+        deleteBtn.style.display = "";
+    });
+}
+
+function deleteCard(index) {
+
 }
 
 function prepareAddNewCard() {
