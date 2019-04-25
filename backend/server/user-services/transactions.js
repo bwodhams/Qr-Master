@@ -297,7 +297,7 @@ function logTransaction(req, email, amount, _id) {
 				if (!err2) {
 					user.receivedPayments.push({
 						name: user2.name,
-						amount: amount - (Math.ceil(amount * 0.029) + 0.3),
+						amount: amount - (Math.ceil(amount * 2.9)/100.0 + 0.3),
 						anonymous: false,
 						date: new Date()
 					});
