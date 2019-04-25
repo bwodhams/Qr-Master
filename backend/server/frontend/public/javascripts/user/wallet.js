@@ -25,20 +25,49 @@ function getCards() {
 
 function getCardsResponse() {
     console.log(this.response);
+    var response = this.response;
     if (this.status === 200) {
         var loadingCircle = document.getElementById('loadingImg');
         var allCards = document.getElementById('myCards');
         var addNewCardBtn = document.getElementById('addNewCardBtn');
-        var outputHTML = "";
+        var outputHTML = '<span class="selectPrimaryText">Click on a card to select as your primary payment method</span><br>';
         for (var i = 0; i < this.response.name.length; i++) {
-            outputHTML += '<div id="card' + i + '" style="position: relative"><img src="../images/creditCardImage.png" alt="creditCard" width="100%" style="z-index: 0; position: relative">' +
-                '<span class="ccType">' + this.response.creditCardType[i] + "</span><br>" + '<span class="ccDigits">**** **** **** ' + this.response.creditCardLastDigits[i] + "</span></div><br>";
+            if (this.response.primaryCard[i] == true) {
+                outputHTML += '<div id="card' + i + '" style="position: relative"><div id="clickableCard' + i + '"><img src="../images/primaryCreditCardImage.png" id="cardImage' + i + '" alt="creditCard" width="100%" style="z-index: 0; position: relative">' +
+                    '<span class="ccType">' + this.response.creditCardType[i] + "</span><br>" + '<span class="ccName">' + this.response.name[i] + '</span>' + '<span class="ccDigits">**** **** **** ' + this.response.creditCardLastDigits[i] + "</span>" + '</div><span class="deleteCard" id="deleteCard' + i + '" style="font-size: 16px">delete</span>' + "</div><br>";
+            } else {
+                outputHTML += '<div id="card' + i + '" style="position: relative"><div id="clickableCard' + i + '"><img src="../images/creditCardImage.png" id="cardImage' + i + '" alt="creditCard" width="100%" style="z-index: 0; position: relative">' +
+                    '<span class="ccType">' + this.response.creditCardType[i] + "</span><br>" + '<span class="ccName">' + this.response.name[i] + '</span>' + '<span class="ccDigits">**** **** **** ' + this.response.creditCardLastDigits[i] + "</span>" + '</div><span class="deleteCard" id="deleteCard' + i + '" style="font-size: 16px">delete</span>' + "</div><br>";
+            }
+
         }
         outputHTML += '<div style="clear: both;"></div>';
         allCards.innerHTML = outputHTML;
+        for (var i = 0; i < this.response.name.length; i++) {
+            document.getElementById('clickableCard' + i).addEventListener('click', function () {
+                makePrimary(this.id, response);
+            });
+            document.getElementById('deleteCard' + i).addEventListener('click', function () {
+                prepareDeleteCard(this.id);
+            });
+        }
         loadingCircle.style.display = "none";
         addNewCardBtn.style.display = "";
     }
+}
+
+function makePrimary(elem, response) {
+    console.log(response);
+    var primaryCardIndex = elem.substring(13);
+    var primaryCardImage = document.getElementById('cardImage' + primaryCardIndex);
+    for (var i = 0; i < response.name.length; i++) {
+        document.getElementById('cardImage' + i).src = '../images/creditCardImage.png';
+    }
+    primaryCardImage.src = '../images/primaryCreditCardImage.png';
+}
+
+function prepareDeleteCard(elem) {
+    console.log("preparing to delete card " + elem);
 }
 
 function prepareAddNewCard() {
