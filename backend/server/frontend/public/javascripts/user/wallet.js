@@ -57,6 +57,9 @@ function getCardsResponse() {
         }
         loadingCircle.style.display = "none";
         addNewCardBtn.style.display = "";
+    } else {
+        var serverResponse = document.getElementById('serverResponse');
+        serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
     }
 }
 
@@ -153,21 +156,56 @@ function prepareAddNewCard() {
 
 function addNewCard() {
     var ccNum = document.getElementById('ccNum').value;
+    var ccType = determineCardType(ccNum);
     var ccExp = document.getElementById('ccExp').value;
     var ccName = document.getElementById('ccName').value;
     var ccCVV = document.getElementById('ccCVV').value;
-
+    var ccZip = document.getElementById('ccZip').value;
+    var ccExpFinal = ccExp.substring(0, 2);
+    ccExpFinal += "/" + ccExp.substring(5);
     var xhr = new XMLHttpRequest();
-    xhr.addEventListener('load', deleteCardResponse);
+    xhr.addEventListener('load', addNewCardResponse);
     xhr.responseType = 'json';
     xhr.open('POST', '/api/user/updateStripe');
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.setRequestHeader('authorization', localStorage.getItem('qr4gloginAuthTokenDesktop'));
     xhr.send(
         JSON.stringify({
-            deleteIndex: index
+            email: getCookie("accEmail"),
+            cvc: ccCVV,
+            expiry: ccExpFinal,
+            name: ccName,
+            number: ccNum,
+            card: true,
+            postalCode: ccZip,
+            type: ccType
         })
     );
+}
+
+function determineCardType(cardNumber) {
+    var ccFirstDigit = cardNumber.substring(0, 1);
+    var ccType = undefined;
+    if (ccFirstDigit == 3) {
+        ccType = "american_express";
+    } else if (ccFirstDigit == 4) {
+        ccType = "visa";
+    } else if (ccFirstDigit == 5) {
+        ccType = "master_card";
+    } else {
+        ccType = "discover_card";
+    }
+    return ccType;
+}
+
+function addNewCardResponse() {
+    var serverResponse = document.getElementById('serverResponse');
+    if (this.status === 200) {
+        document.getElementById('closeAddNewCardBtn').click();
+        getCards();
+    } else {
+        serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+    }
 }
 
 function closeAddNewCardWindow() {

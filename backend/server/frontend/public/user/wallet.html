@@ -67,11 +67,11 @@
         <div class="w3-content" style="max-width:2000px;margin-top:46px">
             <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
                 <h2 class="w3-wide">My Wallet</h2><br>
+                <div id="serverResponse"></div>
                 <div class="register-page" id="myCardsContainer">
                     <div class="form" id="inputForm" style="max-width: 270px; padding: 5px">
                         <div id="loadingImg"></div>
                         <div id="myCards"></div>
-                        <div id="serverResponse"></div>
                         <button id="addNewCardBtn" style="display: none">add new card</button>
                     </div>
                 </div>
@@ -101,14 +101,22 @@
                                 <div class="row-fluid">
                                     <div class="col-md-8">
                                         <div class="form-group">
-                                            <label>Name</label>
-                                            <input type="text" name="name" id="ccName" class="form-control" />
+                                            <label>Zip Code</label>
+                                            <input type="text" id="ccZip" class="form-control" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>CVV </label>
+                                            <label>CVV</label>
                                             <input type="text" name="cvv" id="ccCVV" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label>Name</label>
+                                            <input type="text" name="name" id="ccName" class="form-control" />
                                         </div>
                                     </div>
                                 </div>
@@ -120,9 +128,6 @@
                             </div>
                         </form>
                         <button id="submitNewCardBtn" style="width: 50%">submit</button>
-                        <div class="register-page">
-                            <div id="serverResponse"></div>
-                        </div>
                     </div>
                 </div>
             </div>
