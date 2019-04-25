@@ -76,6 +76,7 @@ function prepareDeleteCard(elem) {
     deleteYesNo.style.display = "";
     document.getElementById('deleteYes' + deleteIndex).addEventListener('click', function () {
         deleteCard(deleteIndex);
+        deleteYesNo.style.display = "none";
     });
     document.getElementById('deleteNo' + deleteIndex).addEventListener('click', function () {
         deleteYesNo.style.display = "none";
@@ -84,7 +85,26 @@ function prepareDeleteCard(elem) {
 }
 
 function deleteCard(index) {
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', deleteCardResponse);
+    xhr.responseType = 'json';
+    xhr.open('POST', '/api/user/deletePayment');
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.setRequestHeader('authorization', localStorage.getItem('qr4gloginAuthTokenDesktop'));
+    xhr.send(
+        JSON.stringify({
+            deleteIndex: index
+        })
+    );
+}
 
+function deleteCardResponse() {
+    var serverResponse = document.getElementById('serverResponse');
+    if (this.status === 200) {
+        getCards();
+    } else {
+        serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+    }
 }
 
 function prepareAddNewCard() {
