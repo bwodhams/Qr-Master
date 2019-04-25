@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     getCards();
     document.getElementById('addNewCardBtn').addEventListener('click', prepareAddNewCard);
     document.getElementById('closeAddNewCardBtn').addEventListener('click', closeAddNewCardWindow);
+    document.getElementById('submitNewCardBtn').addEventListener('click', addNewCard);
 });
 
 function getCards() {
@@ -148,6 +149,25 @@ function prepareAddNewCard() {
         width: 350, // optional — default 350px
         formatting: true
     });
+}
+
+function addNewCard() {
+    var ccNum = document.getElementById('ccNum').value;
+    var ccExp = document.getElementById('ccExp').value;
+    var ccName = document.getElementById('ccName').value;
+    var ccCVV = document.getElementById('ccCVV').value;
+
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', deleteCardResponse);
+    xhr.responseType = 'json';
+    xhr.open('POST', '/api/user/updateStripe');
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.setRequestHeader('authorization', localStorage.getItem('qr4gloginAuthTokenDesktop'));
+    xhr.send(
+        JSON.stringify({
+            deleteIndex: index
+        })
+    );
 }
 
 function closeAddNewCardWindow() {

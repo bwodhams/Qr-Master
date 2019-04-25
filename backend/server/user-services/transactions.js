@@ -29,35 +29,47 @@ function updateStripe(req, res) {
 		routing_number,
 		account_number
 	} = req.body;
-	console.log(req.body)
+	console.log(req.body);
 
-
-	User.findOne({
-			email
-		}, function (err, user) {
-			if (err) {
-				res.status(401).json({
-					message: "Error communicating with database",
+	var authToken = req.headers.authorization;
+	jwt.verify(authToken, secret, function (err, decoded) {
+		if (err) {
+			res.status(401).json({
+				message: 'Token has expired'
+			});
+		} else if (decoded) {
+			User.findOne({
+					email
+				}, function (err, user) {
+					if (err) {
+						res.status(401).json({
+							message: "Error communicating with database",
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "A user with this email address was not found",
+						});
+					} else if (card) {
+						let exp_year = expiry.substring(expiry.indexOf("/") + 1, expiry.length);
+						let exp_month = expiry.substring(0, 2);
+						let ccLastDigits = number.slice(-4);
+						console.log("in card")
+						createCard(res, user, cvc, exp_year, exp_month, ccLastDigits, name, number, postalCode, type);
+					} else {
+						console.log("in bank")
+						createBank(res, user, name, routing_number, account_number);
+					}
+				})
+				.catch(err => {
+					console.log("oh no!")
+					res.status(500).send(err);
 				});
-			} else if (!user) {
-				res.status(401).json({
-					message: "A user with this email address was not found",
-				});
-			} else if (card) {
-				let exp_year = expiry.substring(expiry.indexOf("/") + 1, expiry.length);
-				let exp_month = expiry.substring(0, 2);
-				let ccLastDigits = number.slice(-4);
-				console.log("in card")
-				createCard(res, user, cvc, exp_year, exp_month, ccLastDigits, name, number, postalCode, type);
-			} else {
-				console.log("in bank")
-				createBank(res, user, name, routing_number, account_number);
-			}
-		})
-		.catch(err => {
-			console.log("oh no!")
-			res.status(500).send(err);
-		});
+		} else {
+			res.status(401).json({
+				message: 'Token has expired'
+			});
+		}
+	});
 }
 
 function cardsDoNotExistCheck(user) {
@@ -458,7 +470,7 @@ function updateDefaultPayment(req, res) {
 	} = req.body;
 	const authToken = req.headers.authorization;
 	jwt.verify(authToken, secret, function (err, valid) {
-		if (err){
+		if (err) {
 			if (err.message == 'jwt expired') {
 				res.status(401).json({
 					message: 'Login auth token has expired, please login again.'
