@@ -65,7 +65,30 @@ function makePrimary(elem, response) {
     for (var i = 0; i < response.name.length; i++) {
         document.getElementById('cardImage' + i).src = '../images/creditCardImage.png';
     }
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', function () {
+        makePrimaryResponse(this, primaryCardIndex);
+    });
+    xhr.responseType = 'json';
+    xhr.open('PUT', '/api/user/updateDefaultPayment');
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.setRequestHeader('authorization', localStorage.getItem('qr4gloginAuthTokenDesktop'));
+    xhr.send(
+        JSON.stringify({
+            defaultIndex: primaryCardIndex
+        })
+    );
     primaryCardImage.src = '../images/primaryCreditCardImage.png';
+}
+
+function makePrimaryResponse(response, primaryCardIndex) {
+    var serverResponse = document.getElementById('serverResponse');
+    if (response.status === 200) {
+
+    } else {
+        document.getElementById('cardImage' + primaryCardIndex).src = '../images/creditCardImage.png';
+        serverResponse.innerHTML = "<span class='red-response'>" + response.response.message + "</span>";
+    }
 }
 
 function prepareDeleteCard(elem) {
