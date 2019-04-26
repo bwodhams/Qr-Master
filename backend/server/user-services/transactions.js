@@ -297,7 +297,7 @@ function logTransaction(req, email, amount, _id) {
 				if (!err2) {
 					user.receivedPayments.push({
 						name: user2.name,
-						amount: amount - (Math.ceil(amount * 2.9)/100.0 + 0.3),
+						amount: amount - (Math.ceil(amount * 2.9) / 100.0 + 0.3),
 						anonymous: false,
 						date: new Date()
 					});
@@ -370,61 +370,75 @@ function verifyStripe(req, res) {
 		postal_code,
 		state,
 	} = req.body;
-	console.log(req.body)
+	console.log(req.body);
+	var authToken = req.headers.authorization;
+	jwt.verify(authToken, secret, function (err, decoded) {
+		if (err) {
+			res.status(401).json({
+				message: 'Token has expired'
+			});
+		} else if (decoded) {
+			User.findOne({
+					email
+				}, function (err, user) {
+					if (err) {
+						res.status(401).json({
+							message: "Error communicating with database",
+						});
+					} else if (!user) {
+						res.status(401).json({
+							message: "A user with this email address was not found",
+						});
+					} else {
+						console.log("in verify")
+						stripe.accounts.update(
+							user.stripeToken, {
+								legal_entity: {
+									ssn_last_4,
+									dob: {
+										day: dob_day,
+										month: dob_month,
+										year: dob_year
+									},
+									address: {
+										city,
+										country: 'US',
+										line1,
+										line2: null,
+										postal_code,
+										state,
+									},
+								},
+							},
+							function (err, account) {
+								if (err) {
+									res.status(500).send(err);
+								} else {
+									user.stripeVerified = true;
+									user.save()
+										.then(() => {
+											res.status(200).json({
+												message: "Verification Sent",
+												verification: true
+											})
+										});
+								}
+								console.log(account)
+							});
+					}
+				})
+				.catch(err => {
+					console.log("oh no!")
+					res.status(500).send(err);
+				});
+		} else {
+			res.status(401).json({
+				message: 'Token has expired'
+			});
+		}
+	});
 
-	User.findOne({
-			email
-		}, function (err, user) {
-			if (err) {
-				res.status(401).json({
-					message: "Error communicating with database",
-				});
-			} else if (!user) {
-				res.status(401).json({
-					message: "A user with this email address was not found",
-				});
-			} else {
-				console.log("in verify")
-				stripe.accounts.update(
-					user.stripeToken, {
-						legal_entity: {
-							ssn_last_4,
-							dob: {
-								day: dob_day,
-								month: dob_month,
-								year: dob_year
-							},
-							address: {
-								city,
-								country: 'US',
-								line1,
-								line2: null,
-								postal_code,
-								state,
-							},
-						},
-					},
-					function (err, account) {
-						if (err) {
-							res.status(500).send(err);
-						} else {
-							user.stripeVerified = true;
-							user.save()
-								.then(() => {
-									res.status(200).json({
-										message: "Verification Sent",
-										verification: true
-									})
-								});
-						}
-						console.log(account)
-					});
-			}
-		})
-		.catch(err => {
-			console.log("oh no!")
-			res.status(500).send(err);
-		});
+
 }
 
 function getTransactions(req, res) {
