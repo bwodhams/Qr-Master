@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('closeAddNewCardBtn').addEventListener('click', closeAddNewCardWindow);
     document.getElementById('submitNewCardBtn').addEventListener('click', addNewCard);
     document.getElementById('submitNewBankBtn').addEventListener('click', addNewBank);
+    document.getElementById('submitVerifyStripeBtn').addEventListener('click', verifyStripe);
 });
 
 function getCards() {
@@ -274,20 +275,85 @@ function addNewBankResponse() {
             document.getElementById('addNewBank').style.display = "none";
             getCards();
         } else {
-
+            prepareVerifyStripe();
         }
-        console.log(this.response);
     } else {
         serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
     }
 }
 
+function prepareVerifyStripe() {
+    var addNewBankDiv = document.getElementById('addNewBank');
+    var verifyStripeDiv = document.getElementById('verifyStripe');
+    addNewBankDiv.style.display = "none";
+    verifyStripeDiv.style.display = "";
+}
+
+function verifyStripe() {
+    var ssnLastDigits = document.getElementById('ssnInfo').value;
+    var userAddress = document.getElementById('userAddress').value;
+    var userCity = document.getElementById('userCity').value;
+    var userState = document.getElementById('userState').value;
+    var userZip = document.getElementById('userZip').value;
+    var userBday = document.getElementById('userBday').value;
+    var form = document.getElementById('verifyStripeForm');
+    var loadingCircle = document.getElementById('loadingImgStripe');
+
+    document.getElementById('ssnInfo').readOnly = true;
+    document.getElementById('userAddress').readOnly = true;
+    document.getElementById('userCity').readOnly = true;
+    document.getElementById('userState').readOnly = true;
+    document.getElementById('userZip').readOnly = true;
+    document.getElementById('submitVerifyStripeBtn').disabled = true;
+
+    if (ssnLastDigits.length == 0 || userAddress.length == 0 || userCity.length == 0 || userState.length == 0 || userZip.length == 0 || userBday.length == 0) {
+        serverResponse.innerHTML = "<span class='red-response'>" + "All fields must be filled out." + "</span>";
+        resetFields();
+    } else {
+        if (userBday.length != 10) {
+            serverResponse.innerHTML = "<span class='red-response'>" + "Birthday not entered correctly." + "</span>";
+            resetFields();
+        } else {
+            var dobMonth = userBday.substring(0, 2);
+            var dobDay = userBday.substring(3, 5);
+            var dobYear = userBday.substring(6, 10);
+            form.style.filter = "blur(4px)";
+            loadingCircle.innerHTML = '<img src="../images/loading_screen.svg" alt="loading" height="125px" width="125px">';
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener('load', addNewBankResponse);
+            xhr.responseType = 'json';
+            xhr.open('POST', '/api/user/verifyStripe');
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.setRequestHeader('authorization', localStorage.getItem('qr4gloginAuthTokenDesktop'));
+            xhr.send(
+                JSON.stringify({
+                    email: getCookie("accEmail"),
+                    ssn_last_4: ssnLastDigits,
+                    dob_day: dobDay,
+                    dob_month: dobMonth,
+                    dob_year: dobYear,
+                    city: userCity,
+                    line1: userAddress,
+                    postal_code: userZip,
+                    state: userState
+                })
+            );
+        }
+    }
+
+}
 
 function resetFields() {
     document.getElementById('firstLastName').readOnly = false;
     document.getElementById('bankRoutingNum').readOnly = false;
     document.getElementById('bankAccNum').readOnly = false;
+    document.getElementById('ssnInfo').readOnly = false;
+    document.getElementById('userAddress').readOnly = false;
+    document.getElementById('userCity').readOnly = false;
+    document.getElementById('userState').readOnly = false;
+    document.getElementById('userZip').readOnly = false;
     document.getElementById('submitNewBankBtn').disabled = false;
+    document.getElementById('submitVerifyStripeBtn').disabled = false;
 }
 
 

@@ -2059,11 +2059,18 @@ a {
     z-index: 2;
 }
 
-.loadingImageBank,
-.loadingImageStripe img {
+.loadingImageBank img {
     position: absolute;
     width: 100%;
     top: 290px;
+    left: 0;
+    z-index: 2;
+}
+
+.loadingImageStripe img {
+    position: absolute;
+    width: 100%;
+    top: 385px;
     left: 0;
     z-index: 2;
 }

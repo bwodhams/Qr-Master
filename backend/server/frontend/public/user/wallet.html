@@ -145,14 +145,24 @@
                 </div>
                 <div id="verifyStripe" style="display: none">
                     <div class="loadingImageStripe" id="loadingImgStripe"></div>
-                    <div class="form" id="inputBankForm" style="max-width: 320px; padding: 25px">
-                        <label>Name</label>
-                        <input type="text" name="name" id="firstLastName" class="form-control" />
-                        <label>Routing Number</label>
-                        <input type="number" name="bankRoutingNum" id="bankRoutingNum" class="form-control" />
-                        <label>Account Number</label>
-                        <input type="number" name="bankAccNum" id="bankAccNum" class="form-control" />
-                        <button id="submitNewBankBtn">submit</button>
+                    <div class="form" id="verifyStripeForm" style="max-width: 320px; padding: 25px">
+                        <span id="firstTime">Looks like we need a little more information from you, in order to transfer
+                            money to this bank account.</span><br>
+                        <label>SSN - Last 4 Digits</label>
+                        <input type="text" name="ssnInfo" id="ssnInfo" class="form-control" />
+                        <label>Address</label>
+                        <input type="text" name="userAddress" id="userAddress" placeholder="123 Abc Street"
+                            class="form-control" />
+                        <label>City</label>
+                        <input type="text" name="userCity" id="userCity" placeholder="Seattle" class="form-control" />
+                        <label>State</label>
+                        <input type="text" name="userState" id="userState" placeholder="Washington"
+                            class="form-control" />
+                        <label>Zip Code</label>
+                        <input type="number" name="userZip" id="userZip" placeholder="12345" class="form-control" />
+                        <input type="text" name="userBday" id="userBday" placeholder="MM/DD/YYYY"
+                            class="form-control" />
+                        <button id="submitVerifyStripeBtn">submit</button>
                     </div>
                 </div>
             </div>
