@@ -6,67 +6,114 @@
  *  @author Benjamin Wodhams, Amanda Chesin
 
 -->
+
+
 <!DOCTYPE html>
 <html>
 <title>QR4G - Help</title>
 
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="javascripts/home.js" defer></script>
+    <script src="javascripts/tos.js" defer></script>
     <script src="javascripts/user/logout.js" defer></script>
 </head>
 
 <body>
-	    <div id="header">
-        <!-- Navbar -->
-        <div class="w3-top">
-            <div class="w3-bar w3-blue w3-card">
-                <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
-                    href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i
-                        class="fa fa-bars"></i></a>
-                <a href="/" class="w3-bar-item w3-button w3-padding-large"><img src="images/logo.png" alt="QR4G Logo"
-                        height="45" width="45"> QR4G</a>
-                <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" style="float:right" id="logoutBtn"><img
-                        src="images/logout.png" alt="Logout Img" height="25" width="25"></a>
-                <a href="user/account.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
-                    style="float:right">ACCOUNT</a>
-                <a href="user/qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
-                    style="float:right">MY QR</a>
-                <a href="user/qrcode/create.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
-                    style="float:right">CREATE QR</a>
-                <a href="user/wallet.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
-                    style="float:right">WALLET</a>
-                <a href="user/transaction/history.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
-                    style="float:right">TRANSACTIONS</a>
+    <div id="header">
+        <div id="loggedInHeader" style="display: none">
+            <!-- Navbar -->
+            <div class="w3-top">
+                <div class="w3-bar w3-blue w3-card">
+                    <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
+                        href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i
+                            class="fa fa-bars"></i></a>
+                    <a href="/" class="w3-bar-item w3-button w3-padding-large"><img src="images/logo.png"
+                            alt="QR4G Logo" height="45" width="45"> QR4G</a>
+                    <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" style="float:right"
+                        id="logoutBtn"><img src="images/logout.png" alt="Logout Img" height="25" width="25"></a>
+                    <a href="user/account.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                        style="float:right">ACCOUNT</a>
+                    <a href="user/qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                        style="float:right">MY QR</a>
+                    <a href="user/qrcode/create.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                        style="float:right">CREATE QR</a>
+                    <a href="user/wallet.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                        style="float:right">WALLET</a>
+                    <a href="user/transaction/history.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                        style="float:right">TRANSACTIONS</a>
+                </div>
+            </div>
+
+            <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+            <div id="hamburgerButton" class="w3-bar-block w3-blue w3-hide w3-hide-large w3-hide-medium w3-top"
+                style="margin-top:70px">
+                <a href="user/transaction/history.html" class="w3-bar-item w3-button w3-padding-large"
+                    onclick="myFunction()">TRANSACTIONS</a>
+                <a href="user/wallet.html" class="w3-bar-item w3-button w3-padding-large"
+                    onclick="myFunction()">WALLET</a>
+                <a href="user/qrcode/create.html" class="w3-bar-item w3-button w3-padding-large"
+                    onclick="myFunction()">CREATE QR</a>
+                <a href="user/qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large"
+                    onclick="myFunction()">MY
+                    QR</a>
+                <a href="user/account.html" class="w3-bar-item w3-button w3-padding-large"
+                    onclick="myFunction()">ACCOUNT</a>
+                <a class="w3-bar-item w3-button w3-padding-large" id="logoutBtnMini">LOGOUT</a>
+            </div>
+        </div>
+        <div id="loggedOutHeader">
+            <!-- Navbar -->
+            <div class="w3-top">
+                <div class="w3-bar w3-blue w3-card">
+                    <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
+                        href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i
+                            class="fa fa-bars"></i></a>
+                    <a href="/" class="w3-bar-item w3-button w3-padding-large"><img src="images/logo.png"
+                            alt="QR4G Logo" height="45" width="45"> QR4G</a>
+                    <a href="login.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                        style="float:right">LOGIN</a>
+                    <a href="register.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small"
+                        style="float:right">REGISTER</a>
+                </div>
+            </div>
+
+            <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+            <div id="hamburgerButton" class="w3-bar-block w3-blue w3-hide w3-hide-large w3-hide-medium w3-top"
+                style="margin-top:70px">
+                <a href="register.html" class="w3-bar-item w3-button w3-padding-large"
+                    onclick="myFunction()">REGISTER</a>
+                <a href="login.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">LOGIN</a>
             </div>
         </div>
 
-        <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
-        <div id="hamburgerButton" class="w3-bar-block w3-blue w3-hide w3-hide-large w3-hide-medium w3-top"
-            style="margin-top:70px">
-            <a href="user/transaction/history.html" class="w3-bar-item w3-button w3-padding-large"
-                onclick="myFunction()">TRANSACTIONS</a>
-            <a href="user/wallet.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">WALLET</a>
-            <a href="user/qrcode/create.html" class="w3-bar-item w3-button w3-padding-large"
-                onclick="myFunction()">CREATE QR</a>
-            <a href="user/qrcode/saved.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">MY
-                QR</a>
-            <a href="user/account.html" class="w3-bar-item w3-button w3-padding-large"
-                onclick="myFunction()">ACCOUNT</a>
-            <a class="w3-bar-item w3-button w3-padding-large" id="logoutBtnMini">LOGOUT</a>
-        </div>
     </div>
 
     <div id="mainSection">
         <div class="w3-content" style="max-width:2000px;margin-top:46px">
             <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
-                <h2 class="w3-wide" id="welcomeText"></h2>
-                <p class="w3-opacity"><i>Thanks for giving!</i></p>
+                <p class="w3-center">
+                <h1>Help- Frequenty Asked Questions</h1>
+
+                <h2 class="w3-justify">How do I scan a QR code?</h2>
+                <p class="w3-justify">Unfortunately, QR code scanning functionality is only available on our mobile phone app. Download Microsoft Give on the app store today.</p>
+
+                <h2 class="w3-justify">How can I generate a QR code?</h2>
+                <p class="w3-justify"> By pressing on the hamburger side menu at the top, you can choose “Generate a QR Code” tap, which will take you to a new page. In this new page you will be able to enter the name of the QR code, the default money amount you’d like to request, and whether this is a service or a donation. Then, click “Update QR Code”, which will generate the QR code for you.</p>
+
+                <h2 class="w3-justify">How do I add my credit card information?</h2>
+                <p class="w3-justify">By pressing on the hamburger side menu at the top, you can select “Wallet”, which will take you to a new page. At the bottom of this page, click the “Add New Payment Method” button. You will be redirected to a new page where you can enter all of your cards information, including credit card number, expiration date, CVC, name on card, and zip code.</p>
+
+                <h2 class="w3-justify">How can I receive payments?</h2>
+                <p class="w3-justify">You should be able to receive the payments directly on your bank account, however you will need to allow 3-5 business days before the transaction is complete.</p>
+
+                <h2 class="w3-justify">What if I don’t want my personal information to show when I donate money?</h2>
+                <p class="w3-justify">On the mobile app, when you scan a QR code you will be taken to the payment page where there’ a check mark at the bottom of the screen that says “Make Donation Anonymous”. By checking this, the other party will not be able to see any of your information.</p>
+                </p>
             </div>
         </div>
     </div>
@@ -79,24 +126,7 @@
             <a href="help.html">Help</a>
         </footer>
     </div>
-<h1>Help- Frequenty Asked Questions</h1>
-
-<h2>How do I scan a QR code?</h2>
-<p>Unofortunately, QR code scanning functionality is only available on our mobile phone app. Download Microsoft Give on the app store today.</p>
-
-<h2>How can I generate a QR code?</h2>
-<p> By pressing on the hamburger side menu at the top, you can choose “Generate a QR Code” tap, which will take you to a new page. In this new page you will be able to enter the name of the QR code, the default money amount you’d like to request, and whether this is a service or a donation. Then, click “Update QR Code”, which will generate the QR code for you.</p>
-
-<h2>How do I add my credit card information?</h2>
-<p>By pressing on the hamburger side menu at the top, you can select “Wallet”, which will take you to a new page. At the bottom of this page, click the “Add New Payment Method” button. You will be redirected to a new page where you can enter all of your cards information, including credit card number, expiration date, CVC, name on card, and zip code.</p>
-
-<h2>How can I receive payments?</h2>
-<p>You should be able to receive the payments directly on your bank account, however you will need to allow 3-5 business days before the transaction is complete.</p>
-
-<h2>What if I don’t want my personal information to show when I donate money?</h2>
-<p>On the mobile app, when you scan a QR code you will be taken to the payment page where there’ a check mark at the bottom of the screen that says “Make Donation Anonymous”. By checking this, the other party will not be able to see any of your information.</p>
-
- <script>
+    <script>
         // Used to toggle the menu on small screens when clicking on the menu button
         function myFunction() {
             var x = document.getElementById("hamburgerButton");
@@ -107,7 +137,7 @@
             }
         }
     </script>
-    
+
 </body>
 
 </html>
