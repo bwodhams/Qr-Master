@@ -5,6 +5,7 @@
  *  @author Benjamin Wodhams
  *
  */
+
 var allMyCards = undefined;
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('addNewCardBtn').addEventListener('click', prepareAddNewCard);
     document.getElementById('addNewBankBtn').addEventListener('click', prepareAddNewBank);
     document.getElementById('closeAddNewCardBtn').addEventListener('click', closeAddNewCardWindow);
+    document.getElementById('closeAddNewBankBtn').addEventListener('click', closeAddNewBankWindow);
     document.getElementById('submitNewCardBtn').addEventListener('click', addNewCard);
     document.getElementById('submitNewBankBtn').addEventListener('click', addNewBank);
     document.getElementById('submitVerifyStripeBtn').addEventListener('click', verifyStripe);
@@ -30,7 +32,6 @@ function getCards() {
 }
 
 function getCardsResponse() {
-    console.log(this.response);
     var response = this.response;
     if (this.status === 200) {
         allMyCards = this.response;
@@ -69,7 +70,6 @@ function getCardsResponse() {
 }
 
 function makePrimary(elem, response) {
-    console.log(response);
     var primaryCardIndex = elem.substring(13);
     var primaryCardImage = document.getElementById('cardImage' + primaryCardIndex);
     for (var i = 0; i < response.name.length; i++) {
@@ -268,11 +268,14 @@ function addNewBankResponse() {
     var serverResponse = document.getElementById('serverResponse');
     var form = document.getElementById('inputBankForm');
     var loadingCircle = document.getElementById('loadingImgBank');
+    var myCardsContainer = document.getElementById('myCardsContainer');
     form.style.filter = "";
     loadingCircle.innerHTML = '';
+    resetFields();
     if (this.status === 200) {
         if (this.response.stripeVerified == true) {
             document.getElementById('addNewBank').style.display = "none";
+            myCardsContainer.style.display = "";
             getCards();
         } else {
             prepareVerifyStripe();
@@ -280,6 +283,13 @@ function addNewBankResponse() {
     } else {
         serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
     }
+}
+
+function closeAddNewBankWindow() {
+    var addNewBankContainer = document.getElementById('addNewBank');
+    var myCardsContainer = document.getElementById('myCardsContainer');
+    addNewBankContainer.style.display = "none";
+    myCardsContainer.style.display = "";
 }
 
 function prepareVerifyStripe() {
@@ -317,10 +327,11 @@ function verifyStripe() {
             var dobMonth = userBday.substring(0, 2);
             var dobDay = userBday.substring(3, 5);
             var dobYear = userBday.substring(6, 10);
+            serverResponse.innerHTML = "";
             form.style.filter = "blur(4px)";
             loadingCircle.innerHTML = '<img src="../images/loading_screen.svg" alt="loading" height="125px" width="125px">';
             var xhr = new XMLHttpRequest();
-            xhr.addEventListener('load', addNewBankResponse);
+            xhr.addEventListener('load', verifyStripeResponse);
             xhr.responseType = 'json';
             xhr.open('POST', '/api/user/verifyStripe');
             xhr.setRequestHeader('Content-type', 'application/json');
@@ -340,7 +351,27 @@ function verifyStripe() {
             );
         }
     }
+}
 
+function verifyStripeResponse() {
+    var serverResponse = document.getElementById('serverResponse');
+    var form = document.getElementById('verifyStripeForm');
+    var loadingCircle = document.getElementById('loadingImgStripe');
+    var myCardsContainer = document.getElementById('myCardsContainer');
+    form.style.filter = "";
+    loadingCircle.innerHTML = '';
+    resetFields();
+    if (this.status === 200) {
+        if (this.response.verification == true) {
+            document.getElementById('verifyStripe').style.display = "none";
+            myCardsContainer.style.display = "";
+            getCards();
+        } else {
+            serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+        }
+    } else {
+        serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+    }
 }
 
 function resetFields() {
