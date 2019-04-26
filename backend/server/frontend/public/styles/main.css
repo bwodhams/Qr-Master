@@ -2059,7 +2059,17 @@ a {
     z-index: 2;
 }
 
-#inputForm input[disabled] {
+.loadingImageBank,
+.loadingImageStripe img {
+    position: absolute;
+    width: 100%;
+    top: 290px;
+    left: 0;
+    z-index: 2;
+}
+
+#inputForm,
+#inputBankForm input[disabled] {
     color: rgb(146, 146, 146);
     background-image: none;
 }
@@ -2848,4 +2858,10 @@ input[type=search] {
     margin-top: -15px;
     margin-right: -5px;
     cursor: pointer;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

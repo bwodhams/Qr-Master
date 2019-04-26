@@ -20,7 +20,8 @@ function register() {
     var serverResponse = document.getElementById('serverResponse');
 
     if (name.value == "" || email.value == "" || password.value == "" || confirmPassword.value == "") {
-        serverResponse.innerHTML = "<span class='red-response'>All fields required.</span>"
+        serverResponse.innerHTML = "<span class='red-response'>All fields required.</span>";
+        resetFields();
     } else {
         var errorCheck = registrationErrorCheck(name.value, email.value, password.value, confirmPassword.value);
         if (errorCheck.length > 0) {
@@ -67,9 +68,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function resetFields() {
     document.getElementById('name').readOnly = false;
-    document.getElementById('email').readOnly = false;;
-    document.getElementById('password').readOnly = false;;
-    document.getElementById('confirmPassword').readOnly = false;;
+    document.getElementById('email').readOnly = false;
+    document.getElementById('password').readOnly = false;
+    document.getElementById('confirmPassword').readOnly = false;
     document.getElementById('registerBtn').disabled = false;
 }
 

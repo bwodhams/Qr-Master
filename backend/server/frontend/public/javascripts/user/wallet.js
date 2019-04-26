@@ -12,8 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
     loadingCircle.innerHTML = '<img src="../images/loading_screen.svg" alt="loading" height="125px" width="125px">';
     getCards();
     document.getElementById('addNewCardBtn').addEventListener('click', prepareAddNewCard);
+    document.getElementById('addNewBankBtn').addEventListener('click', prepareAddNewBank);
     document.getElementById('closeAddNewCardBtn').addEventListener('click', closeAddNewCardWindow);
     document.getElementById('submitNewCardBtn').addEventListener('click', addNewCard);
+    document.getElementById('submitNewBankBtn').addEventListener('click', addNewBank);
 });
 
 function getCards() {
@@ -34,6 +36,7 @@ function getCardsResponse() {
         var loadingCircle = document.getElementById('loadingImg');
         var allCards = document.getElementById('myCards');
         var addNewCardBtn = document.getElementById('addNewCardBtn');
+        var addNewBankBtn = document.getElementById('addNewBankBtn');
         var outputHTML = '<span class="selectPrimaryText">Click on a card to select as your primary payment method</span><br>';
         for (var i = 0; i < this.response.name.length; i++) {
             if (this.response.primaryCard[i] == true) {
@@ -57,6 +60,7 @@ function getCardsResponse() {
         }
         loadingCircle.style.display = "none";
         addNewCardBtn.style.display = "";
+        addNewBankBtn.style.display = "";
     } else {
         var serverResponse = document.getElementById('serverResponse');
         serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
@@ -214,6 +218,78 @@ function closeAddNewCardWindow() {
     addNewCardContainer.style.display = "none";
     myCardsContainer.style.display = "";
 }
+
+function prepareAddNewBank() {
+    var myCardsContainer = document.getElementById('myCardsContainer');
+    var addNewBankDiv = document.getElementById('addNewBank');
+    addNewBankDiv.style.display = "";
+    myCardsContainer.style.display = "none";
+}
+
+function addNewBank() {
+    var form = document.getElementById('inputBankForm');
+    var loadingCircle = document.getElementById('loadingImgBank');
+    var name = document.getElementById('firstLastName').value;
+    var routingNum = document.getElementById('bankRoutingNum').value;
+    var accountNum = document.getElementById('bankAccNum').value;
+    var serverResponse = document.getElementById('serverResponse');
+
+    document.getElementById('firstLastName').readOnly = true;
+    document.getElementById('bankRoutingNum').readOnly = true;
+    document.getElementById('bankAccNum').readOnly = true;
+    document.getElementById('submitNewBankBtn').disabled = true;
+
+    if (name.length == 0 || routingNum.length == 0 || accountNum.length == 0) {
+        serverResponse.innerHTML = "<span class='red-response'>" + "All fields must be filled out." + "</span>";
+        resetFields();
+    } else {
+        form.style.filter = "blur(4px)";
+        loadingCircle.innerHTML = '<img src="../images/loading_screen.svg" alt="loading" height="125px" width="125px">';
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', addNewBankResponse);
+        xhr.responseType = 'json';
+        xhr.open('POST', '/api/user/updateStripe');
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', localStorage.getItem('qr4gloginAuthTokenDesktop'));
+        xhr.send(
+            JSON.stringify({
+                email: getCookie("accEmail"),
+                name: name,
+                routing_number: routingNum,
+                account_number: accountNum,
+                card: false
+            })
+        );
+    }
+}
+
+function addNewBankResponse() {
+    var serverResponse = document.getElementById('serverResponse');
+    var form = document.getElementById('inputBankForm');
+    var loadingCircle = document.getElementById('loadingImgBank');
+    form.style.filter = "";
+    loadingCircle.innerHTML = '';
+    if (this.status === 200) {
+        if (this.response.stripeVerified == true) {
+            document.getElementById('addNewBank').style.display = "none";
+            getCards();
+        } else {
+
+        }
+        console.log(this.response);
+    } else {
+        serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+    }
+}
+
+
+function resetFields() {
+    document.getElementById('firstLastName').readOnly = false;
+    document.getElementById('bankRoutingNum').readOnly = false;
+    document.getElementById('bankAccNum').readOnly = false;
+    document.getElementById('submitNewBankBtn').disabled = false;
+}
+
 
 function getCookie(cname) {
     var name = cname + "=";

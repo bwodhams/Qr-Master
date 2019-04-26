@@ -69,14 +69,15 @@
                 <h2 class="w3-wide">My Wallet</h2><br>
                 <div id="serverResponse"></div>
                 <div class="register-page" id="myCardsContainer">
-                    <div class="form" id="inputForm" style="max-width: 270px; padding: 5px">
+                    <div class="form" style="max-width: 270px; padding: 5px">
                         <div id="loadingImg"></div>
                         <div id="myCards"></div>
-                        <button id="addNewCardBtn" style="display: none">add new card</button>
+                        <button id="addNewCardBtn" style="display: none; width: 45%">add card</button>
+                        <button id="addNewBankBtn" style="display: none; width: 45%">add bank</button>
                     </div>
                 </div>
                 <div id="addNewCard" style="display: none">
-                    <div class="form" id="inputForm" style="max-width: 400px; padding: 15px">
+                    <div class="form" style="max-width: 400px; padding: 15px">
                         <img src="../images/closeButton.png" alt="close" id="closeAddNewCardBtn">
                         <form>
                             <div class="well">
@@ -128,6 +129,30 @@
                             </div>
                         </form>
                         <button id="submitNewCardBtn" style="width: 50%">submit</button>
+                    </div>
+                </div>
+                <div id="addNewBank" style="display: none">
+                    <div class="loadingImageBank" id="loadingImgBank"></div>
+                    <div class="form" id="inputBankForm" style="max-width: 320px; padding: 25px">
+                        <label>Name</label>
+                        <input type="text" name="name" id="firstLastName" class="form-control" />
+                        <label>Routing Number</label>
+                        <input type="number" name="bankRoutingNum" id="bankRoutingNum" class="form-control" />
+                        <label>Account Number</label>
+                        <input type="number" name="bankAccNum" id="bankAccNum" class="form-control" />
+                        <button id="submitNewBankBtn">submit</button>
+                    </div>
+                </div>
+                <div id="verifyStripe" style="display: none">
+                    <div class="loadingImageStripe" id="loadingImgStripe"></div>
+                    <div class="form" id="inputBankForm" style="max-width: 320px; padding: 25px">
+                        <label>Name</label>
+                        <input type="text" name="name" id="firstLastName" class="form-control" />
+                        <label>Routing Number</label>
+                        <input type="number" name="bankRoutingNum" id="bankRoutingNum" class="form-control" />
+                        <label>Account Number</label>
+                        <input type="number" name="bankAccNum" id="bankAccNum" class="form-control" />
+                        <button id="submitNewBankBtn">submit</button>
                     </div>
                 </div>
             </div>
