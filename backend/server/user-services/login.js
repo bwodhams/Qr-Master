@@ -738,8 +738,7 @@ function updateResetPassword(req, res) {
 		resetPasswordCode,
 		newPassword
 	} = req.body;
-	email = email.toLowercase();
-
+	email = email.toLowerCase();
 	User.findOne({
 			email
 		},
@@ -754,7 +753,7 @@ function updateResetPassword(req, res) {
 				});
 			} else {
 				if (user.resetPassword == true) {
-					if ((user.resetPasswordCode = resetPasswordCode)) {
+					if (user.resetPasswordCode == resetPasswordCode) {
 						bcrypt.genSalt(10, function (err, salt) {
 							bcrypt.hash(newPassword, salt, function (err, passwordHash) {
 								user.passwordHash = passwordHash;
