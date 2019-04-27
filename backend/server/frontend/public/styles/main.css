@@ -2901,3 +2901,10 @@ input[type=number]::-webkit-outer-spin-button {
     margin-right: -15px;
     padding-left: 50px;
 }
+
+.paymentFromAnon {
+    float: right;
+    margin-top: -50px;
+    margin-right: -15px;
+    padding-left: 50px;
+}

@@ -62,7 +62,11 @@ function displayMyReceivedPayments(payments) {
             var paymentDate = payments[i].date.substring(5, 7);
             paymentDate += '/' + payments[i].date.substring(8, 10);
             paymentDate += '/' + payments[i].date.substring(0, 4);
-            outputHTML += '<div id="rPayment' + i + '" class="well"><div class="leftSideInfo"><span class="paymentAmount">+$' + payments[i].amount + '</span><br><span class="paymentDate">' + paymentDate + '</span></div><span class="paymentFrom"><img src="../../images/userIcon.png" alt="loading" height="25px" width="25px">' + payments[i].name + ' paid you</span></div>';
+            if (payments[i].anonymous == true) {
+                outputHTML += '<div id="rPayment' + i + '" class="well"><div class="leftSideInfo"><span class="paymentAmount">+$' + payments[i].amount + '</span><br><span class="paymentDate">' + paymentDate + '</span></div><span class="paymentFromAnon"><img src="../../images/anonIcon.png" alt="loading" height="35px" width="35px">Anonymous paid you</span></div>';
+            } else {
+                outputHTML += '<div id="rPayment' + i + '" class="well"><div class="leftSideInfo"><span class="paymentAmount">+$' + payments[i].amount + '</span><br><span class="paymentDate">' + paymentDate + '</span></div><span class="paymentFrom"><img src="../../images/userIcon.png" alt="loading" height="25px" width="25px">' + payments[i].name + ' paid you</span></div>';
+            }
         }
         myReceivedPaymentsDiv.innerHTML = outputHTML;
 
