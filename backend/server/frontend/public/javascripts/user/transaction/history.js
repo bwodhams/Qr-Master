@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
     getAllTransactions();
 });
 
-//My QRCodes
 function getAllTransactions() {
     var xhr = new XMLHttpRequest();
     xhr.addEventListener('load', getAllTransactionsResponse);
@@ -44,10 +43,22 @@ function getAllTransactionsResponse() {
 
 function displayMyPayments(payments) {
     var myServerResponse = document.getElementById('myServerResponse');
+    var myPaymentsDiv = document.getElementById('myPaymentsWell');
+    var outputHTML = "";
     if (payments.length == 0) {
         myServerResponse.innerHTML = "<span class='red-response'>You haven't made any payments yet.</span>";
     } else {
-
+        for (var i = 0; i < payments.length; i++) {
+            var paymentDate = payments[i].date.substring(5, 7);
+            paymentDate += '/' + payments[i].date.substring(8, 10);
+            paymentDate += '/' + payments[i].date.substring(0, 4);
+            if (payments[i].anonymous == true) {
+                outputHTML += '<div id="myPayment' + i + '" class="well"><span class="paymentAmount">-$' + parseFloat(payments[i].amount).toFixed(2) + '</span><span class="paymentToAnon"><img src="../../images/anonIcon.png" alt="loading" height="35px" width="35px">You paid ' + payments[i].name + '</span><br><span class="paymentDate">' + paymentDate + '</span></div>';
+            } else {
+                outputHTML += '<div id="myPayment' + i + '" class="well"><span class="paymentAmount">-$' + parseFloat(payments[i].amount).toFixed(2) + '</span><span class="paymentTo"><img src="../../images/userIcon.png" alt="loading" height="25px" width="25px">You paid ' + payments[i].name + '</span><br><span class="paymentDate">' + paymentDate + '</span></div>';
+            }
+        }
+        myPaymentsDiv.innerHTML = outputHTML;
     }
 }
 
@@ -63,12 +74,11 @@ function displayMyReceivedPayments(payments) {
             paymentDate += '/' + payments[i].date.substring(8, 10);
             paymentDate += '/' + payments[i].date.substring(0, 4);
             if (payments[i].anonymous == true) {
-                outputHTML += '<div id="rPayment' + i + '" class="well"><div class="leftSideInfo"><span class="paymentAmount">+$' + payments[i].amount + '</span><br><span class="paymentDate">' + paymentDate + '</span></div><span class="paymentFromAnon"><img src="../../images/anonIcon.png" alt="loading" height="35px" width="35px">Anonymous paid you</span></div>';
+                outputHTML += '<div id="rPayment' + i + '" class="well"><span class="paymentAmount">+$' + parseFloat(payments[i].amount).toFixed(2) + '</span><span class="paymentFromAnon"><img src="../../images/anonIcon.png" alt="loading" height="35px" width="35px">Anonymous paid you</span><br><span class="paymentDate">' + paymentDate + '</span></div>';
             } else {
-                outputHTML += '<div id="rPayment' + i + '" class="well"><div class="leftSideInfo"><span class="paymentAmount">+$' + payments[i].amount + '</span><br><span class="paymentDate">' + paymentDate + '</span></div><span class="paymentFrom"><img src="../../images/userIcon.png" alt="loading" height="25px" width="25px">' + payments[i].name + ' paid you</span></div>';
+                outputHTML += '<div id="rPayment' + i + '" class="well"><span class="paymentAmount">+$' + parseFloat(payments[i].amount).toFixed(2) + '</span><span class="paymentFrom"><img src="../../images/userIcon.png" alt="loading" height="25px" width="25px">' + payments[i].name + ' paid you</span><br><span class="paymentDate">' + paymentDate + '</span></div>';
             }
         }
         myReceivedPaymentsDiv.innerHTML = outputHTML;
-
     }
 }
