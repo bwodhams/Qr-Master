@@ -2880,3 +2880,24 @@ input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+.paymentAmount {
+    float: left;
+    margin-top: -20px;
+    margin-left: -10px;
+    font-size: 18px;
+}
+
+.paymentDate {
+    float: left;
+    font-size: 12px;
+    margin-top: -5px;
+    margin-left: -10px;
+}
+
+.paymentFrom {
+    float: right;
+    margin-top: -40px;
+    margin-right: -15px;
+    padding-left: 50px;
+}
