@@ -15,7 +15,7 @@ function changePassword() {
 	var confirmNewPassword = document.getElementById('newPasswordConfirm').value;
 
 	if (newPassword != confirmNewPassword) {
-		document.getElementById('response').innerHTML = "Passwords don't match";
+		document.getElementById('serverResponse').innerHTML = "Passwords don't match";
 	} else {
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('load', changePasswordResponse);
@@ -35,10 +35,10 @@ function changePassword() {
 
 function changePasswordResponse() {
 	if (this.status === 201) {
-		document.getElementById('response').innerHTML =
+		document.getElementById('serverResponse').innerHTML =
 			'Password successfully changed. You may now login with your new password.';
 	} else {
-		document.getElementById('response').innerHTML = JSON.stringify(this.response);
+		document.getElementById('serverResponse').innerHTML = JSON.stringify(this.response);
 	}
 }
 document.addEventListener('DOMContentLoaded', function () {
