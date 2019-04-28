@@ -19,15 +19,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function sendEmail() {
-    var success = document.getElementById('success_message');
-    var form = document.getElementById('contact_form');
-    success.style.display = "";
-    form.style.display = "none";
-    removeElement('contact_form');
+    var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+    var message = document.getElementById('message').value;
+    var serverResponse = document.getElementById('serverResponse');
+    serverResponse.innerHTML = "";
+    if (name.length == 0 || email.length == 0 || message.length == 0) {
+        serverResponse.innerHTML = "<span class='red-response'>All fields must be filled out.</span>";
+    } else {
+        if (getCookie('sentEmail').length == 0) {
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener('load', sendEmailResponse);
+            xhr.responseType = 'json';
+            xhr.open('POST', '/api/user/contactUs');
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.send(
+                JSON.stringify({
+                    email: email,
+                    name: name,
+                    message: message
+                })
+            );
+        } else {
+            serverResponse.innerHTML = "<span class='red-response'>You have recently sent us an email, please wait a few minutes before sending again. If this message persists, please reload the page.</span>";
+        }
+
+    }
+
 }
 
 function sendEmailResponse() {
-
+    var serverResponse = document.getElementById('serverResponse');
+    var successMessage = document.getElementById('success_message');
+    var formDiv = document.getElementById('contact_form');
+    if (this.status == 201) {
+        formDiv.style.display = "none";
+        successMessage.style.display = "";
+    } else {
+        serverResponse.innerHTML = "<span class='red-response'>" + this.response.message + "</span>";
+    }
 }
 
 function getCookie(cname) {

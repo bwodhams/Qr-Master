@@ -874,13 +874,12 @@ function contactUsEmail(req, res) {
 		email,
 		message
 	} = req.body;
-
 	if (req.cookies['sentEmail'] == undefined) {
 		mailOptions = {
-			from: '"Support Request" <' + email + '>',
-			to: "contact@qrcodes4good.com",
+			from: '"Support Request" <support@qrcodes4good.com>',
+			to: "support@qrcodes4good.com",
 			subject: 'ContactUs Request From ' + name,
-			html: message
+			html: name + ' "' + email + '" has sent the following message : <br><br><br>' + message
 		};
 		smtpTransport.sendMail(mailOptions, function (error, response) {
 			if (error) {
