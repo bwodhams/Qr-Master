@@ -136,11 +136,12 @@ function acceptTos(req, res) {
 }
 
 async function create(req, res) {
-	const {
+	var {
 		email,
 		name,
 		password
 	} = req.body;
+	email = email.toLowerCase();
 	let emailVerifCode = randomVerificationCode(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 	let loginAuthToken = jwt.sign({
 			email: email
@@ -244,7 +245,7 @@ function update(req, res) {
 		newPassword,
 		confirmNewPassword
 	} = req.body;
-	var email = req.body.email;
+	var email = req.body.email.toLowerCase();
 	var changePass = false;
 	if (email == undefined || currentPassword == undefined) {
 		res.status(400).json({
@@ -501,11 +502,12 @@ function bioLogin(req, res) {
 }
 
 function login(req, res) {
-	const {
+	var {
 		email,
 		inputPassword,
 		devID
 	} = req.body;
+	email = email.toLowerCase();
 	if (email == undefined) {
 		res.status(400).json({
 			message: 'Request must have an email in the body.',
@@ -665,9 +667,10 @@ function verify(req, res) {
 }
 
 function forgotPassword(req, res) {
-	const {
+	var {
 		email
 	} = req.body;
+	email = email.toLowerCase();
 	if (email == undefined) {
 		res.status(400).json({
 			message: 'Request must contain email.'
@@ -730,12 +733,12 @@ function forgotPassword(req, res) {
 }
 
 function updateResetPassword(req, res) {
-	const {
+	var {
 		email,
 		resetPasswordCode,
 		newPassword
 	} = req.body;
-
+	email = email.toLowerCase();
 	User.findOne({
 			email
 		},
@@ -750,7 +753,7 @@ function updateResetPassword(req, res) {
 				});
 			} else {
 				if (user.resetPassword == true) {
-					if ((user.resetPasswordCode = resetPasswordCode)) {
+					if (user.resetPasswordCode == resetPasswordCode) {
 						bcrypt.genSalt(10, function (err, salt) {
 							bcrypt.hash(newPassword, salt, function (err, passwordHash) {
 								user.passwordHash = passwordHash;
@@ -780,9 +783,10 @@ function updateResetPassword(req, res) {
 }
 
 function resendConfirmationEmail(req, res) {
-	const {
+	var {
 		email
 	} = req.body;
+	email = email.toLowerCase();
 	User.findOne({
 			email
 		},

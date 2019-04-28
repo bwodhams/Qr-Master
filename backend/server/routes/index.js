@@ -310,7 +310,7 @@ router.put('/user/updateDefaultPayment', (req, res) => {
 		res.status(400).json({
 			message: 'Your request must contain a body of defaultIndex'
 		});
-	} else{
+	} else {
 		transactionService.updateDefaultPayment(req, res);
 	}
 });
