@@ -2075,8 +2075,7 @@ a {
     z-index: 2;
 }
 
-#inputForm,
-#inputBankForm input[disabled] {
+input:read-only {
     color: rgb(146, 146, 146);
     background-image: none;
 }

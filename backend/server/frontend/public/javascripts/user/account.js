@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var email = document.getElementById("email");
     email.value = getCookie("accEmail");
     name.value = getCookie("accName");
+    name.readOnly = true;
+    email.readOnly = true;
     oldEmail = getCookie("accEmail");
     oldName = getCookie("accName");
     document.getElementById('changePass').addEventListener('click', activateChangePass);
