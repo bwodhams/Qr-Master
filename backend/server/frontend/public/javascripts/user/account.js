@@ -34,13 +34,13 @@ function activateChangePass() {
 function editName() {
     changeName = true;
     document.getElementById('editName').hidden = true;
-    document.getElementById('name').disabled = false;
+    document.getElementById('name').readOnly = false;
 }
 
 function editEmail() {
     changeEmail = true;
     document.getElementById('editEmail').hidden = true;
-    document.getElementById('email').disabled = false;
+    document.getElementById('email').readOnly = false;
 }
 
 function updateAccount() {
