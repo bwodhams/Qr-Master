@@ -1996,7 +1996,8 @@ a {
     text-decoration: underline;
 }
 
-.form {
+.form,
+#contact_form {
     position: relative;
     background: #FFFFFF;
     max-width: 360px;
