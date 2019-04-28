@@ -261,9 +261,8 @@ function transaction(req, res) {
 				});
 			}
 		} else if (valid) {
-			var payer = valid['email'];
 			User.findOne({
-					email: payer
+					_id: receiverID
 				}, async function (err, user) {
 					if (err) {
 						res.status(401).json({
@@ -271,7 +270,7 @@ function transaction(req, res) {
 						});
 					} else if (!user) {
 						res.status(401).json({
-							message: "A user with this email address was not found",
+							message: "The account associated with this QR code has been closed.",
 						});
 					} else {
 						logTransaction(req, email, amount, receiverID);
