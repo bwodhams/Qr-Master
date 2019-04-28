@@ -64,10 +64,18 @@ Sample usage to restart front end
 | `serve -s build -l 80` | Serve frontend page on port 80 |
 
 
+Support Email Access
+====================
+https://privateemail.com/appsuite/index.html
+
+Email : support@qrcodes4good.com
+Password : .48MuQJtj6Bzm
+
+
 
 Server routes
 =============
-HOST : https://www.qrcodes4good.com:8080 OR https://104.42.36.29:8080 (Warnings given by most browsers)
+HOST : https://www.qrcodes4good.com OR https://104.42.36.29
 
 old: http://www.microsoftgive.com:8080 (not working due to no SSL cert)
 
