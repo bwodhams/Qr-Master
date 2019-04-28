@@ -13,7 +13,7 @@ https://azure.microsoft.com
 
 Username : bwodhams@email.arizona.edu
 
-Password : \[r7:fXNcEx^Vc#P
+Password : \[r7:fXNcEx^Vc#P!
 
 Server information (connect via SSH)
 ====================================
@@ -69,6 +69,7 @@ Support Email Access
 https://privateemail.com/appsuite/index.html
 
 Email : support@qrcodes4good.com
+
 Password : .48MuQJtj6Bzm
 
 
