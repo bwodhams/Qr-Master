@@ -247,6 +247,7 @@ function transaction(req, res) {
 		email,
 		receiverID,
 		amount,
+		anonymous,
 	} = req.body;
 	const authToken = req.headers.authorization;
 	jwt.verify(authToken, secret, function (err, valid) {
@@ -273,7 +274,7 @@ function transaction(req, res) {
 							message: "The account associated with this QR code has been closed.",
 						});
 					} else {
-						logTransaction(req, email, amount, receiverID);
+						logTransaction(req, email, amount, receiverID, anonymous == null ? false : anonymous);
 						processTransaction(res, user.customerToken, amount * 100, receiverID);
 					}
 				})
@@ -285,7 +286,7 @@ function transaction(req, res) {
 	});
 }
 
-function logTransaction(req, email, amount, _id) {
+function logTransaction(req, email, amount, _id, anonymous) {
 	User.findOne({
 		_id
 	}, function (err, user) {
@@ -297,13 +298,13 @@ function logTransaction(req, email, amount, _id) {
 					user.receivedPayments.push({
 						name: user2.name,
 						amount: amount - (Math.ceil(amount * 2.9) / 100.0 + 0.3),
-						anonymous: false,
+						anonymous: anonymous,
 						date: new Date()
 					});
 					user2.sentPayments.push({
 						name: user.name,
 						amount: amount,
-						anonymous: false,
+						anonymous: anonymous,
 						date: new Date()
 					});
 					user.save();
