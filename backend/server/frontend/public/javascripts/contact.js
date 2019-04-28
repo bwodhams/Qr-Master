@@ -17,8 +17,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById('sendBtn').addEventListener('click', createQR);
+    document.getElementById('sendBtn').addEventListener('click', sendEmail);
 });
+
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -42,5 +43,9 @@ function removeElement(elementId) {
 }
 
  function sendEmail() {
- 	
+ 	var success = document.getElementById('success_message');
+    var form = document.getElementById('contact_form');
+    success.style.display = "";
+    form.style.display = "none";
+    removeElement('contact_form');
  }
