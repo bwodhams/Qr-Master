@@ -334,4 +334,8 @@ router.get('/user/getSimpleInfo', (req, res) => {
 	loginService.getSimpleInformation(req, res);
 })
 
+router.post('/user/contactUs', (req, res) => {
+	loginService.contactUsEmail(req, res);
+})
+
 module.exports = router;

@@ -868,6 +868,45 @@ function getSimpleInformation(req, res) {
 	})
 }
 
+function contactUsEmail(req, res) {
+	const {
+		name,
+		email,
+		message
+	} = req.body;
+
+	if (req.cookies['sentEmail'] == undefined) {
+		mailOptions = {
+			from: '"Support Request" <' + email + '>',
+			to: "contact@qrcodes4good.com",
+			subject: 'ContactUs Request From ' + name,
+			html: message
+		};
+		smtpTransport.sendMail(mailOptions, function (error, response) {
+			if (error) {
+				console.log(error);
+				res.status(500).json({
+					message: 'Error sending support request.',
+					error: error
+				});
+			} else {
+				console.log('Support email sent successfully!');
+				res.cookie('sentEmail', name, {
+					maxAge: 300000,
+				});
+				res.status(201).json({
+					message: "Support request sent successfully"
+				});
+			}
+		});
+	} else {
+		res.status(500).json({
+			message: 'You have recently sent us an email, please wait a few minutes before sending again. If this message persists, please reload the page.'
+		});
+	}
+
+}
+
 
 module.exports = {
 	get,
@@ -881,5 +920,6 @@ module.exports = {
 	updateResetPassword,
 	acceptTos,
 	resendConfirmationEmail,
-	getSimpleInformation
+	getSimpleInformation,
+	contactUsEmail
 };
