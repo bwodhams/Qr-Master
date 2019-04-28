@@ -264,7 +264,7 @@ function transaction(req, res) {
 		} else if (valid) {
 			if (amount > 20.00 || amount < 0.50) {
 				res.status(401).json({
-					message: "Payment amount must be more than $0.50 and less than $20.00",
+					message: "Payment amount must be at least $0.50 and at most $20.00",
 				});
 			} else {
 				User.findOne({

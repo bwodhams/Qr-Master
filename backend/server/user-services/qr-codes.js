@@ -33,7 +33,7 @@ function generateQRCode(req, res) {
 			var email = decoded[`email`];
 			if (defaultAmount > 20.00 || defaultAmount < 0.50) {
 				res.status(401).json({
-					message: "Default amount must be greater than 0.00 and less than 50.00"
+					message: "Default amount must be at least $0.50 and at most $20.00"
 				});
 				return;
 			}
