@@ -262,26 +262,32 @@ function transaction(req, res) {
 				});
 			}
 		} else if (valid) {
-			User.findOne({
-					_id: receiverID
-				}, async function (err, user) {
-					if (err) {
-						res.status(401).json({
-							message: "Error communicating with database",
-						});
-					} else if (!user) {
-						res.status(401).json({
-							message: "The account associated with this QR code has been closed.",
-						});
-					} else {
-						logTransaction(req, email, amount, receiverID, anonymous == null ? false : anonymous);
-						processTransaction(res, user.customerToken, amount * 100, receiverID);
-					}
-				})
-				.catch(err => {
-					console.log("oh no!")
-					res.status(500).send(err);
+			if (amount > 20.00 || amount < 0.50) {
+				res.status(401).json({
+					message: "Payment amount must be more than $0.50 and less than $20.00",
 				});
+			} else {
+				User.findOne({
+						_id: receiverID
+					}, async function (err, user) {
+						if (err) {
+							res.status(401).json({
+								message: "Error communicating with database",
+							});
+						} else if (!user) {
+							res.status(401).json({
+								message: "The account associated with this QR code has been closed.",
+							});
+						} else {
+							logTransaction(req, email, amount, receiverID, anonymous == null ? false : anonymous);
+							processTransaction(res, user.customerToken, amount * 100, receiverID);
+						}
+					})
+					.catch(err => {
+						console.log("oh no!")
+						res.status(500).send(err);
+					});
+			}
 		}
 	});
 }
