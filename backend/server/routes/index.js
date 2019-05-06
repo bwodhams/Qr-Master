@@ -13,9 +13,6 @@ const loginService = require('../user-services/login');
 const qrService = require('../user-services/qr-codes');
 const transactionService = require('../user-services/transactions');
 
-router.get('/users', (req, res) => {
-	loginService.get(req, res);
-});
 
 router.get('/verify/:email&:code', (req, res) => {
 	loginService.verify(req, res);

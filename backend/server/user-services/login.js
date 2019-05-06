@@ -29,18 +29,6 @@ require('../mongo').connect();
 
 var hostLink = 'https://www.qrcodes4good.com';
 
-function get(req, res) {
-	const docquery = User.find({}).read(ReadPreference.NEAREST);
-	docquery
-		.exec()
-		.then((users) => {
-			res.json(users);
-		})
-		.catch((err) => {
-			res.status(500).send(err);
-		});
-}
-
 //Email verification stuff
 var smtpTransport = nodemailer.createTransport({
 	host: 'mail.privateemail.com',
@@ -908,7 +896,6 @@ function contactUsEmail(req, res) {
 
 
 module.exports = {
-	get,
 	create,
 	update,
 	destroy,

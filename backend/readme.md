@@ -1,19 +1,11 @@
-This is the backend code used by the QRCodes4Good App.
+This is the backend code used by the QRCodes4Good App AND the frontend code used for the QRCodes4Good website.
 
-To get started, clone repo, enter the directory and do npm install.
-Also need npm install react-native-bcrypt  and npm install bcryptjs
-
-For more explicit instructions, check out the howTo.md file.
+To get started, clone repo on your server, enter the directory and do npm install.
 
 Azure Database Login Information
 ================================
-(Account is linked to my Arizona account, so you'll have to do 2FA, so just make sure you tell me before you attempt to login)
 
-https://azure.microsoft.com
-
-Username : bwodhams@email.arizona.edu
-
-Password : \[r7:fXNcEx^Vc#P!
+Setting up the Database can be done by following the tutorial here :  (https://www.youtube.com/watch?v=0U2jV1thfvs)
 
 Server information (connect via SSH)
 ====================================
@@ -21,7 +13,7 @@ IP : 104.42.36.29
 
 Username : qrcodes4good
 
-Password : 1282*^nb7*(56&
+Password : [removed and changed]
 
 To log in with a key instead of the password:
 
@@ -45,7 +37,7 @@ Frequently used commands
 | `screen -r 1234` | connect to screen with id number 1234 |
 | ctrl + a + d | disconnect from screen (detach) and leave running |
 
-Sample usage to restart node server
+Sample usage to restart frontend and backend server
 -----------------------------------
 | Command | Description |
 | ------- | ----------- |
@@ -57,20 +49,13 @@ Sample usage to restart node server
 | ctrl + a + d | detach from screen and leave node service running |
 
 
-Sample usage to restart front end
----------------------------------
-| Command | Description |
-| ------- | ----------- |
-| `serve -s build -l 80` | Serve frontend page on port 80 |
-
-
-Support Email Access
+Support Email Access (from namecheap - domain provider)
 ====================
 https://privateemail.com/appsuite/index.html
 
 Email : support@qrcodes4good.com
 
-Password : .48MuQJtj6Bzm
+Password : [removed and changed]
 
 
 
@@ -78,9 +63,11 @@ Server routes
 =============
 HOST : https://www.qrcodes4good.com OR https://104.42.36.29
 
-old: http://www.microsoftgive.com:8080 (not working due to no SSL cert)
 
 Sample account {"email": "bpwodhams@gmail.com", "password": "Abc1234"}
+
+NOTE : Almost all routes require header including authorization token. (no tokens for registration, verify, login etc)
+
 
 | Mode | Route | Description | Expected Input | Expected Output | Sample Usage |
 | :---: | ----- | ----------- | -------------- | ------------ | -------- |
@@ -101,3 +88,13 @@ Sample account {"email": "bpwodhams@gmail.com", "password": "Abc1234"}
 | POST | {HOST}/api/user/resendConfirmationEmail | Resend account confirmation email | Body containing email | JSON object `{"message": "some message"}` | /api/user/resendConfirmationEmail with body of `{"email" : "random@gmail.com"}` |
 | PUT | {HOST}/api/user/saveQRCode | Save a scanned QRCode | Body containing userID, qrcodeData | JSON object `{"message": "some message"}` | /api/user/saveQRCode with body of `{"userID": "12345", "qrcodeData": "data"}` |
 | GET | {HOST}/api/user/ getSavedQRCodes | Get user's saved QRCodes | Header containing session token | JSON object `{"message": "some message", "qrcodes": "array of all saved qrcodes for user"}` | /api/user/getSavedQRCodes with session token in header |
+| POST | {HOST}/api/user/tosUpdate | Update user value once they accept the ToS | Header containing auth token, body containing email | JSON object `{"message": "some message", "tosAccepted": true}` | /api/user/tosUpdate with header of "authorization", body of email |
+| POST | {HOST}/api/user/verifyStripe | Verify user before they can receive payments to their bank account | Header containing auth token, body containing email, ssn_last_4, dob_day, dob_month, dob_year, city, line1, postal_code, state | JSON object `{"message": "some message", "verification": true}` | /api/user/verifyStripe with header of "authorization", body of `{"email": "random@gmail.com", "ssn_last_4": "1234", "dob_day": "01", "dob_month": "02", "dob_year": "2019", "city": "Tucson", "line1": "123 Some Street", "postal_code": "12345", "state": "Arizona"}` |
+| POST | {HOST}/api/user/transaction | Send money from one user to another | Header containing auth token, body containing email, receiverID, amount, anonymous | JSON object `{"message": "some message", "success": true}` | /api/user/transaction with header of "authorization", body of `{"email": "random@gmail.com", "receiverID" : "12345", "amount": "10.00", "anonymous" : true}` |
+| GET | {HOST}/api/user/transactionHistory | Get user tx history | Header containing auth token | JSON object `{"message": "some message", "sent": [array of sent payments], "received": [array of received payments]}` | /api/user/transactionHistory with header of "authorization" |
+| POST | {HOST}/api/user/deleteSavedQRCode | Delete a saved QRCode | Header containing auth token, body containing deleteID | JSON object `{"message": "some message"}` | /api/user/deleteSavedQRCode with header of "authorization", body of `{"deleteID": 1}` |
+| PUT | {HOST}/api/user/updateDefaultPayment | Update user default payment method | Header containing auth token, body containing defaultIndex | JSON object `{"message": "some message", "stripeData": [array of all user cards / banks]}` | /api/user/updateDefaultPayment with header of "authorization", body of `{"defaultIndex": 1}` |
+| POST | {HOST}/api/user/deletePayment | Delete payment method | Header containing auth token, body containing deleteIndex | JSON object `{"message": "some message", "stripeData": [array of all user cards / banks]}` | /api/user/deletePayment with header of "authorization", body of `{"deleteIndex": 1}` |
+| POST | {HOST}/api/user/contactUs | Send contact us email | Body containing name, email, message | JSON object `{"message": "some message"}` | /api/user/contactUs with body of `{"name": "My Name", "email": "random@gmail.com", "message": "I really like your website and your service!"}` |
+| GET | {HOST}/api/user/getSimpleInfo | Get user name for website | Header containing auth token | JSON object `{"message": "some message", "name": "account Name"}` | /api/user/getSimpleInfo with header of "authorization" |
+
