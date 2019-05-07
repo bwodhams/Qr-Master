@@ -11,10 +11,15 @@ const env = require('./env/environment');
 
 mongoose.Promise = global.Promise;
 
-const mongoUri = `mongodb://qrcodes4good:A6PnUis3ScRgClirQD9VkaYTCpOxEVxn3Nek76gcxs4alcUIgVstrIzuNwVlmO81hmRktuEhywBuZMd5IYtHuQ==@qrcodes4good.documents.azure.com:10255/?ssl=true&replicaSet=globaldb`;
+const mongoUri = `mongodb://` + env.dbName + `:` + env.key + `@` + env.dbName + `.documents.azure.com:` + env.cosmosPort + `/?ssl=true&replicaSet=globaldb`;
 
 function connect() {
-  return mongoose.connect(mongoUri, { auth: { user: env.dbName, password: env.key }});
+  return mongoose.connect(mongoUri, {
+    auth: {
+      user: env.dbName,
+      password: env.key
+    }
+  });
 }
 
 module.exports = {
